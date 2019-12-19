@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+ 
+  "name": "Mindful Extension",
+  "version": "1.0",
+  "description": "An extension that makes you more mindful of what you say on social media using the power of sentiment analysis and Emojis.",
+ 
+  "browser_action": {
+    "default_icon": "mindful-extension.png"
+  },
+  "permissions": [
+    "history",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["bundle.js"]
+      
+    }
+  ]
+}
