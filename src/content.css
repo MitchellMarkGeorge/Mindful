@@ -2,3 +2,9 @@
     font-size: 10px !important;
     position: relative !important;
 }
+
+#mindful-wrapper {
+    height: 30px;
+    line-height: 30px;
+    background-color: gray;
+}

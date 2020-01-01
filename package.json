@@ -25,6 +25,7 @@
     "webpack-dev-server": "^3.10.0"
   },
   "dependencies": {
-    "sentiment": "^5.0.2"
+    "sentiment": "^5.0.2",
+    "vader-sentiment": "^1.1.3"
   }
 }
