@@ -44,7 +44,7 @@ module.exports = {
   },
 
   plugins: [
-    // new CleanWebpackPlugin(), 
+    // new CopyWebpackPlugin(), 
     // new HtmlWebPackPlugin({
     //     template: "./index.html",
 
