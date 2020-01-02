@@ -1,10 +1,11 @@
 .test {
-    font-size: 10px !important;
-    position: relative !important;
+  font-size: 10px !important;
+  position: relative !important;
 }
 
 #mindful-wrapper {
-    height: 30px;
-    line-height: 30px;
-    background-color: gray;
+  height: 30px !important;
+  line-height: 30px !important;
+  background-color: transparent !important;
+  /* margin?? */
 }

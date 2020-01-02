@@ -1,102 +1,124 @@
 import Sentiment from "sentiment";
 import { SentimentIntensityAnalyzer } from "vader-sentiment";
-console.log("hello");
-//console.log(document.activeElement)
 
-//document.body.onclick =
+
+// Might make utils folder
+// isInputElement
+// isTextArea
+// isContentEditable
+
+// make final dist folder
 
 let activeElement;
 let sentiment = new Sentiment();
 let score = 0;
 let wrapperDiv;
+let scoreElement; // for emoji
+let progressBar; // positble progress bar (or text)
+let mindfulWrapper;
 
-//TODO: see if ther is already a text area or input in focus
+
+// make accounts and test on target websites/ platforms
 // reddit
 
 document.body.addEventListener("click", () => {
+
   activeElement = document.activeElement;
+
   console.log(activeElement.tagName);
-  // forms??? // might reconsidder contentEditable
 
-  // might have to do something different for each type ofwhay of input
-  // consider grammarly
-  // reconsider way of showund sentiement (might just use dashboard or new tab. Consult Nick, Mr. Ajiri, and Uncle Seyi)
-  // should not interfere with previous extension
-  // instant feedback??
-  // tooltip??
-  // reomve on blur
-  //should not be in the way of the user
-  if (
-    activeElement.tagName === "INPUT" ||
-    activeElement.tagName === "TEXTAREA" ||
-    activeElement.contentEditable === "true"
-  ) {
-    console.log(activeElement.contentEditable === "true");
-    if (document.getElementById('mindful-wrapper')) {
-        analyze();
-    } else {
-    wrapperDiv = document.createElement("div");
-    wrapperDiv.id = "mindful-wrapper";
+  console.log('Should insert: ' + shouldInsertWrapper());
 
-    // // wrapperDiv.style.position = 'relative';
-    // // wrapperDiv.style.top = '0';
-    // // wrapperDiv.style.left = '0'
+  if (shouldInsertWrapper()) {
+    //console.log(activeElement.isContentEditable);
+    console.log(activeElement.type);
+    console.log(activeElement.form);
+    // if it is an input element and it is in a form
+    // might change this later
+    // if (document.getElementById('mindful-wrapper')) {
+    //   analyze();
+    // } else {
+    // wrapperDiv = document.createElement("div");
+    // wrapperDiv.id = "mindful-wrapper";
 
-    // // top: 0px;
-    // // left: 0px;
-   
-    activeElement.parentNode.insertBefore(
-      wrapperDiv,
-      activeElement.nextSibling
-    );
+    inserExtension();
 
-    
-    // document.body.insertBefore(wrapperDiv, activeElement);
-    // console.log(wrapperDiv);
+
+    // activeElement.parentNode.insertBefore(
+    //   mindfulWrapper,
+    //   activeElement.nextSibling
+    // );
+
+
+  
     analyze();
-    }
+
   }
   // console.log(document.activeElement.tagName)
   // console.log(sentiment.analyze(document.activeElement.value));
   //might have to increase the scale to have more nuetral values (or devide by 5 like google nlp)
 });
 
-function analyze() {
-  activeElement.addEventListener("input", e => {
-    //console.log(activeElement.value);
-    // console.log(sentiment.analyze(e.target.value));
+function shouldInsertWrapper() {
+  return activeElement.tagName === "INPUT" ||
+    activeElement.tagName === "TEXTAREA" ||
+    activeElement.isContentEditable;
+  // Figure out strategy so that all appropriate inputs can have extension working and on then blur and then focus occurs, no new wrapper is made and appropriate wrapper reads input (multiple input problem)
 
-    // if (!activeElement.value) return;
-    //console.log(SentimentIntensityAnalyzer);
-    // let text  = activeElement.value;
-    // let analysis = sentiment.analyze(activeElement.value)
-    // console.log(analysis);
+  // checks if the elemt is an input, textarea or contentEditable 
+}
+
+function inserExtension() {
+  // create extension instance on element
+  mindfulWrapper = document.createElement('mindful-extension')
+  wrapperDiv = document.createElement('div');
+
+  scoreElement = document.createElement('span');
+  progressBar = document.createElement('span');
+  mindfulWrapper.appendChild(wrapperDiv);
+  wrapperDiv.appendChild(scoreElement);
+  wrapperDiv.appendChild(progressBar);
+
+  // insert created element into the page
+  activeElement.parentNode.insertBefore(
+    mindfulWrapper,
+    activeElement.nextSibling
+  );
+
+
+}
+
+function analyze() {
+  activeElement.addEventListener("input", (e) => {
+
+    if (!wrapperDiv.id) {
+      wrapperDiv.id = "mindful-wrapper"; // apply styling on input event
+    }
+
 
     if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
       // console.log(e);
       let analysis = sentiment.analyze(activeElement.value);
-      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
+      //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
+      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(activeElement.value);
       console.log(analysis);
       console.log(analysis_2);
 
+      score = analysis_2.compound;
+      scoreElement.innerHTML = `${score}`;
 
-      wrapperDiv.innerHTML = `${analysis_2.compound}`;
     } else {
+      // contentEditable
       let analysis = sentiment.analyze(activeElement.innerHTML);
       let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(activeElement.innerHTML);
       console.log(analysis);
       console.log(analysis_2);
 
-      wrapperDiv.innerHTML = `${analysis_2.compound}`;
+      score = analysis_2.compound;
+      scoreElement.innerHTML = `${score}`;
     }
 
 
-    // activeElement.value += ` ${analysis.score}`;
-    //text += analysis.score;
 
-    // activeElement.value += ` ${analysis.score}`;
-    //wrapperDiv.innerHTML = `${analysis.score}`;
-
-    //FIND WAY TO ADD EMOJI TO END OF TEXT
   });
 }
