@@ -1,4 +1,4 @@
-import Sentiment from "sentiment";
+import Sentiment from "sentiment"; // will remove
 import { SentimentIntensityAnalyzer } from "vader-sentiment";
 import { MidfulExtensionClass } from './mindful-class'
 
@@ -22,8 +22,8 @@ let currentMindfulInstance;
 
 
 // make accounts and test on target websites/ platforms
-// reddit
-
+// reddit 
+  
 document.body.addEventListener("click", () => {
 
   activeElement = document.activeElement;
@@ -106,14 +106,14 @@ function inserExtension() {
     activeElement.nextSibling
   );
 
-    // class will be made here
+  // class will be made here
 
   currentMindfulInstance = new MidfulExtensionClass(mindfulWrapper);
 
 }
 
 function getEmoji(score) {
-  // workon
+  // workon 
   // confirm if my evaluattion is correct
   if (score > 0.8) return '128525';
   else if (score > 0.6) return '128512';
@@ -147,7 +147,7 @@ function analyzeInput() {
       let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(activeElement.value);
       console.log(analysis);
       console.log(analysis_2);
- 
+
       score = analysis_2.compound; // `${score}`
       currentMindfulInstance.setEmojiElementContent(getEmoji(score));
       //scoreElement.innerHTML = String.fromCodePoint(getEmoji(score));

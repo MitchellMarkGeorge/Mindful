@@ -1,5 +1,7 @@
 const path = require('path');
 
+const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 // where is the entry file
 module.exports = {
@@ -8,7 +10,7 @@ module.exports = {
   entry: './src/app.js',
   output: {
     filename: 'bundle.js',
-    path: __dirname,
+    path: path.resolve(__dirname, 'dist')
     // might change this
   },
 
@@ -44,6 +46,12 @@ module.exports = {
   },
 
   plugins: [
+    new CopyPlugin([
+      {from: 'public', to: 'public'}, 
+      {from: 'manifest.json', to: 'manifest.json'}, 
+      {from: 'src/content.css', to: 'content.css'}
+    ]),
+    new CleanWebpackPlugin()
     // new CopyWebpackPlugin(), 
     // new HtmlWebPackPlugin({
     //     template: "./index.html",
