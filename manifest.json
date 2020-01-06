@@ -4,7 +4,7 @@
   "name": "Mindful Extension",
   "author": "Mitchell Mark-George",
   "version": "1.0",
-  "description": "An extension that makes you more mindful of what you say on social media using the power of sentiment analysis and Emojis.",
+  "description": "An extension that makes you more mindful of what you say on social media using the power of sentiment analysis, machine learning and emojis.",
  
   "browser_action": {
     "default_icon": "public/mindful-extension.png", 
@@ -19,9 +19,18 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"], 
-      "js": ["bundle.js"],
+      "js": ["content.js"],
       "css": ["content.css"]
       
     }
-  ]
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+
+
 }

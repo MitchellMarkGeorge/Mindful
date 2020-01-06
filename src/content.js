@@ -1,7 +1,11 @@
-import Sentiment from "sentiment"; // will remove
+import Sentiment from "sentiment"; // remove befor production
 import { SentimentIntensityAnalyzer } from "vader-sentiment";
-import { MidfulExtensionClass } from './mindful-class'
+import { MidfulExtensionClass } from './mindful-class';
 
+import * as toxicity from '@tensorflow-models/toxicity';
+// import work from 'webworkify-webpack';
+//import Worker from 'worker-loader!./Worker';
+// ONLY DO TEXTAREA (DOES GRAMMARLY ONLY DO THAT???)
 
 // Might make utils folder
 // isInputElement
@@ -9,21 +13,43 @@ import { MidfulExtensionClass } from './mindful-class'
 // isContentEditable
 
 // make final dist folder
+ 
 
+// if using "progressbar.min.js, dont forget to put minfile in manifest.json"
 let activeElement;
 let sentiment = new Sentiment();
 let score = 0;
+let model;
+let worker;
+//let progressBar;
+// can add progressBar dist code as contentscript js/css file
+
 // let wrapperDiv;
 // let scoreElement; // for emoji
 // let progressBar; // positble progress bar (or text)
 // let mindfulWrapper;
 
-let currentMindfulInstance;
+let currentMindfulInstance = new MidfulExtensionClass();
+// The minimum prediction confidence. https://github.com/tensorflow/tfjs-models/tree/master/toxicity
+
+// figure out why this slows down the entire thread
+// also increases extension size
+
+// in production remove consologs
+// const threshold = 0.9
+// toxicity.load(threshold)
+//   .then(modelObject => { 
+//     model = modelObject;
+    
+//   })
+//   .catch(err => {
+//     console.log(err)
+//   }) 
 
 
 // make accounts and test on target websites/ platforms
 // reddit 
-  
+
 document.body.addEventListener("click", () => {
 
   activeElement = document.activeElement;
@@ -35,7 +61,7 @@ document.body.addEventListener("click", () => {
   if (shouldInsertWrapper()) {
     //console.log(activeElement.isContentEditable);
     console.log(activeElement.type);
-    console.log(activeElement.form);
+
 
     if (activeElement.nextSibling && activeElement.nextSibling.tagName === 'MINDFUL-EXTENSION' && currentMindfulInstance) {
       // need to check if there is a nextSibling because of content editable
@@ -44,6 +70,7 @@ document.body.addEventListener("click", () => {
       // set values
       // compare active elements??
       currentMindfulInstance.setValues(activeElement.nextSibling);
+      //progressBar = undefined; // reset value
       analyzeInput();
 
     } else {
@@ -79,7 +106,7 @@ document.body.addEventListener("click", () => {
 });
 
 function shouldInsertWrapper() {
-  return activeElement.tagName === "INPUT" ||
+  return (activeElement.tagName === "INPUT" && activeElement.type === 'text') ||
     activeElement.tagName === "TEXTAREA" ||
     activeElement.isContentEditable;
   // Figure out strategy so that all appropriate inputs can have extension working 
@@ -95,10 +122,11 @@ function inserExtension() {
   let wrapperDiv = document.createElement('div');
   // should styles be loaded her on on type event
   let scoreElement = document.createElement('span');
-  let progressBar = document.createElement('span');
+  // let progressBar = document.createElement('span');
+  let loading = document.createElement('span');
   mindfulWrapper.appendChild(wrapperDiv);
   wrapperDiv.appendChild(scoreElement);
-  wrapperDiv.appendChild(progressBar);
+  wrapperDiv.appendChild(loading); 
 
   // insert created element into the page
   activeElement.parentNode.insertBefore(
@@ -108,7 +136,12 @@ function inserExtension() {
 
   // class will be made here
 
-  currentMindfulInstance = new MidfulExtensionClass(mindfulWrapper);
+  //currentMindfulInstance = new MidfulExtensionClass(mindfulWrapper);
+  currentMindfulInstance.setValues(mindfulWrapper);
+  currentMindfulInstance.setWrapperDivID("mindful-wrapper");
+  // currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
+  currentMindfulInstance.setEmojiElementContent('128528'); 
+
 
 }
 
@@ -135,9 +168,28 @@ function analyzeInput() {
     //   wrapperDiv.id = "mindful-wrapper"; // apply styling on input event
     // }
 
-    if (!currentMindfulInstance.getWrapperDiv.id) {
-      currentMindfulInstance.setWrapperDivID("mindful-wrapper");
-    }
+
+
+    // if (!currentMindfulInstance.getWrapperDiv.id) {
+    //     currentMindfulInstance.setWrapperDivID("mindful-wrapper");
+    //     currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
+
+        
+
+        
+    // }
+
+    
+      // progressBar = new ProgressBar.Line(currentMindfulInstance.getProgressBarElement(), {
+      //   strokeWidth: 4,
+      //   easing: 'easeInOut',
+      //   duration: 1400,
+      //   color: '#FFEA82',
+      //   trailColor: '#eee',
+      //   trailWidth: 1,
+      //   svgStyle: {width: '50px'}
+      // })
+    
 
     console.log(activeElement.nextSibling.tagName);
     if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
@@ -148,8 +200,18 @@ function analyzeInput() {
       console.log(analysis);
       console.log(analysis_2);
 
+      
+      
+
       score = analysis_2.compound; // `${score}`
       currentMindfulInstance.setEmojiElementContent(getEmoji(score));
+      
+      // model.classify(activeElement.value).then(prediction => {
+      //   console.log(prediction);
+      // }) // this slows down the entire site!!!
+      // currentMindfulInstance.progressBar.animate(1);
+
+      
       //scoreElement.innerHTML = String.fromCodePoint(getEmoji(score));
 
     } else {
@@ -159,11 +221,46 @@ function analyzeInput() {
       console.log(analysis);
       console.log(analysis_2);
 
+      
+
       score = analysis_2.compound; // `${score}`
       currentMindfulInstance.setEmojiElementContent(getEmoji(score));
+      
+      // model.classify(activeElement.innerHTML).then(prediction => {
+      //   console.log(prediction);
+      // })
+      // currentMindfulInstance.progressBar.animate(1);
+
+      
     }
 
 
 
   });
+
+  // let typingTimer;
+  // activeElement.addEventListener('keyup', () => {
+  //   clearTimeout(typingTimer);
+
+  //   if (activeElement.value) { // pass in value as parameter or just use global variable
+  //     typingTimer = setTimeout(function() {doneTyping(activeElement.value)}, 2000)
+  //   } else if (activeElement.innerHTML) {
+  //     typingTimer = setTimeout(function() {doneTyping(activeElement.innerHTML)}, 2000)
+  //   }
+  // })
 }
+
+// function doneTyping(text) { 
+
+//   if (!worker && window.Worker) {
+//   //  worker = new Worker();
+
+//   worker = work(require.resolve('./Worker.js'));
+//   }
+
+//   worker.postMessage(text);
+//   console.log('sent message to worker');
+//   // model.classify(text).then(prediction => {
+//   //       console.log(prediction); // blocks entire thread???
+//   //     })
+// }

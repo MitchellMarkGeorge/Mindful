@@ -2,25 +2,38 @@ export class MidfulExtensionClass {
 
     wrapperDiv;
     emojiElement;
-    progressBarElement
+    // progressBarElement;
+    // progressBar;
+    loadingElement;
 
-    constructor(DOMElement) {
+    constructor() {
 
         // this.wrapperDiv;
         // this.emojiElement;
         // this.progressBarElement;
 
-        this.setValues(DOMElement)
+        
 
     }
 
     setValues(DOMElement) {
         this.wrapperDiv = DOMElement.firstChild;
         this.emojiElement = this.wrapperDiv.firstChild;
-        this.progressBarElement = this.wrapperDiv.lastChild;
+        this.loadingElement = this.wrapperDiv.lastChild;
+
+        // this.progressBar = new ProgressBar.Line(this.getProgressBarElement(), {
+        //     strokeWidth: 4,
+        //     easing: 'easeInOut',
+        //     duration: 1400,
+        //     color: '#FFEA82',
+        //     trailColor: '#eee',
+        //     trailWidth: 1,
+        //     svgStyle: { width: '50px' }
+        //   });
         console.log(this.wrapperDiv);
-        console.log(this.progressBarElement);
+        //console.log(this.progressBarElement);
         console.log(this.emojiElement);
+        console.log(this.loadingElement)
     }
 
 
@@ -29,13 +42,13 @@ export class MidfulExtensionClass {
     }
 
     setEmojiElementContent(emojiNumber) {
-        console.log(this.emojiElement);
+        
         this.emojiElement.innerHTML = String.fromCodePoint(emojiNumber);
     }
 
-    getProgressBarElement() {
-        return this.progressBarElement;
-    }
+    // getProgressBarElement() {
+    //     return this.progressBarElement;
+    // }
 
     getWrapperDiv() {
         return this.wrapperDiv;
@@ -45,5 +58,8 @@ export class MidfulExtensionClass {
         this.wrapperDiv.id = idString
     }
 
-    setProgressBarElement() { }
-}
+    setSpanElementClassName(className) {
+        //this.emojiElement.classList.add(className);
+        this.loadingElement.classList.add(className);
+     }
+} 
