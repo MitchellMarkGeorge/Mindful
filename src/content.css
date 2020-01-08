@@ -5,7 +5,7 @@
 
 #mindful-wrapper {
   height: 30px !important;
-  width: 200px !important;
+  /* width: 200px !important; */
   line-height: 30px !important;
   background-color: transparent !important;
   /* margin?? */
@@ -13,9 +13,38 @@
 
 .mindful-span-elements {
     display: inline-block !important;
-    line-height: 30px !important;
-    margin-right: 10px !important;
-    height: 30px !important;
-    border: 1px solid #000 !important;
-    border-radius: 5px !important;
+    /* line-height: 30px !important; */
+    margin-right: 10px !important; 
+    /* height: 30px !important; */
+    
 }
+
+.mindful-span-toxicity-elements {
+  border: 1px solid #000 !important;
+  border-radius: 14px !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  white-space: nowrap;
+  padding: 5px !important;
+  line-height: 1 !important;
+  color: red !important;
+  text-transform: capitalize !important;
+  margin-right: 10px !important; 
+  display: inline-block !important; 
+  /* neccasary??? */
+
+}
+
+.la-ball-clip-rotate {
+  color: #79bbb5 !important;
+  width: 12px !important;
+  height: 12px !important;
+  line-height: 30px !important;
+}
+
+.la-ball-clip-rotate > div {
+  width: 12px !important;
+  height: 12px !important;
+  line-height: 30px !important;
+}
+

@@ -65,7 +65,8 @@ module.exports = {
     new CopyPlugin([
       {from: 'public', to: 'public'}, 
       {from: 'manifest.json', to: 'manifest.json'}, 
-      {from: 'src/content.css', to: 'content.css'}, 
+      {from: 'src/content.css', to: 'content.css'},
+      {from: 'src/ball-clip-rotate.min.css', to: 'ball-clip-rotate.min.css'} 
       // {from: 'progressbar.min.js', to: 'progressbar.min.js'}
     ]),
     // new CleanWebpackPlugin()

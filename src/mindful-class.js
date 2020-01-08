@@ -5,6 +5,7 @@ export class MidfulExtensionClass {
     // progressBarElement;
     // progressBar;
     loadingElement;
+    tocicityElements = [];
 
     constructor() {
 
@@ -59,7 +60,52 @@ export class MidfulExtensionClass {
     }
 
     setSpanElementClassName(className) {
-        //this.emojiElement.classList.add(className);
+        // check if it aleready contains it
+        this.emojiElement.classList.add(className);
+        this.loadingElement.classList.add(className); // , 'mindful-span-toxicity-elements'
+
+     }
+
+     setToxicityElements(toxicityArray) {
+         let tempArray = toxicityArray.filter(item => item.results[0].match === true);
+
+         console.log(tempArray);
+
+         this.tocicityElements = tempArray.map(item => {
+             let element = document.createElement('span');
+             element.className = 'mindful-span-toxicity-elements'
+             element.innerHTML = `${item.label}`; // add percentage???
+             return element;
+         })
+
+         console.log(this.tocicityElements);
+
+         for (let item of this.tocicityElements) {
+            this.emojiElement.parentNode.insertBefore(
+                item,
+                this.emojiElement.nextSibling
+              );
+         }
+     }
+
+     removeToxicityElements() {
+
+        for (let element of this.tocicityElements) {
+            element.remove(); // removes element??
+        }
+        // reset array
+        this.tocicityElements = [];
+
+     }
+
+
+ 
+     setToxicityElementClass(className) {
         this.loadingElement.classList.add(className);
+        console.log(className);
+     }
+
+     getLoadingElement() {
+         return this.loadingElement;
      }
 } 
