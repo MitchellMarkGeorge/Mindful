@@ -74,7 +74,7 @@ export class MidfulExtensionClass {
          this.tocicityElements = tempArray.map(item => {
              let element = document.createElement('span');
              element.className = 'mindful-span-toxicity-elements'
-             element.innerHTML = `${item.label}`; // add percentage???
+             element.innerHTML = `${item.label.replace('_', ' ')}`; // add percentage???
              return element;
          })
 

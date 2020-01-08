@@ -2,14 +2,15 @@ const path = require('path');
 
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ChromeExtensionReloader  = require('webpack-chrome-extension-reloader');
 
 // where is the entry file
 module.exports = {
 
   mode: 'development',
   entry: {
-    content: './src/app.js',
-    background: './src/app-2.js'
+    content: './src/content.js',
+    background: './src/background.js'
   }, 
   output: {
     filename: '[name].js',
@@ -62,6 +63,14 @@ module.exports = {
   },
 
   plugins: [
+    // new ChromeExtensionReloader({
+    //   port: 9090, 
+    //   reloadPage: true, 
+    //   entries: {
+    //     contentScript: 'content', 
+    //     background: 'background'
+    //   }
+    // }), 
     new CopyPlugin([
       {from: 'public', to: 'public'}, 
       {from: 'manifest.json', to: 'manifest.json'}, 

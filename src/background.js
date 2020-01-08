@@ -7,6 +7,7 @@ chrome.runtime.onInstalled.addListener(function () {
        
 })
 
+// The minimum prediction confidence. https://github.com/tensorflow/tfjs-models/tree/master/toxicity
 const threshold = 0.7// 0.9;
 // rethink threshold 
 
@@ -37,7 +38,8 @@ toxicity.load(threshold)
         //             })
         //         }
         //     })
-        model.classify('hello').then(predict => {console.log(predict)});
+
+        //model.classify('hello').then(predict => {console.log(predict)});
     })
     .catch(err => {
         console.log(err)

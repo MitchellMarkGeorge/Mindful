@@ -3,8 +3,7 @@ import { SentimentIntensityAnalyzer } from "vader-sentiment";
 import { MidfulExtensionClass } from './mindful-class';
 
 // import * as toxicity from '@tensorflow-models/toxicity';
-// import work from 'webworkify-webpack';
-//import Worker from 'worker-loader!./Worker';
+
 // ONLY DO TEXTAREA (DOES GRAMMARLY ONLY DO THAT???)
 
 // Might make utils folder
@@ -22,7 +21,7 @@ let score = 0;
 let model;
 let worker;
 let port;
-let text;
+let text = '';
 //let progressBar;
 // can add progressBar dist code as contentscript js/css file
 
@@ -82,6 +81,10 @@ document.body.addEventListener("click", () => {
       inserExtension();
       analyzeInput();
 
+      activeElement.parentNode.addEventListener('input', () => {
+        console.log('test');
+      })
+
     }
     // if it is an input element and it is in a form
     // might change this later
@@ -114,6 +117,8 @@ function shouldInsertWrapper() {
     activeElement.tagName === "TEXTAREA" ||
     activeElement.isContentEditable;
   // Figure out strategy so that all appropriate inputs can have extension working 
+  //FIGURED IT OUT: ONLY USE TEXTARES
+  // ALSO, CONSIDER SIZE LIKE GRAMARLY
 
   // checks if the elemt is an input, textarea or contentEditable 
 }
@@ -127,11 +132,11 @@ function inserExtension() {
   // should styles be loaded her on on type event
   let scoreElement = document.createElement('span');
   // let progressBar = document.createElement('span');
-  let loading = document.createElement('div');
-  loading.appendChild(document.createElement('div'))
+  let loadingElement = document.createElement('div');
+  loadingElement.appendChild(document.createElement('div'))
   mindfulWrapper.appendChild(wrapperDiv);
   wrapperDiv.appendChild(scoreElement);
-  wrapperDiv.appendChild(loading); 
+  wrapperDiv.appendChild(loadingElement); 
 
   // insert created element into the page
   activeElement.parentNode.insertBefore(
@@ -145,7 +150,7 @@ function inserExtension() {
   currentMindfulInstance.setValues(mindfulWrapper);
   currentMindfulInstance.setWrapperDivID("mindful-wrapper");
   
-  currentMindfulInstance.setEmojiElementContent('128528');
+  currentMindfulInstance.setEmojiElementContent('128528'); // defult emoji
   
 
 
@@ -200,12 +205,19 @@ function analyzeInput() {
 
     console.log(activeElement.nextSibling.tagName);
     if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
+      // console.log(activeElement.cols);
       // console.log(e);
-      text = activeElement.value.trim();
+      //text = activeElement.value.trim();
+
+      if (!activeElement.value && currentMindfulInstance.tocicityElements.length > 0) {
+        currentMindfulInstance.removeToxicityElements();
+      }
+
+      //event.target.value
       
-      let analysis = sentiment.analyze(text);
+      let analysis = sentiment.analyze(activeElement.value);
       //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
-      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(text);
+      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(activeElement.value);
 
       console.log(analysis);
       console.log(analysis_2);
@@ -226,12 +238,12 @@ function analyzeInput() {
 
     } else {  
       // contentEditable  
-      text = activeElement.innerHTML.trim();
-      if (text.length === 0 && currentMindfulInstance.tocicityElements.length >= 0) {
+      //text = activeElement.innerHTML.trim();
+      if (!activeElement.innerHTML && currentMindfulInstance.tocicityElements.length > 0) {
         currentMindfulInstance.removeToxicityElements();
-      }   
-      let analysis = sentiment.analyze(text);
-      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(text);
+      }
+      let analysis = sentiment.analyze(activeElement.innerHTML);
+      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(activeElement.innerHTML);
       console.log(analysis);
       console.log(analysis_2);
   
@@ -270,22 +282,15 @@ function analyzeInput() {
 
  function doneTyping(userText) {
    if (userText === '') return;
-  // chrome.runtime.sendMessage({text: userText}, function(response) {
-  //   // console.log(response.prediction);
-  // });
 
-  // chrome.runtime.onMessage.addListener(
-  //   function(request) {
-  //     console.log(request.prediction)
-  //   }
-  // )
 
-  if (!port) {
+  if (!port) {  
+  
    port = chrome.runtime.connect({name: "ToxicML"});
-   
+    
   }
 
-  port.postMessage({text: userText}); //test reasons
+  port.postMessage({text: userText});
   console.log('message sent');
   if (currentMindfulInstance.tocicityElements) {
     // remove them
@@ -306,16 +311,4 @@ function analyzeInput() {
 
   })
    
-
-//   if (!worker && window.Worker) {
-//   //  worker = new Worker();
-
-//   worker = work(require.resolve('./Worker.js'));
-//   }
-
-//   worker.postMessage(text);
-//   console.log('sent message to worker');
-//   // model.classify(text).then(prediction => {
-//   //       console.log(prediction); // blocks entire thread???
-//   //     })
  }
