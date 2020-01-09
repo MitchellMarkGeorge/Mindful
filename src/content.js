@@ -290,7 +290,7 @@ function analyzeInput() {
     
   }
 
-  port.postMessage({text: userText});
+  port.postMessage({text: userText}); 
   console.log('message sent');
   if (currentMindfulInstance.tocicityElements) {
     // remove them

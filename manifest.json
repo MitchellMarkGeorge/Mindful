@@ -7,13 +7,13 @@
   "description": "An extension that makes you more mindful of what you say on social media using the power of sentiment analysis, machine learning and emojis.",
  
   "browser_action": {
-    "default_icon": "public/mindful-extension.png", 
+    "default_icon": "public/mindful-logo2.png", 
     "default_popup": "public/popup.html"
     
   },
 
   "icons": {
-    "128": "public/mindful-extension128.png"
+    "128": "public/mindful-logo2.png"
   },
   
   "content_scripts": [

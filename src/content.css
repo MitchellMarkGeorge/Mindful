@@ -20,17 +20,18 @@
 }
 
 .mindful-span-toxicity-elements {
-  border: 1px solid #000 !important;
+  /* border: 1px solid #000 !important; */
   border-radius: 14px !important;
   text-align: center !important;
   font-size: 12px !important;
   white-space: nowrap;
   padding: 5px !important;
   line-height: 1 !important;
-  color: red !important;
+  color: #fff !important;
   text-transform: capitalize !important;
   margin-right: 10px !important; 
-  display: inline-block !important; 
+  display: inline-block !important;
+  background-color: #79bbb5; 
   /* width: 50px !important; */
   /* neccasary??? */
 
