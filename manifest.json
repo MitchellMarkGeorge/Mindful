@@ -27,7 +27,7 @@
 
   "background": {
     "scripts": ["background.js"],
-    "persistent": false
+    "persistent": true
   },
 
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"

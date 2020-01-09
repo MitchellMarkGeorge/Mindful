@@ -18,6 +18,7 @@ toxicity.load(threshold)
         // listen for event
         chrome.runtime.onConnect.addListener(
             function(port) {
+                if (port.name !== "ToxicML") return;
                 port.onMessage.addListener(function(msg) {
                     console.log(msg.text);
                     if (msg.text === '') return
