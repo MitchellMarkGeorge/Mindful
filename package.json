@@ -8,6 +8,9 @@
     "build": "webpack -w",
     "dist-build": "webpack --mode=production"
   },
+
+  "browserslist": "> 0.25%, not dead",
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
