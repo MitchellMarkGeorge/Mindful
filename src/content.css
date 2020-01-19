@@ -1,12 +1,9 @@
-.test {
-  font-size: 10px !important;
-  position: relative !important;
-}
 
 #mindful-wrapper {
   height: 30px !important;
   /* width: 200px !important; */
   line-height: 30px !important;
+  /* padding: 3px !important; */
   background-color: transparent !important;
   /* margin?? */
 }
@@ -31,7 +28,7 @@
   text-transform: capitalize !important;
   margin-right: 10px !important; 
   display: inline-block !important;
-  background-color: #d95252; 
+  background-color: #d95252 !important; 
   /* width: 50px !important; */
   /* neccasary??? */
 

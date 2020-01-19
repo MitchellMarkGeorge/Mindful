@@ -47,10 +47,6 @@ export class MidfulExtensionClass {
         this.emojiElement.innerHTML = String.fromCodePoint(emojiNumber);
     }
 
-    // getProgressBarElement() {
-    //     return this.progressBarElement;
-    // }
-
     getWrapperDiv() {
         return this.wrapperDiv;
     }
@@ -81,6 +77,7 @@ export class MidfulExtensionClass {
          console.log(this.tocicityElements);
 
          for (let item of this.tocicityElements) {
+             // insert all toxicity elements after emoji element
             this.emojiElement.parentNode.insertBefore(
                 item,
                 this.emojiElement.nextSibling
