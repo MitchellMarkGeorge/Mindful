@@ -11,6 +11,7 @@ module.exports = {
   entry: {
     content: './src/content.js',
     background: './src/background.js'
+    // load popupscript
   }, 
   output: {
     filename: '[name].js',

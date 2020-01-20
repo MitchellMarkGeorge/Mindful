@@ -15,6 +15,12 @@
   "icons": {
     "128": "public/mindful-logo2.png"
   },
+
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage"
+  ],
   
   "content_scripts": [
     {
