@@ -9,10 +9,15 @@ import { MidfulExtensionClass } from "./mindful-class";
 
 // comment all console.logs for production
 
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+  console.log(changes);
+})
 
 let hostname = location.hostname;
 let blacklist = [];
 console.log(hostname);
+
+
 
 
 chrome.storage.sync.get(['blacklist'], function (result) {
@@ -77,7 +82,7 @@ function runExtension() {
     if (shouldInsertWrapper()) {
       console.log(activeElement);
       console.log(!activeElement.getAttribute("autocorrect")); // whick ones should i be checking
-      console.log(!activeElement.getAttribute("autocomplete")); // could be a code editor
+      console.log(!activeElement.getAttribute("autocomplete")); // could be a code editor // mignt not even check any
 
       score = 0; //reset score -  is this needed
 
@@ -123,8 +128,8 @@ function runExtension() {
   function shouldInsertWrapper() {
     return (
       (activeElement.tagName === "TEXTAREA" || activeElement.isContentEditable) &&
-      !activeElement.getAttribute("autocorrect") && //AND or OR
-      !activeElement.getAttribute("autocomplete")
+      !activeElement.getAttribute("autocorrect") && //dont check any (purpose of black luse)
+      !activeElement.getAttribute("autocomplete") // dont check any of them
     );
 
     // adjust to not work on code editor textareas

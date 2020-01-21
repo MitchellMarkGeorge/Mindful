@@ -2,28 +2,62 @@ import * as toxicity from '@tensorflow-models/toxicity';
 
 let model;
 
+let blacklist = [];
+let hostname;
+
+
+// on load, get blacklist array and update on changed. In changeBadgeText function, just use blacklist
 chrome.runtime.onInstalled.addListener(function () {
     // run it when extension is installed????
        
 })
 
-chrome.tabs.onActivated.addListener((tabs) => {
+// chrome.storage.onChanged.addListener(function(changes, namespace) {
+//     console.log(changes);
 
+//     blacklist = changes.blacklist.newValue;
+//   });
+
+chrome.tabs.onActivated.addListener((tabs) => {
+    console.log(tabs)
     console.log('changed')
     chrome.tabs.get(tabs.tabId, (object) => {
         console.log(object.url);
+        hostname = object.url.split("/")[2]; // pass in directly
+        changeBadgeText(hostname, tabs.tabId) // or use object.id??
+
     })
 
 })
 
-let blacklist = [];
-let hostname;
+
 
 chrome.tabs.onUpdated.addListener((id, obj, tab) => {
 
     console.log('UPDATED');
-    console.log(tab.url);
-    hostname = tab.url.split("/")[2];
+    //console.log(tab.url);
+    hostname = tab.url.split("/")[2]; // pass in directly?
+    // chrome.storage.sync.get(['blacklist'], function (result) {
+    //     // if it is undefied or the lenght is 0
+    //     if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
+            
+    //         return; // or should it be cheked by defult and then the script runs and confirms?
+    //     };
+    //     blacklist = result.blacklist;
+    //     // if the current website is blacklisted
+    //     if (contains(blacklist, hostname)) {
+    //         //blacklist.incudes(hostname);
+    //         chrome.browserAction.setBadgeText({text: "OFF", tabId: tab.id});
+    //     } else {
+    //         chrome.browserAction.setBadgeText({text: "", tabId: tab.id});
+    //     }
+    // })
+
+    changeBadgeText(hostname, id);
+
+})
+
+function changeBadgeText(pageHostname, id) {
     chrome.storage.sync.get(['blacklist'], function (result) {
         // if it is undefied or the lenght is 0
         if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
@@ -32,15 +66,14 @@ chrome.tabs.onUpdated.addListener((id, obj, tab) => {
         };
         blacklist = result.blacklist;
         // if the current website is blacklisted
-        if (contains(blacklist, hostname)) {
-            
-            chrome.browserAction.setBadgeText({text: "OFF", tabId: tab.id});
+        if (contains(blacklist, pageHostname)) {
+            //blacklist.incudes(hostname);
+            chrome.browserAction.setBadgeText({text: "OFF", tabId: id});
         } else {
-            chrome.browserAction.setBadgeText({text: "", tabId: tab.id});
+            chrome.browserAction.setBadgeText({text: "", tabId: id});
         }
     })
-
-})
+}
 
 function contains(array, element) {
     for (var i = 0; i < array.length; i++) {
@@ -54,7 +87,7 @@ function contains(array, element) {
 // The minimum prediction confidence. https://github.com/tensorflow/tfjs-models/tree/master/toxicity
 const threshold = 0.7// 0.9;
 // rethink threshold 
-
+// MOVE THIS TO INSTALLED FUNCTION???
 toxicity.load(threshold) 
     .then(modelObject => { 
         model = modelObject;

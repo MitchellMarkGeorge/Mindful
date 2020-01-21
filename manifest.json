@@ -21,6 +21,11 @@
     "activeTab",
     "storage"
   ],
+
+  "options_ui": {
+    "page": "public/options.html",
+    "open_in_tab": false
+  },
   
   "content_scripts": [
     {

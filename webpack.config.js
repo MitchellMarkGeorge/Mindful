@@ -2,7 +2,7 @@ const path = require('path');
 
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ChromeExtensionReloader  = require('webpack-chrome-extension-reloader');
+const ExtensionReloader  = require('webpack-extension-reloader');
 
 // where is the entry file
 module.exports = {
@@ -27,9 +27,10 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
+        // use: {
+        //   loader: "babel-loader"
+        // }
+        use: ["babel-loader"]
 
       },
 
@@ -64,14 +65,9 @@ module.exports = {
   },
 
   plugins: [
-    // new ChromeExtensionReloader({
-    //   port: 9090, 
-    //   reloadPage: true, 
-    //   entries: {
-    //     contentScript: 'content', 
-    //     background: 'background'
-    //   }
-    // }), 
+    new ExtensionReloader({
+      manifest: path.resolve(__dirname, "manifest.json")
+    }),
     new CopyPlugin([
       {from: 'public', to: 'public'}, 
       {from: 'manifest.json', to: 'manifest.json'}, 

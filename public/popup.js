@@ -2,23 +2,23 @@
 //     console.log(location.hostname);
 //   })
 
-chrome.tabs.onActivated.addListener((tabs) => {
+// chrome.tabs.onActivated.addListener((tabs) => {
 
-    console.log('changed')
-    chrome.tabs.get(tabs.tabId, (object) => {
-        console.log(object.url);
-    })
+//     console.log('changed')
+//     chrome.tabs.get(tabs.tabId, (object) => {
+//         console.log(object.url);
+//     })
 
-})
+// })
 
 
 
-chrome.tabs.onUpdated.addListener((id, obj, tab) => {
+// chrome.tabs.onUpdated.addListener((id, obj, tab) => {
 
-    console.log('UPDATED');
-    console.log(tab.url);
+//     console.log('UPDATED');
+//     console.log(tab.url);
 
-})
+// })
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     console.log(tabs[0].url.split("/")[2]); // hostname
@@ -39,7 +39,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         // if the current website is blacklisted
         if (contains(blacklist, hostname)) {
             checkbox.checked = false;
-            chrome.browserAction.setBadgeText({text: "OFF", tabId: tabs[0].id});
+            // chrome.browserAction.setBadgeText({text: "OFF", tabId: tabs[0].id});
         } else {
             checkbox.checked = true;
         }
@@ -55,6 +55,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             blacklist = removeItem(blacklist, hostname);
             chrome.storage.sync.set({ blacklist: blacklist }, function () {
                 console.log('Blacklist is set to ' + blacklist);
+                //PORT CONNECTION SO ALL BADGE CODE IS HANLED BY BACKGROUND SCRIPT
                 chrome.browserAction.setBadgeText({text: "", tabId: tabs[0].id});
             });
         } else {
@@ -74,7 +75,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 });
 
 function contains(array, element) {
-    for (var i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         if (array[i] === element) {
             return true;
         }
