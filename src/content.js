@@ -126,6 +126,9 @@ function runExtension() {
   });
 
   function shouldInsertWrapper() {
+    // THE REASON GRMMARLY DOES NOT WORK ON CODEEDITORS IS BECAUSE IT TAKES INTO ACCOUNT THE HEIGHT OF THE TEXTAREA
+    // CODE EDITOR TEXTAREAS USUALLY HAVE SMALL AND ODD DIMENSION FOR LINE HILIGHTING AND OTHER THINGS
+    // USE HIGHT AND WIDTH FOR TEXTAREA (THIS WILL HELP WITH CODE EDITORS)
     return (
       (activeElement.tagName === "TEXTAREA" || activeElement.isContentEditable) &&
       !activeElement.getAttribute("autocorrect") && //dont check any (purpose of black luse)

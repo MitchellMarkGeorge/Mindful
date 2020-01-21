@@ -9,14 +9,22 @@ let hostname;
 // on load, get blacklist array and update on changed. In changeBadgeText function, just use blacklist
 chrome.runtime.onInstalled.addListener(function () {
     // run it when extension is installed????
-       
+
 })
 
-// chrome.storage.onChanged.addListener(function(changes, namespace) {
-//     console.log(changes);
+chrome.storage.sync.get(['blacklist'], function (result) {
+    if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
 
-//     blacklist = changes.blacklist.newValue;
-//   });
+        return; // or should it be cheked by defult and then the script runs and confirms?
+    };
+    blacklist = result.blacklist;
+})
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    console.log(changes);
+
+    blacklist = changes.blacklist.newValue;
+  });
 
 chrome.tabs.onActivated.addListener((tabs) => {
     console.log(tabs)
@@ -40,7 +48,7 @@ chrome.tabs.onUpdated.addListener((id, obj, tab) => {
     // chrome.storage.sync.get(['blacklist'], function (result) {
     //     // if it is undefied or the lenght is 0
     //     if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
-            
+
     //         return; // or should it be cheked by defult and then the script runs and confirms?
     //     };
     //     blacklist = result.blacklist;
@@ -58,21 +66,25 @@ chrome.tabs.onUpdated.addListener((id, obj, tab) => {
 })
 
 function changeBadgeText(pageHostname, id) {
-    chrome.storage.sync.get(['blacklist'], function (result) {
-        // if it is undefied or the lenght is 0
-        if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
-            
-            return; // or should it be cheked by defult and then the script runs and confirms?
-        };
-        blacklist = result.blacklist;
-        // if the current website is blacklisted
-        if (contains(blacklist, pageHostname)) {
-            //blacklist.incudes(hostname);
-            chrome.browserAction.setBadgeText({text: "OFF", tabId: id});
-        } else {
-            chrome.browserAction.setBadgeText({text: "", tabId: id});
-        }
-    })
+    // chrome.storage.sync.get(['blacklist'], function (result) {
+    //     // if it is undefied or the lenght is 0
+    //     if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
+
+    //         return; // or should it be cheked by defult and then the script runs and confirms?
+    //     };
+    //     blacklist = result.blacklist;
+    // if the current website is blacklisted
+    if (blacklist === undefined || blacklist.length == 0) { // if 
+
+        return; // or should it be cheked by defult and then the script runs and confirms?
+    };
+    if (contains(blacklist, pageHostname)) {
+        //blacklist.incudes(hostname);
+        chrome.browserAction.setBadgeText({ text: "OFF", tabId: id });
+    } else {
+        chrome.browserAction.setBadgeText({ text: "", tabId: id });
+    }
+    //})
 }
 
 function contains(array, element) {
@@ -88,20 +100,20 @@ function contains(array, element) {
 const threshold = 0.7// 0.9;
 // rethink threshold 
 // MOVE THIS TO INSTALLED FUNCTION???
-toxicity.load(threshold) 
-    .then(modelObject => { 
+toxicity.load(threshold)
+    .then(modelObject => {
         model = modelObject;
         console.log(model);
         // listen for event
         chrome.runtime.onConnect.addListener(
-            function(port) {
+            function (port) {
                 if (port.name !== "ToxicML") return;
-                port.onMessage.addListener(function(msg) {
+                port.onMessage.addListener(function (msg) {
                     console.log(msg.text);
                     if (msg.text === '') return
                     modelObject.classify(msg.text).then(predict => {
                         console.log(predict);
-                        port.postMessage({prediction: predict});
+                        port.postMessage({ prediction: predict });
                     })
                 })
             }
@@ -123,5 +135,5 @@ toxicity.load(threshold)
         console.log(err)
     })
 
-    
+
 
