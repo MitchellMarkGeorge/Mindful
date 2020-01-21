@@ -18,13 +18,24 @@ chrome.storage.sync.get(['blacklist'], function (result) {
         return; // or should it be cheked by defult and then the script runs and confirms?
     };
     blacklist = result.blacklist;
+
+    // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    //     console.log(tabs[0].url.split("/")[2]); // hostname
+
+    //     hostname = tabs[0].url.split("/")[2];
+    //     console.log('tab obj' + tabs[0])
+    //     changeBadgeText(hostname, tabs[0].id);
+    // })
 })
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
     console.log(changes);
 
     blacklist = changes.blacklist.newValue;
-  });
+
+
+
+});
 
 chrome.tabs.onActivated.addListener((tabs) => {
     console.log(tabs)
