@@ -112,7 +112,7 @@ const threshold = 0.7// 0.9;
 // rethink threshold 
 // MOVE THIS TO INSTALLED FUNCTION???
 toxicity.load(threshold)
-    .then(modelObject => {
+    .then(modelObject => { // HANDLE ERROR AND SHOW MESSAGE IN COMPONENT/ OR JUST STOP LOADING
         model = modelObject;
         console.log(model);
         // listen for event
