@@ -26,14 +26,14 @@ chrome.storage.sync.get(['blacklist'], function (result) {
   // WORK ON THIS SECTION (WORKS ON MY SYSTEM/ BUT IN CASE OF OTHERS)
   console.log(!Array.isArray(blacklist) || !blacklist.length);
   // not an array and is empty - still run
-  if (!Array.isArray(blacklist) || !blacklist.length) {
+  if ((!Array.isArray(blacklist) || !blacklist.length) || !blacklist.includes(hostname)) {
     runExtension();
   } // handle if array is empty??
   // it is an array and it is not empty, there are blacklisted sites
-  else if (!blacklist.includes(hostname)) { // should i still check length??
-    runExtension();
+  // else if (!blacklist.includes(hostname)) { // should i still check length??
+  //   runExtension();
 
-  }
+  // }
 });
 
 function runExtension() {
