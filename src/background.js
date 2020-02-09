@@ -126,6 +126,7 @@ toxicity.load(threshold)
                         console.log(predict);
                         port.postMessage({ prediction: predict });
                     })
+                        .catch(err => { setTimeout(function () { throw err; }); })
                 })
             }
         )
@@ -143,8 +144,18 @@ toxicity.load(threshold)
         //model.classify('hello').then(predict => {console.log(predict)});
     })
     .catch(err => {
-        console.log(err)
+        setTimeout(function () { throw err; }); // to trigger error onerror handeler
     })
+
+function sendErrorMessage() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { error: "true" });
+    });
+}
+
+window.onerror = () => {
+    sendErrorMessage();
+}
 
 
 

@@ -2,6 +2,7 @@ export class MidfulExtensionClass {
 
     wrapperDiv;
     emojiElement;
+    errorElement;
     // progressBarElement;
     // progressBar;
     loadingElement;
@@ -63,6 +64,9 @@ export class MidfulExtensionClass {
      }
 
      setToxicityElements(toxicityArray) {
+         if (this.errorElement) {
+             this.errorElement.remove(); // reconsider placement if this code
+         }
          let tempArray = toxicityArray.filter(item => item.results[0].match === true);
 
          console.log(tempArray);
@@ -104,5 +108,23 @@ export class MidfulExtensionClass {
 
      getLoadingElement() {
          return this.loadingElement;
+     }
+
+     createErrorElement() {
+         if (this.getEmojiElement()) {
+             if (this.tocicityElements) {
+                 this.removeToxicityElements();
+             } 
+             if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+                currentMindfulInstance.getLoadingElement().classList.remove("la-ball-clip-rotate");
+             }
+             this.errorElement = document.createElement('span');
+             errorElement.className = 'mindful-span-toxicity-elements'; // might change className
+             errorElement.innerHTML = 'Unavalible';
+             this.emojiElement.parentNode.insertBefore(
+                this.errorElement,
+                this.emojiElement.nextSibling
+              );
+         }
      }
 } 

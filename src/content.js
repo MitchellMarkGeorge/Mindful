@@ -51,7 +51,7 @@ function runExtension() {
   // let scoreElement; // for emoji
   // let progressBar; // positble progress bar (or text)
   // let mindfulWrapper;
-
+ 
   let currentMindfulInstance = new MidfulExtensionClass();
   // The minimum prediction confidence. https://github.com/tensorflow/tfjs-models/tree/master/toxicity
 
@@ -68,7 +68,7 @@ function runExtension() {
   //   .catch(err => {
   //     console.log(err)
   //   })
-
+  
   // make accounts and test on target websites/ platforms
   // reddit
 
@@ -101,7 +101,25 @@ function runExtension() {
         analyzeInput();
       } else {
         inserExtension();
-        analyzeInput();
+
+        activeElement.addEventListener("input", e => {
+          analyzeInput();
+        });
+
+        // activeElement.addEventListener("paste", e => {
+        //   analyzeInput();
+        // })
+        // // DO I NEED THESE
+        // activeElement.addEventListener('cut', e => {
+        //   analyzeInput();
+        // })
+
+        chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+          if (message.error === "true") {
+            currentMindfulInstance.createErrorElement();
+          }
+        })
+        
       }
       // if it is an input element and it is in a form
       // might change this later
@@ -129,6 +147,8 @@ function runExtension() {
     // THE REASON GRMMARLY DOES NOT WORK ON CODEEDITORS IS BECAUSE IT TAKES INTO ACCOUNT THE HEIGHT OF THE TEXTAREA
     // CODE EDITOR TEXTAREAS USUALLY HAVE SMALL AND ODD DIMENSION FOR LINE HILIGHTING AND OTHER THINGS
     // USE HIGHT AND WIDTH FOR TEXTAREA (THIS WILL HELP WITH CODE EDITORS)
+    console.log('width', activeElement.clientWidth);
+    console.log('height', activeElement.clientHeight)
     return (
       (activeElement.tagName === "TEXTAREA" || activeElement.isContentEditable) &&
       !activeElement.getAttribute("autocorrect") && //dont check any (purpose of black luse)
@@ -189,7 +209,7 @@ function runExtension() {
   }
 
   function analyzeInput() {
-    activeElement.addEventListener("input", e => {
+    
       // if (!wrapperDiv.id) {
       //   wrapperDiv.id = "mindful-wrapper"; // apply styling on input event
       // }
@@ -253,7 +273,7 @@ function runExtension() {
         // })
         // currentMindfulInstance.progressBar.animate(1);
       }
-    });
+  
 
     let typingTimer;
     activeElement.addEventListener("keyup", () => {
@@ -284,7 +304,10 @@ function runExtension() {
     if (currentMindfulInstance.tocicityElements) {
       // remove toxicity elemnts if any
       currentMindfulInstance.removeToxicityElements();
-    }
+    } 
+    // if (currentMindfulInstance.errorElement) {
+    //   currentMindfulInstance.errorElement.remove();
+    // }
 
     currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
     currentMindfulInstance
