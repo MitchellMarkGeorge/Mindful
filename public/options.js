@@ -3,9 +3,9 @@ chrome.storage.sync.get(['blacklist'], function (result) {
 
     blacklist = result.blacklist;
 
-    if (Array.isArray(blacklist) && blacklist.length) {
+    if (Array.isArray(blacklist) && blacklist.length > 0) {
         let listOfWebsites = document.createElement('ul');
-        for (var i = 0; i < blacklist.length; i ++) {
+        for (var i = 0; i < blacklist.length; i++) {
             var listItemElement = document.createElement('li');
             listItemElement.innerHTML = blacklist[i];
             listOfWebsites.appendChild(listItemElement);
@@ -15,7 +15,8 @@ chrome.storage.sync.get(['blacklist'], function (result) {
         document.body.appendChild(listOfWebsites);
     } else {
         let noListElement = document.createElement('p');
-        noListElement.innerHTML = 'No websites blacklisted'
+        noListElement.innerHTML = 'No websites blacklisted.';
+        document.body.appendChild(noListElement);
     }
 
 })

@@ -6,6 +6,9 @@ import { MidfulExtensionClass } from "./mindful-class";
 
 // ONLY DO TEXTAREA (DOES GRAMMARLY ONLY DO THAT???)
 
+window.onerror = () => {
+  console.log('error')
+}
 
 // comment all console.logs for production
 
@@ -81,8 +84,7 @@ function runExtension() {
 
     if (shouldInsertWrapper()) {
       console.log(activeElement);
-      console.log(!activeElement.getAttribute("autocorrect")); // whick ones should i be checking
-      console.log(!activeElement.getAttribute("autocomplete")); // could be a code editor // mignt not even check any
+      
 
       score = 0; //reset score -  is this needed
 
@@ -98,13 +100,16 @@ function runExtension() {
         // compare active elements??
         currentMindfulInstance.setValues(activeElement.nextSibling);
         //progressBar = undefined; // reset value
-        analyzeInput();
+        //analyzeInput();
       } else {
         inserExtension();
 
         activeElement.addEventListener("input", e => {
+          console.log('input') 
           analyzeInput();
         });
+
+        
 
         // activeElement.addEventListener("paste", e => {
         //   analyzeInput();
@@ -147,12 +152,18 @@ function runExtension() {
     // THE REASON GRMMARLY DOES NOT WORK ON CODEEDITORS IS BECAUSE IT TAKES INTO ACCOUNT THE HEIGHT OF THE TEXTAREA
     // CODE EDITOR TEXTAREAS USUALLY HAVE SMALL AND ODD DIMENSION FOR LINE HILIGHTING AND OTHER THINGS
     // USE HIGHT AND WIDTH FOR TEXTAREA (THIS WILL HELP WITH CODE EDITORS)
+
+    // could potentially add a class to activeelements so i can query all of them if needed
     console.log('width', activeElement.clientWidth);
-    console.log('height', activeElement.clientHeight)
+    console.log('height', activeElement.clientHeight);
+    console.log(activeElement.clientWidth > 190 && activeElement.clientHeight > 20);
     return (
-      (activeElement.tagName === "TEXTAREA" || activeElement.isContentEditable) &&
-      !activeElement.getAttribute("autocorrect") && //dont check any (purpose of black luse)
-      !activeElement.getAttribute("autocomplete") // dont check any of them
+      //work on dimesion for textarea
+      (activeElement.tagName === "TEXTAREA" &&  activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable) 
+       
+       // think about values
+      // !activeElement.getAttribute("autocorrect") && //dont check any (purpose of black luse)
+      // !activeElement.getAttribute("autocomplete") // dont check any of them
     );
 
     // adjust to not work on code editor textareas
@@ -219,9 +230,9 @@ function runExtension() {
       //     currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
 
       // }
-
+     
       // should text be variable
-
+      // console.log(activeElement.textContent);
       console.log(activeElement.nextSibling.tagName);
       if (activeElement.tagName === "TEXTAREA") {
         // console.log(activeElement.cols);
@@ -247,17 +258,20 @@ function runExtension() {
         score = analysis_2.compound;
         currentMindfulInstance.setEmojiElementContent(getEmoji(score));
       } else {
+        console.log(activeElement.textContent)
+
+        // WORK ON THIS SECTION
         // contentEditable
-        //text = activeElement.innerHTML.trim();
-        if (
-          !activeElement.innerHTML &&
+        //text = activeElement.textContent.trim();
+        if ( // change this condition
+          !activeElement.textContent &&
           currentMindfulInstance.tocicityElements.length > 0
         ) {
           currentMindfulInstance.removeToxicityElements();
         }
-        let analysis = sentiment.analyze(activeElement.innerHTML);
+        let analysis = sentiment.analyze(activeElement.textContent);
         let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
-          activeElement.innerHTML
+          activeElement.textContent
         );
         console.log(analysis);
         console.log(analysis_2);
@@ -268,25 +282,27 @@ function runExtension() {
 
         // currentMindfulInstance.setLoadingElementText('Loading...');
 
-        // model.classify(activeElement.innerHTML).then(prediction => {
+        // model.classify(activeElement.textContent).then(prediction => {
         //   console.log(prediction);
         // })
         // currentMindfulInstance.progressBar.animate(1);
       }
   
 
+
     let typingTimer;
+    // WORK ON THIS SECTION
     activeElement.addEventListener("keyup", () => {
       clearTimeout(typingTimer);
-
-      if (activeElement.value) {
+      // WORK ON THIS PART
+      if (activeElement.value) { // SHOULD I JEST USE TEXT ARE AND CONTENT EDITABLE
         // pass in value as parameter or just use global variable
         typingTimer = setTimeout(function () {
           doneTyping(activeElement.value);
         }, 2000);
-      } else if (activeElement.innerHTML) {
+      } else if (activeElement.textContent) {
         typingTimer = setTimeout(function () {
-          doneTyping(activeElement.innerHTML);
+          doneTyping(activeElement.textContent);
         }, 2000);
       }
     });
@@ -294,7 +310,7 @@ function runExtension() {
 
   function doneTyping(userText) {
     if (userText === "") return; // do i need this???
-
+    
     if (!port) {
       port = chrome.runtime.connect({ name: "ToxicML" });
     }
