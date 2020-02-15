@@ -12,9 +12,9 @@ window.onerror = () => {
 
 // comment all console.logs for production
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-  console.log(changes);
-})
+// chrome.storage.onChanged.addListener(function(changes, namespace) {
+//   console.log(changes);
+// })
 
 let hostname = location.hostname;
 let blacklist = [];
@@ -43,8 +43,7 @@ function runExtension() {
   let activeElement;
   let sentiment = new Sentiment();
   let score = 0;
-  let model;
-  let worker;
+
   let port;
   let text = "";
   //let progressBar;
@@ -54,7 +53,7 @@ function runExtension() {
   // let scoreElement; // for emoji
   // let progressBar; // positble progress bar (or text)
   // let mindfulWrapper;
- 
+
   let currentMindfulInstance = new MidfulExtensionClass();
   // The minimum prediction confidence. https://github.com/tensorflow/tfjs-models/tree/master/toxicity
 
@@ -71,7 +70,7 @@ function runExtension() {
   //   .catch(err => {
   //     console.log(err)
   //   })
-  
+
   // make accounts and test on target websites/ platforms
   // reddit
 
@@ -84,7 +83,7 @@ function runExtension() {
 
     if (shouldInsertWrapper()) {
       console.log(activeElement);
-      
+
 
       score = 0; //reset score -  is this needed
 
@@ -105,11 +104,28 @@ function runExtension() {
         inserExtension();
 
         activeElement.addEventListener("input", e => {
-          console.log('input') 
+          console.log('input');
           analyzeInput();
         });
 
-        
+        let typingTimer;
+        // WORK ON THIS SECTION
+        activeElement.addEventListener("keyup", () => {
+          clearTimeout(typingTimer);
+          // WORK ON THIS PART
+          //if (activeElement.value) { // SHOULD I JEST USE TEXT ARE AND CONTENT EDITABLE
+            // pass in value as parameter or just use global variable
+            typingTimer = setTimeout(function () {
+              doneTyping(text);
+            }, 2000);
+          // } else if (activeElement.textContent) {
+          //   typingTimer = setTimeout(function () {
+          //     doneTyping(activeElement.textContent);
+          //   }, 2000);
+          // }
+        });
+
+
 
         // activeElement.addEventListener("paste", e => {
         //   analyzeInput();
@@ -119,12 +135,15 @@ function runExtension() {
         //   analyzeInput();
         // })
 
+        // should error lisener be here?
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-          if (message.error === "true") {
+          // do i need to check errorElemnt ???
+          if (message.error === "true" && !currentMindfulInstance.errorElement) {
+            console.log('recieved message');
             currentMindfulInstance.createErrorElement();
           }
         })
-        
+
       }
       // if it is an input element and it is in a form
       // might change this later
@@ -159,9 +178,9 @@ function runExtension() {
     console.log(activeElement.clientWidth > 190 && activeElement.clientHeight > 20);
     return (
       //work on dimesion for textarea
-      (activeElement.tagName === "TEXTAREA" &&  activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable) 
-       
-       // think about values
+      (activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable)
+
+      // think about values
       // !activeElement.getAttribute("autocorrect") && //dont check any (purpose of black luse)
       // !activeElement.getAttribute("autocomplete") // dont check any of them
     );
@@ -220,110 +239,123 @@ function runExtension() {
   }
 
   function analyzeInput() {
-    
-      // if (!wrapperDiv.id) {
-      //   wrapperDiv.id = "mindful-wrapper"; // apply styling on input event
+
+    text = activeElement.tagName === "TEXTAREA"? activeElement.value : activeElement.textContent;
+    // could just use || operator
+
+    // if (!wrapperDiv.id) {
+    //   wrapperDiv.id = "mindful-wrapper"; // apply styling on input event
+    // }
+
+    // if (!currentMindfulInstance.getWrapperDiv.id) {
+    //     currentMindfulInstance.setWrapperDivID("mindful-wrapper");
+    //     currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
+
+    // }
+
+    // should text be variable
+    // console.log(activeElement.textContent);
+    console.log(activeElement.nextSibling.tagName);
+    //if (activeElement.tagName === "TEXTAREA") {
+      // console.log(activeElement.cols);
+      // console.log(e);
+      //text = activeElement.value.trim();
+
+      if (currentMindfulInstance.tocicityElements.length > 0) {
+        // if there is no text and there are
+        currentMindfulInstance.removeToxicityElements(); // think about this
+      }
+
+      // if (currentMindfulInstance.errorElement) {
+      //   currentMindfulInstance.errorElement.remove();
       // }
 
-      // if (!currentMindfulInstance.getWrapperDiv.id) {
-      //     currentMindfulInstance.setWrapperDivID("mindful-wrapper");
-      //     currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
+      //event.target.value
 
-      // }
-     
-      // should text be variable
-      // console.log(activeElement.textContent);
-      console.log(activeElement.nextSibling.tagName);
-      if (activeElement.tagName === "TEXTAREA") {
-        // console.log(activeElement.cols);
-        // console.log(e);
-        //text = activeElement.value.trim();
+      let analysis = sentiment.analyze(text);
+      //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
+      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
+        text
+      );
 
-        if (currentMindfulInstance.tocicityElements.length > 0) {
-          // if there is no text and there are
-          currentMindfulInstance.removeToxicityElements(); // think about this
-        }
+      console.log(analysis);
+      console.log(analysis_2);
 
-        //event.target.value
+      score = analysis_2.compound;
+      currentMindfulInstance.setEmojiElementContent(getEmoji(score));
+    // } else {
+    //   console.log(activeElement.textContent)
 
-        let analysis = sentiment.analyze(activeElement.value);
-        //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
-        let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
-          activeElement.value
-        );
+    //   // WORK ON THIS SECTION
+    //   // contentEditable
+    //   //text = activeElement.textContent.trim();
+    //   if ( // change this condition
+    //     !activeElement.textContent &&
+    //     currentMindfulInstance.tocicityElements.length > 0
+    //   ) {
+    //     currentMindfulInstance.removeToxicityElements();
+    //   }
+    //   let analysis = sentiment.analyze(activeElement.textContent);
+    //   let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
+    //     activeElement.textContent
+    //   );
+    //   console.log(analysis);
+    //   console.log(analysis_2);
 
-        console.log(analysis);
-        console.log(analysis_2);
+    //   score = analysis_2.compound; // `${score}`
+    //   currentMindfulInstance.setEmojiElementContent(getEmoji(score));
+    //   // currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
 
-        score = analysis_2.compound;
-        currentMindfulInstance.setEmojiElementContent(getEmoji(score));
-      } else {
-        console.log(activeElement.textContent)
+    //   // currentMindfulInstance.setLoadingElementText('Loading...');
 
-        // WORK ON THIS SECTION
-        // contentEditable
-        //text = activeElement.textContent.trim();
-        if ( // change this condition
-          !activeElement.textContent &&
-          currentMindfulInstance.tocicityElements.length > 0
-        ) {
-          currentMindfulInstance.removeToxicityElements();
-        }
-        let analysis = sentiment.analyze(activeElement.textContent);
-        let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
-          activeElement.textContent
-        );
-        console.log(analysis);
-        console.log(analysis_2);
-
-        score = analysis_2.compound; // `${score}`
-        currentMindfulInstance.setEmojiElementContent(getEmoji(score));
-        // currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
-
-        // currentMindfulInstance.setLoadingElementText('Loading...');
-
-        // model.classify(activeElement.textContent).then(prediction => {
-        //   console.log(prediction);
-        // })
-        // currentMindfulInstance.progressBar.animate(1);
-      }
-  
+    //   // model.classify(activeElement.textContent).then(prediction => {
+    //   //   console.log(prediction);
+    //   // })
+    //   // currentMindfulInstance.progressBar.animate(1);
+    // }
 
 
-    let typingTimer;
-    // WORK ON THIS SECTION
-    activeElement.addEventListener("keyup", () => {
-      clearTimeout(typingTimer);
-      // WORK ON THIS PART
-      if (activeElement.value) { // SHOULD I JEST USE TEXT ARE AND CONTENT EDITABLE
-        // pass in value as parameter or just use global variable
-        typingTimer = setTimeout(function () {
-          doneTyping(activeElement.value);
-        }, 2000);
-      } else if (activeElement.textContent) {
-        typingTimer = setTimeout(function () {
-          doneTyping(activeElement.textContent);
-        }, 2000);
-      }
-    });
+
+
   }
 
   function doneTyping(userText) {
-    if (userText === "") return; // do i need this???
-    
+    //if (userText === "") return; // do i need this???
+    if (!userText) return;
+
     if (!port) {
       port = chrome.runtime.connect({ name: "ToxicML" });
+
+      port.onMessage.addListener(function (msg) {
+        console.log(msg.prediction);
+        console.log('hello');
+        if (
+          currentMindfulInstance
+            .getLoadingElement()
+            .classList.contains("la-ball-clip-rotate") &&
+          msg.prediction
+        ) {
+          // currentMindfulInstance
+          //   .getLoadingElement()
+          //   .classList.remove("la-ball-clip-rotate");
+          currentMindfulInstance.removeLoadingSpinner();
+
+          currentMindfulInstance.setToxicityElements(msg.prediction);
+        }
+      });
     }
 
     port.postMessage({ text: userText });
-    console.log("message sent");
-    if (currentMindfulInstance.tocicityElements) {
+    console.log("message sent"); // check lenght????
+    if (currentMindfulInstance.tocicityElements.length > 0) {
       // remove toxicity elemnts if any
       currentMindfulInstance.removeToxicityElements();
-    } 
-    // if (currentMindfulInstance.errorElement) {
-    //   currentMindfulInstance.errorElement.remove();
-    // }
+    }
+    if (currentMindfulInstance.errorElement) {
+      currentMindfulInstance.removeErrorElement();
+      // currentMindfulInstance.errorElement.remove();
+      // currentMindfulInstance.errorElement = undefined;
+    }
 
     currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
     currentMindfulInstance
@@ -331,20 +363,13 @@ function runExtension() {
       .classList.add("la-ball-clip-rotate"); // add animation
     // currentMindfulInstance.getLoadingElement().classList.toggle("la-ball-clip-rotate");
 
-    port.onMessage.addListener(function (msg) {
-      console.log(msg.prediction);
-      if (
-        currentMindfulInstance
-          .getLoadingElement()
-          .classList.contains("la-ball-clip-rotate") &&
-        msg.prediction
-      ) {
-        currentMindfulInstance
-          .getLoadingElement()
-          .classList.remove("la-ball-clip-rotate");
+    // setTimeout(function() {
+    //   if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+    //     currentMindfulInstance.removeLoadingSpinner();
+    //     // show error // should we assume an error occured???
+    //     currentMindfulInstance.createErrorElement();
+    //   }
+    // }, 30 * 1000)
 
-        currentMindfulInstance.setToxicityElements(msg.prediction);
-      }
-    });
   }
 }

@@ -3,8 +3,10 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ExtensionReloader  = require('webpack-extension-reloader');
+// const process = require('process')
 
 // where is the entry file
+const isDev = process.env.NODE_ENV !== 'production';
 module.exports = {
 
   mode: 'development',
@@ -94,3 +96,7 @@ module.exports = {
 
   }
 };
+
+// if (isDev) {
+//   module.exports.plugins.push()
+// }

@@ -66,6 +66,7 @@ export class MidfulExtensionClass {
      setToxicityElements(toxicityArray) {
          if (this.errorElement) {
              this.errorElement.remove(); // reconsider placement if this code
+             this.emojiElement = undefined;
          }
          let tempArray = toxicityArray.filter(item => item.results[0].match === true);
 
@@ -110,17 +111,28 @@ export class MidfulExtensionClass {
          return this.loadingElement;
      }
 
+     removeErrorElement() {
+         
+             this.errorElement.remove();
+             this.errorElement = undefined;
+         
+     }
+
+     removeLoadingSpinner() {
+        this.getLoadingElement().classList.remove("la-ball-clip-rotate");
+     }
+
      createErrorElement() {
-         if (this.getEmojiElement()) {
+         if (this.getEmojiElement() && !this.errorElement) {
              if (this.tocicityElements) {
                  this.removeToxicityElements();
              } 
-             if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
-                currentMindfulInstance.getLoadingElement().classList.remove("la-ball-clip-rotate");
-             }
+             if (this.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+                this.getLoadingElement().classList.remove("la-ball-clip-rotate");
+             } 
              this.errorElement = document.createElement('span');
-             errorElement.className = 'mindful-span-toxicity-elements'; // might change className
-             errorElement.innerHTML = 'Unavalible';
+             this.errorElement.className = 'mindful-span-toxicity-elements'; // might change className
+             this.errorElement.innerHTML = 'Unavalible';
              this.emojiElement.parentNode.insertBefore(
                 this.errorElement,
                 this.emojiElement.nextSibling
