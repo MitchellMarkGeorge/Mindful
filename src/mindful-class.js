@@ -1,20 +1,22 @@
 export class MidfulExtensionClass {
 
-    wrapperDiv;
-    emojiElement;
-    errorElement;
-    // progressBarElement;
-    // progressBar;
-    loadingElement;
-    tocicityElements = [];
+
 
     constructor() {
+
+        this.wrapperDiv;
+        this.emojiElement;
+        this.errorElement;
+        // progressBarElement;
+        // progressBar;
+        this.loadingElement;
+        this.tocicityElements = [];
 
         // this.wrapperDiv;
         // this.emojiElement;
         // this.progressBarElement;
 
-        
+
 
     }
 
@@ -44,7 +46,7 @@ export class MidfulExtensionClass {
     }
 
     setEmojiElementContent(emojiNumber) {
-        
+
         this.emojiElement.innerHTML = String.fromCodePoint(emojiNumber);
     }
 
@@ -61,36 +63,35 @@ export class MidfulExtensionClass {
         this.emojiElement.classList.add(className);
         this.loadingElement.classList.add(className); // , 'mindful-span-toxicity-elements'
 
-     }
+    }
 
-     setToxicityElements(toxicityArray) {
-         if (this.errorElement) {
-             this.errorElement.remove(); // reconsider placement if this code
-             this.emojiElement = undefined;
-         }
-         let tempArray = toxicityArray.filter(item => item.results[0].match === true);
+    setToxicityElements(toxicityArray) {
+        if (this.errorElement) {
+            this.removeErrorElement()
+        }
+        let tempArray = toxicityArray.filter(item => item.results[0].match === true);
 
-         console.log(tempArray);
+        console.log(tempArray);
 
-         this.tocicityElements = tempArray.map(item => {
-             let element = document.createElement('span');
-             element.className = 'mindful-span-toxicity-elements'
-             element.innerHTML = `${item.label.replace('_', ' ')}`; // add percentage???
-             return element;
-         })
+        this.tocicityElements = tempArray.map(item => {
+            let element = document.createElement('span');
+            element.className = 'mindful-span-toxicity-elements'
+            element.innerHTML = `${item.label.replace('_', ' ')}`; // add percentage???
+            return element;
+        })
 
-         console.log(this.tocicityElements);
+        console.log(this.tocicityElements);
 
-         for (let item of this.tocicityElements) {
-             // insert all toxicity elements after emoji element
+        for (let item of this.tocicityElements) {
+            // insert all toxicity elements after emoji element
             this.emojiElement.parentNode.insertBefore(
                 item,
                 this.emojiElement.nextSibling
-              );
-         }
-     }
+            );
+        }
+    }
 
-     removeToxicityElements() {
+    removeToxicityElements() {
 
         for (let element of this.tocicityElements) {
             element.remove(); // removes element??
@@ -98,45 +99,46 @@ export class MidfulExtensionClass {
         // reset array
         this.tocicityElements = [];
 
-     }
+    }
 
 
- 
-     setToxicityElementClass(className) {
+
+    setToxicityElementClass(className) {
         this.loadingElement.classList.add(className);
         console.log(className);
-     }
+    }
 
-     getLoadingElement() {
-         return this.loadingElement;
-     }
+    getLoadingElement() {
+        return this.loadingElement;
+    }
 
-     removeErrorElement() {
-         
-             this.errorElement.remove();
-             this.errorElement = undefined;
-         
-     }
+    removeErrorElement() {
 
-     removeLoadingSpinner() {
+        this.errorElement.remove();
+        this.errorElement = undefined;
+
+    }
+
+    removeLoadingSpinner() {
         this.getLoadingElement().classList.remove("la-ball-clip-rotate");
-     }
+    }
 
-     createErrorElement() {
-         if (this.getEmojiElement() && !this.errorElement) {
-             if (this.tocicityElements) {
-                 this.removeToxicityElements();
-             } 
-             if (this.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+    createErrorElement(specialMessage) {
+        let text = specialMessage || 'Unavalible'
+        if (this.getEmojiElement() && !this.errorElement) {
+            if (this.tocicityElements) {
+                this.removeToxicityElements();
+            }
+            if (this.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
                 this.getLoadingElement().classList.remove("la-ball-clip-rotate");
-             } 
-             this.errorElement = document.createElement('span');
-             this.errorElement.className = 'mindful-span-toxicity-elements'; // might change className
-             this.errorElement.innerHTML = 'Unavalible';
-             this.emojiElement.parentNode.insertBefore(
+            }
+            this.errorElement = document.createElement('span');
+            this.errorElement.className = 'mindful-span-toxicity-elements'; // might change className
+            this.errorElement.innerHTML = text;
+            this.emojiElement.parentNode.insertBefore(
                 this.errorElement,
                 this.emojiElement.nextSibling
-              );
-         }
-     }
+            );
+        }
+    }
 } 

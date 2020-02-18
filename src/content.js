@@ -1,4 +1,3 @@
-import Sentiment from "sentiment"; // remove befor production
 import { SentimentIntensityAnalyzer } from "vader-sentiment";
 import { MidfulExtensionClass } from "./mindful-class";
 
@@ -109,9 +108,11 @@ function runExtension() {
         });
 
         let typingTimer;
+        //let timeOutTimer;
         // WORK ON THIS SECTION
         activeElement.addEventListener("keyup", () => {
           clearTimeout(typingTimer);
+          //clearTimeout(timeOutTimer);
           // WORK ON THIS PART
           //if (activeElement.value) { // SHOULD I JEST USE TEXT ARE AND CONTENT EDITABLE
             // pass in value as parameter or just use global variable
@@ -124,6 +125,15 @@ function runExtension() {
           //   }, 2000);
           // }
         });
+
+      //   timeOutTimer = setTimeout(function () {
+      //     console.log('TIMEOUT') // is this how to do this???
+      // if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+      //   currentMindfulInstance.removeLoadingSpinner();
+      //   // show error // should we assume an error occured???
+      //   currentMindfulInstance.createErrorElement();
+      // }
+      //   }, 30 * 1000)
 
 
 
@@ -272,16 +282,16 @@ function runExtension() {
 
       //event.target.value
 
-      let analysis = sentiment.analyze(text);
+      
       //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
-      let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
+      let analysis = SentimentIntensityAnalyzer.polarity_scores(
         text
       );
 
       console.log(analysis);
-      console.log(analysis_2);
+     
 
-      score = analysis_2.compound;
+      score = analysis.compound;
       currentMindfulInstance.setEmojiElementContent(getEmoji(score));
     // } else {
     //   console.log(activeElement.textContent)
@@ -319,12 +329,16 @@ function runExtension() {
 
   }
 
-  function doneTyping(userText) {
-    //if (userText === "") return; // do i need this???
-    if (!userText) return;
+  function reconnectToExtension() {
+    console.log('Disconected')
+    port = null;
+    // should there be a set timeout
+    connectToPort();
+    
+  }
 
-    if (!port) {
-      port = chrome.runtime.connect({ name: "ToxicML" });
+  function connectToPort() {
+    port = chrome.runtime.connect({ name: "ToxicML" });
 
       port.onMessage.addListener(function (msg) {
         console.log(msg.prediction);
@@ -335,18 +349,72 @@ function runExtension() {
             .classList.contains("la-ball-clip-rotate") &&
           msg.prediction
         ) {
+
           // currentMindfulInstance
           //   .getLoadingElement()
           //   .classList.remove("la-ball-clip-rotate");
           currentMindfulInstance.removeLoadingSpinner();
 
+          // if (currentMindfulInstance.errorElement) {
+          //   currentMindfulInstance.removeErrorElement();
+          // } // might not need this
+
           currentMindfulInstance.setToxicityElements(msg.prediction);
         }
       });
+
+      port.onDisconnect.addListener(reconnectToExtension)
+  }
+
+  function doneTyping(userText) {
+    //if (userText === "") return; // do i need this???
+    // let timeOut;
+    // clearTimeout(timeOut);
+    if (!userText) return;
+
+    if (!port) {
+      connectToPort();
+      
+      // port = chrome.runtime.connect({ name: "ToxicML" });
+
+      // port.onMessage.addListener(function (msg) {
+      //   console.log(msg.prediction);
+      //   console.log('hello');
+      //   if (
+      //     currentMindfulInstance
+      //       .getLoadingElement()
+      //       .classList.contains("la-ball-clip-rotate") &&
+      //     msg.prediction
+      //   ) {
+      //     // currentMindfulInstance
+      //     //   .getLoadingElement()
+      //     //   .classList.remove("la-ball-clip-rotate");
+      //     currentMindfulInstance.removeLoadingSpinner();
+
+      //     currentMindfulInstance.setToxicityElements(msg.prediction);
+      //   }
+      // });
+
+      // port.onDisconnect.addListener(function () {
+      //   port = undefined;
+      //   // try and reconect
+      // })
     }
 
-    port.postMessage({ text: userText });
-    console.log("message sent"); // check lenght????
+    try {
+      port.postMessage({ text: userText });
+      // console.timeEnd();
+      // console.time();
+      console.log("message sent");
+       // check lenght????
+    } catch (err) {
+        console.error(err);
+        currentMindfulInstance.createErrorElement('Reload Page');
+        return;
+      
+    }
+    //port.postMessage({ text: userText });
+    
     if (currentMindfulInstance.tocicityElements.length > 0) {
       // remove toxicity elemnts if any
       currentMindfulInstance.removeToxicityElements();
@@ -363,7 +431,8 @@ function runExtension() {
       .classList.add("la-ball-clip-rotate"); // add animation
     // currentMindfulInstance.getLoadingElement().classList.toggle("la-ball-clip-rotate");
 
-    // setTimeout(function() {
+    // timeOut = setTimeout(function() {
+    //   console.log('TIMEOUT') // is this how to do this???
     //   if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
     //     currentMindfulInstance.removeLoadingSpinner();
     //     // show error // should we assume an error occured???
