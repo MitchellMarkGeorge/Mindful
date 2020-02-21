@@ -5,6 +5,14 @@
   "author": "Mitchell Mark-George",
   "version": "1.0",
   "description": "An extension that makes you more mindful of what you say online using the power of sentiment analysis, machine learning and emojis.",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "mindful@extension.com",
+      "strict_min_version": "42.0"
+    }
+  },
+
  
   "browser_action": {
     "default_icon": "public/mindful-logo2.png", 

@@ -5,9 +5,6 @@ import { MidfulExtensionClass } from "./mindful-class";
 
 // ONLY DO TEXTAREA (DOES GRAMMARLY ONLY DO THAT???)
 
-window.onerror = () => {
-  console.log('error')
-}
 
 // comment all console.logs for production
 
@@ -26,8 +23,8 @@ chrome.storage.sync.get(['blacklist'], function (result) {
   console.log(result.blacklist)
   blacklist = result.blacklist;
   // WORK ON THIS SECTION (WORKS ON MY SYSTEM/ BUT IN CASE OF OTHERS)
-  console.log(!Array.isArray(blacklist) || !blacklist.length);
-  // not an array and is empty - still run
+
+  
   if ((!Array.isArray(blacklist) || !blacklist.length) || !blacklist.includes(hostname)) {
     runExtension();
   } // handle if array is empty??
@@ -40,39 +37,12 @@ chrome.storage.sync.get(['blacklist'], function (result) {
 
 function runExtension() {
   let activeElement;
-  let sentiment = new Sentiment();
   let score = 0;
-
   let port;
   let text = "";
-  //let progressBar;
-  // can add progressBar dist code as contentscript js/css file
-
-  // let wrapperDiv;
-  // let scoreElement; // for emoji
-  // let progressBar; // positble progress bar (or text)
-  // let mindfulWrapper;
 
   let currentMindfulInstance = new MidfulExtensionClass();
-  // The minimum prediction confidence. https://github.com/tensorflow/tfjs-models/tree/master/toxicity
-
-  // figure out why this slows down the entire thread
-  // also increases extension size
-
-  // in production remove consologs
-  // const threshold = 0.9
-  // toxicity.load(threshold)
-  //   .then(modelObject => {
-  //     model = modelObject;
-
-  //   })
-  //   .catch(err => {
-  //     console.log(err)
-  //   })
-
-  // make accounts and test on target websites/ platforms
-  // reddit
-
+  // dont work in development enxiroments like localhost (except for sandbox???)
   document.body.addEventListener("click", () => {
     activeElement = document.activeElement;
 
@@ -108,32 +78,18 @@ function runExtension() {
         });
 
         let typingTimer;
-        //let timeOutTimer;
+     
         // WORK ON THIS SECTION
         activeElement.addEventListener("keyup", () => {
           clearTimeout(typingTimer);
-          //clearTimeout(timeOutTimer);
-          // WORK ON THIS PART
-          //if (activeElement.value) { // SHOULD I JEST USE TEXT ARE AND CONTENT EDITABLE
-            // pass in value as parameter or just use global variable
+        
             typingTimer = setTimeout(function () {
               doneTyping(text);
             }, 2000);
-          // } else if (activeElement.textContent) {
-          //   typingTimer = setTimeout(function () {
-          //     doneTyping(activeElement.textContent);
-          //   }, 2000);
-          // }
+          
         });
 
-      //   timeOutTimer = setTimeout(function () {
-      //     console.log('TIMEOUT') // is this how to do this???
-      // if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
-      //   currentMindfulInstance.removeLoadingSpinner();
-      //   // show error // should we assume an error occured???
-      //   currentMindfulInstance.createErrorElement();
-      // }
-      //   }, 30 * 1000)
+
 
 
 
@@ -149,7 +105,7 @@ function runExtension() {
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           // do i need to check errorElemnt ???
           if (message.error === "true" && !currentMindfulInstance.errorElement) {
-            console.log('recieved message');
+            console.log('recieved error message');
             currentMindfulInstance.createErrorElement();
           }
         })
@@ -184,6 +140,7 @@ function runExtension() {
 
     // could potentially add a class to activeelements so i can query all of them if needed
     console.log('width', activeElement.clientWidth);
+  
     console.log('height', activeElement.clientHeight);
     console.log(activeElement.clientWidth > 190 && activeElement.clientHeight > 20);
     return (
@@ -244,7 +201,7 @@ function runExtension() {
     else if (score < -0.6 && score > -0.8) return "128551";
     // could also use '128550'??? include this one
     else if (score < -0.8) return "128552";
-    // not working on values lower than -0.2
+    
     else return "128528";
   }
 
