@@ -30,7 +30,9 @@
   text-transform: capitalize !important;
   margin-right: 10px !important; 
   display: inline-block !important;
-  background-color: #d95252 !important; 
+  background-color: #d95252 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+
   /* width: 50px !important; */
   /* neccasary??? */
 

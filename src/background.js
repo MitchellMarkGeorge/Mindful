@@ -10,6 +10,8 @@ let hostname;
 // if script is not persitent, discummect current port
 // chrome.runtime.onSuspend.addListener(listener)
 loadModel();
+
+
 // on load, get blacklist array and update on changed. In changeBadgeText function, just use blacklist
 chrome.runtime.onInstalled.addListener(reason => {
     console.log('here')
@@ -41,9 +43,9 @@ chrome.runtime.onConnect.addListener(async function (port) {
             loadModel(); // await loadModel() - should i do this
         }
         // sendErrorMessage()
-        // return;
+         //return;
         try {
-            const predict = await model?.classify(msg.text);
+            const predict = await model.classify(msg.text);
             port.postMessage({ prediction: predict });
            
         } catch (err) {

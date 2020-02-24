@@ -22,9 +22,10 @@ console.log(hostname);
 chrome.storage.sync.get(['blacklist'], function (result) {
   console.log(result.blacklist)
   blacklist = result.blacklist;
+  console.log('here')
   // WORK ON THIS SECTION (WORKS ON MY SYSTEM/ BUT IN CASE OF OTHERS)
+  console.log(`Should work ${(!Array.isArray(blacklist) || !blacklist.length) || !blacklist.includes(hostname)}`)
 
-  
   if ((!Array.isArray(blacklist) || !blacklist.length) || !blacklist.includes(hostname)) {
     runExtension();
   } // handle if array is empty??
@@ -42,8 +43,13 @@ function runExtension() {
   let text = "";
 
   let currentMindfulInstance = new MidfulExtensionClass();
+  // window.addEventListener
   // dont work in development enxiroments like localhost (except for sandbox???)
-  document.body.addEventListener("click", () => {
+  // ON MANAGEBACK, document.body DID NOT WORK - WITCH ONE SHOULD I USE (server side rendering)
+  //document.body - ask mr Drenth
+  // better to attach to document due to server side rendering changing the dodu and head
+  document.addEventListener("click", () => {
+    console.log('click')
     activeElement = document.activeElement;
 
     console.log(activeElement.tagName);
@@ -54,7 +60,7 @@ function runExtension() {
       console.log(activeElement);
 
 
-      score = 0; //reset score -  is this needed
+      //score = 0; //reset score -  is this needed
 
       if (
         activeElement.nextSibling &&
@@ -78,15 +84,15 @@ function runExtension() {
         });
 
         let typingTimer;
-     
+
         // WORK ON THIS SECTION
         activeElement.addEventListener("keyup", () => {
           clearTimeout(typingTimer);
-        
-            typingTimer = setTimeout(function () {
-              doneTyping(text);
-            }, 2000);
-          
+
+          typingTimer = setTimeout(function () {
+            doneTyping(text);
+          }, 2000);
+
         });
 
 
@@ -140,7 +146,7 @@ function runExtension() {
 
     // could potentially add a class to activeelements so i can query all of them if needed
     console.log('width', activeElement.clientWidth);
-  
+
     console.log('height', activeElement.clientHeight);
     console.log(activeElement.clientWidth > 190 && activeElement.clientHeight > 20);
     return (
@@ -188,6 +194,7 @@ function runExtension() {
     currentMindfulInstance.setWrapperDivID("mindful-wrapper");
 
     currentMindfulInstance.setEmojiElementContent("128528"); // defult emoji
+    currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
   }
 
   function getEmoji(score) {
@@ -201,13 +208,13 @@ function runExtension() {
     else if (score < -0.6 && score > -0.8) return "128551";
     // could also use '128550'??? include this one
     else if (score < -0.8) return "128552";
-    
+
     else return "128528";
   }
 
-  function analyzeInput() {
-
-    text = activeElement.tagName === "TEXTAREA"? activeElement.value : activeElement.textContent;
+  function analyzeInput(event) {
+    
+    text = activeElement.tagName === "TEXTAREA" ? activeElement.value : activeElement.textContent;
     // could just use || operator
 
     // if (!wrapperDiv.id) {
@@ -224,32 +231,32 @@ function runExtension() {
     // console.log(activeElement.textContent);
     console.log(activeElement.nextSibling.tagName);
     //if (activeElement.tagName === "TEXTAREA") {
-      // console.log(activeElement.cols);
-      // console.log(e);
-      //text = activeElement.value.trim();
+    // console.log(activeElement.cols);
+    // console.log(e);
+    //text = activeElement.value.trim();
 
-      if (currentMindfulInstance.tocicityElements.length > 0) {
-        // if there is no text and there are
-        currentMindfulInstance.removeToxicityElements(); // think about this
-      }
+    if (currentMindfulInstance.tocicityElements.length > 0) {
+      // if there is no text and there are
+      currentMindfulInstance.removeToxicityElements(); // think about this
+    }
 
-      // if (currentMindfulInstance.errorElement) {
-      //   currentMindfulInstance.errorElement.remove();
-      // }
+    // if (currentMindfulInstance.errorElement) {
+    //   currentMindfulInstance.errorElement.remove();
+    // }
 
-      //event.target.value
+    //event.target.value
 
-      
-      //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
-      let analysis = SentimentIntensityAnalyzer.polarity_scores(
-        text
-      );
 
-      console.log(analysis);
-     
+    //let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(e.target.value);
+    let analysis = SentimentIntensityAnalyzer.polarity_scores(
+      text
+    );
 
-      score = analysis.compound;
-      currentMindfulInstance.setEmojiElementContent(getEmoji(score));
+    console.log(analysis);
+
+
+    score = analysis.compound;
+    currentMindfulInstance.setEmojiElementContent(getEmoji(score));
     // } else {
     //   console.log(activeElement.textContent)
 
@@ -291,47 +298,64 @@ function runExtension() {
     port = null;
     // should there be a set timeout
     connectToPort();
-    
+
   }
 
   function connectToPort() {
+    //try { // do i need this try catch
     port = chrome.runtime.connect({ name: "ToxicML" });
+    console.log('connected')
+    //} catch (err) {
+    //console.error(err);
+    // currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
+    currentMindfulInstance.createErrorElement();
+    //   return;
 
-      port.onMessage.addListener(function (msg) {
-        console.log(msg.prediction);
-        console.log('hello');
-        if (
-          currentMindfulInstance
-            .getLoadingElement()
-            .classList.contains("la-ball-clip-rotate") &&
-          msg.prediction
-        ) {
+    //}
 
-          // currentMindfulInstance
-          //   .getLoadingElement()
-          //   .classList.remove("la-ball-clip-rotate");
-          currentMindfulInstance.removeLoadingSpinner();
+    port.onMessage.addListener(function (msg) {
+      console.log(msg.prediction);
+      console.log('hello');
+      if (
+        currentMindfulInstance
+          .getLoadingElement()
+          .classList.contains("la-ball-clip-rotate") &&
+        msg.prediction
+      ) {
+        // if (timeOut) clearTimeout(timeOut);
+        // currentMindfulInstance
+        //   .getLoadingElement()
+        //   .classList.remove("la-ball-clip-rotate");
+        currentMindfulInstance.removeLoadingSpinner();
 
-          // if (currentMindfulInstance.errorElement) {
-          //   currentMindfulInstance.removeErrorElement();
-          // } // might not need this
+        // if (currentMindfulInstance.errorElement) {
+        //   currentMindfulInstance.removeErrorElement();
+        // } // might not need this
 
-          currentMindfulInstance.setToxicityElements(msg.prediction);
-        }
-      });
+        currentMindfulInstance.setToxicityElements(msg.prediction);
+      }
+    });
 
-      port.onDisconnect.addListener(reconnectToExtension)
+    port.onDisconnect.addListener(reconnectToExtension)
   }
 
   function doneTyping(userText) {
     //if (userText === "") return; // do i need this???
-    // let timeOut;
-    // clearTimeout(timeOut);
+    //  let timeOut;
+    //  clearTimeout(timeOut);
     if (!userText) return;
 
     if (!port) {
-      connectToPort();
-      
+
+      try {
+        connectToPort();
+      } catch (err) {
+        // look at Devtool source map problem
+        //console.error(err);
+        currentMindfulInstance.createErrorElement();
+        return;
+      }
+
       // port = chrome.runtime.connect({ name: "ToxicML" });
 
       // port.onMessage.addListener(function (msg) {
@@ -363,15 +387,15 @@ function runExtension() {
       // console.timeEnd();
       // console.time();
       console.log("message sent");
-       // check lenght????
+      // check lenght????
     } catch (err) {
-        console.error(err);
-        currentMindfulInstance.createErrorElement('Reload Page');
-        return;
-      
+      console.error(err);
+      currentMindfulInstance.createErrorElement('Reload Page');
+      return;
+
     }
     //port.postMessage({ text: userText });
-    
+
     if (currentMindfulInstance.tocicityElements.length > 0) {
       // remove toxicity elemnts if any
       currentMindfulInstance.removeToxicityElements();
@@ -382,7 +406,7 @@ function runExtension() {
       // currentMindfulInstance.errorElement = undefined;
     }
 
-    currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
+    // currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
     currentMindfulInstance
       .getLoadingElement()
       .classList.add("la-ball-clip-rotate"); // add animation
