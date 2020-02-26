@@ -308,9 +308,9 @@ function runExtension() {
     port = chrome.runtime.connect({ name: "ToxicML" });
     console.log('connected');
 
-    if (currentMindfulInstance.errorElement) {
-      currentMindfulInstance.removeErrorElement();
-    }
+    // if (currentMindfulInstance.errorElement) {
+    //   currentMindfulInstance.removeErrorElement();
+    // }
     //} catch (err) {
     //console.error(err);
     // currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
