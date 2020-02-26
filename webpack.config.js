@@ -6,7 +6,7 @@ const ExtensionReloader  = require('webpack-extension-reloader');
 // const process = require('process')
 
 // where is the entry file
-const isDev = process.env.NODE_ENV !== 'production';
+const isDev = process.env.NODE_ENV === 'development';
 module.exports = {
 
   mode: 'development',
@@ -67,9 +67,11 @@ module.exports = {
   },
 
   plugins: [
-    new ExtensionReloader({
+    
+    ...(isDev ? [] : [new ExtensionReloader({
       manifest: path.resolve(__dirname, "manifest.json")
-    }),
+    })]),
+
     new CopyPlugin([
       {from: 'public', to: 'public'}, 
       {from: 'manifest.json', to: 'manifest.json'}, 

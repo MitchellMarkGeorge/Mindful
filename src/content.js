@@ -6,11 +6,7 @@ import { MidfulExtensionClass } from "./mindful-class";
 // ONLY DO TEXTAREA (DOES GRAMMARLY ONLY DO THAT???)
 
 
-// comment all console.logs for production
 
-// chrome.storage.onChanged.addListener(function(changes, namespace) {
-//   console.log(changes);
-// })
 
 let hostname = location.hostname;
 let blacklist = [];
@@ -41,6 +37,11 @@ function runExtension() {
   let score = 0;
   let port;
   let text = "";
+  //NOT SURE ABOUT CAPSLOCK
+  // should i move to class?
+  const badKeys = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'meta', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control'
+  // previousInstance
+  let cleartimeOut; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
 
   let currentMindfulInstance = new MidfulExtensionClass();
   // window.addEventListener
@@ -49,7 +50,7 @@ function runExtension() {
   //document.body - ask mr Drenth
   // better to attach to document due to server side rendering changing the dodu and head
   document.addEventListener("click", () => {
-    console.log('click')
+    console.log('click');
     activeElement = document.activeElement;
 
     console.log(activeElement.tagName);
@@ -83,17 +84,42 @@ function runExtension() {
           analyzeInput();
         });
 
+        // activeElement.addEventListener('blur', () => {
+        //   if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+
+        //     currentMindfulInstance.removeLoadingSpinner();
+        //   }
+        // })
+
         let typingTimer;
 
+
         // WORK ON THIS SECTION
-        activeElement.addEventListener("keyup", () => {
+        // KEYBORD CODES 
+        // NEEDS SPACE (?), BACKSPACE, NUMBERS, LETTERS, KEYPAD
+        // DNT NEED  VOLUME, PLAY/PAUSE
+        activeElement.addEventListener("keyup", (event) => {
+          // console.log(event.key)
+          const key = event.key.toLowerCase();
+          // console.log(key);
+          if (badKeys.includes(key)) return;
+          // if ( 
+          //   shouldRunKeyEvent(event)
+          // ) {console.log('good (i think)')} else return;
+          // console.log(event.keyCode);
           clearTimeout(typingTimer);
+          clearTimeout(cleartimeOut); // clears timeout for no response
+          // console.log(cleartimeOut);
+          // called on ANY Key
+          // i have to determine what keys are ressed
 
           typingTimer = setTimeout(function () {
             doneTyping(text);
           }, 2000);
 
         });
+
+
 
 
 
@@ -138,6 +164,8 @@ function runExtension() {
     // console.log(sentiment.analyzeInput(document.activeElement.value));
     //might have to increase the scale to have more nuetral values (or devide by 5 like google nlp)
   });
+
+
 
   function shouldInsertWrapper() {
     // THE REASON GRMMARLY DOES NOT WORK ON CODEEDITORS IS BECAUSE IT TAKES INTO ACCOUNT THE HEIGHT OF THE TEXTAREA
@@ -187,7 +215,10 @@ function runExtension() {
       activeElement.nextSibling
     );
 
-    // class will be made here
+
+
+
+    // class will be made here 
 
     //currentMindfulInstance = new MidfulExtensionClass(mindfulWrapper);
     currentMindfulInstance.setValues(mindfulWrapper);
@@ -212,9 +243,10 @@ function runExtension() {
     else return "128528";
   }
 
-  function analyzeInput(event) {
-    
-    text = activeElement.tagName === "TEXTAREA" ? activeElement.value : activeElement.textContent;
+  function analyzeInput() {
+    // do i need to trim strings
+    text = activeElement.tagName === "TEXTAREA" ? activeElement.value.trim() : activeElement.textContent.trim();
+    console.log(text);
     // could just use || operator
 
     // if (!wrapperDiv.id) {
@@ -257,37 +289,6 @@ function runExtension() {
 
     score = analysis.compound;
     currentMindfulInstance.setEmojiElementContent(getEmoji(score));
-    // } else {
-    //   console.log(activeElement.textContent)
-
-    //   // WORK ON THIS SECTION
-    //   // contentEditable
-    //   //text = activeElement.textContent.trim();
-    //   if ( // change this condition
-    //     !activeElement.textContent &&
-    //     currentMindfulInstance.tocicityElements.length > 0
-    //   ) {
-    //     currentMindfulInstance.removeToxicityElements();
-    //   }
-    //   let analysis = sentiment.analyze(activeElement.textContent);
-    //   let analysis_2 = SentimentIntensityAnalyzer.polarity_scores(
-    //     activeElement.textContent
-    //   );
-    //   console.log(analysis);
-    //   console.log(analysis_2);
-
-    //   score = analysis_2.compound; // `${score}`
-    //   currentMindfulInstance.setEmojiElementContent(getEmoji(score));
-    //   // currentMindfulInstance.setSpanElementClassName('mindful-span-elements');
-
-    //   // currentMindfulInstance.setLoadingElementText('Loading...');
-
-    //   // model.classify(activeElement.textContent).then(prediction => {
-    //   //   console.log(prediction);
-    //   // })
-    //   // currentMindfulInstance.progressBar.animate(1);
-    // }
-
 
 
 
@@ -297,6 +298,7 @@ function runExtension() {
     console.log('Disconected')
     port = null;
     // should there be a set timeout
+    // setTimeout(connectToPort, 1000)
     connectToPort();
 
   }
@@ -304,33 +306,36 @@ function runExtension() {
   function connectToPort() {
     //try { // do i need this try catch
     port = chrome.runtime.connect({ name: "ToxicML" });
-    console.log('connected')
+    console.log('connected');
+
+    if (currentMindfulInstance.errorElement) {
+      currentMindfulInstance.removeErrorElement();
+    }
     //} catch (err) {
     //console.error(err);
     // currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
-    currentMindfulInstance.createErrorElement();
+    // currentMindfulInstance.createErrorElement();
     //   return;
 
     //}
 
     port.onMessage.addListener(function (msg) {
       console.log(msg.prediction);
-      console.log('hello');
+      // console.log('hello');
+      if (cleartimeOut) {
+        clearTimeout(cleartimeOut);
+        // console.log(cleartimeOut);
+      } // do i need this
       if (
         currentMindfulInstance
           .getLoadingElement()
           .classList.contains("la-ball-clip-rotate") &&
         msg.prediction
       ) {
-        // if (timeOut) clearTimeout(timeOut);
-        // currentMindfulInstance
-        //   .getLoadingElement()
-        //   .classList.remove("la-ball-clip-rotate");
+
         currentMindfulInstance.removeLoadingSpinner();
 
-        // if (currentMindfulInstance.errorElement) {
-        //   currentMindfulInstance.removeErrorElement();
-        // } // might not need this
+
 
         currentMindfulInstance.setToxicityElements(msg.prediction);
       }
@@ -341,7 +346,9 @@ function runExtension() {
 
   function doneTyping(userText) {
     //if (userText === "") return; // do i need this???
-    //  let timeOut;
+
+
+
     //  clearTimeout(timeOut);
     if (!userText) return;
 
@@ -353,33 +360,11 @@ function runExtension() {
         // look at Devtool source map problem
         //console.error(err);
         currentMindfulInstance.createErrorElement();
+        // reconnectToExtension()
         return;
       }
 
-      // port = chrome.runtime.connect({ name: "ToxicML" });
 
-      // port.onMessage.addListener(function (msg) {
-      //   console.log(msg.prediction);
-      //   console.log('hello');
-      //   if (
-      //     currentMindfulInstance
-      //       .getLoadingElement()
-      //       .classList.contains("la-ball-clip-rotate") &&
-      //     msg.prediction
-      //   ) {
-      //     // currentMindfulInstance
-      //     //   .getLoadingElement()
-      //     //   .classList.remove("la-ball-clip-rotate");
-      //     currentMindfulInstance.removeLoadingSpinner();
-
-      //     currentMindfulInstance.setToxicityElements(msg.prediction);
-      //   }
-      // });
-
-      // port.onDisconnect.addListener(function () {
-      //   port = undefined;
-      //   // try and reconect
-      // })
     }
 
     try {
@@ -391,6 +376,7 @@ function runExtension() {
     } catch (err) {
       console.error(err);
       currentMindfulInstance.createErrorElement('Reload Page');
+      // reconnectToExtension()
       return;
 
     }
@@ -412,14 +398,15 @@ function runExtension() {
       .classList.add("la-ball-clip-rotate"); // add animation
     // currentMindfulInstance.getLoadingElement().classList.toggle("la-ball-clip-rotate");
 
-    // timeOut = setTimeout(function() {
-    //   console.log('TIMEOUT') // is this how to do this???
-    //   if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
-    //     currentMindfulInstance.removeLoadingSpinner();
-    //     // show error // should we assume an error occured???
-    //     currentMindfulInstance.createErrorElement();
-    //   }
-    // }, 30 * 1000)
+    cleartimeOut = setTimeout(function () {
+      console.log('TIMEOUT') // is this how to do this???
+      if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
+        currentMindfulInstance.removeLoadingSpinner();
+        // show error // should we assume an error occured???
+        currentMindfulInstance.createErrorElement('Error');
+      }
+    }, 15 * 1000);
+    // console.log(cleartimeOut);
 
   }
 }

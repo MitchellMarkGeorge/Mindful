@@ -14,7 +14,7 @@ You will need:
 * Node.js
 * Understanding of Chrome Extension and  Artitecture
 * Understanding of JavaScript
-A passion of making the world a better place!
+* A passion of making the world a better place!
 
 
 ### Installing (Local Development)
@@ -43,7 +43,11 @@ To create dist build, run
 ```
 npm run dist-build
 ```
+Package app for store disribution:
 
+```
+npm run store-dist
+```
 
 
 ## Running the tests
@@ -62,9 +66,9 @@ npm run standard
 
 * [Tensorflow.js](https://github.com/tensorflow/tfjs-models/tree/master/toxicity) - Used for advanced text analysis
 
-## Contributing
+<!-- ## Contributing
 
-Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us. -->
 
 ## Versioning
 
@@ -78,6 +82,6 @@ See also the list of [contributors](https://github.com/MitchellMarkGeorge/Mindfu
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the AGPL-3.0-only License - see the [LICENSE.txt](LICENSE.txt) file for details
 
 

@@ -1,10 +1,10 @@
 body {
     text-align: center;
-    color: #79bbb5;
+    /* color: #79bbb5; */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
 }
 
-span {
+span, #version {
     font-weight: bold;
 }
 

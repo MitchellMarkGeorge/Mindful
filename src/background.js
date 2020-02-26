@@ -1,4 +1,6 @@
-import * as toxicity from "@tensorflow-models/toxicity";
+import * as toxicity from '@tensorflow-models/toxicity';
+
+// lazy load instead
 
 let model;
 
@@ -6,6 +8,7 @@ let blacklist = []; // technically dont need to empty array due to
 let hostname;
 
 // unInsatll event
+
 
 // if script is not persitent, discummect current port
 // chrome.runtime.onSuspend.addListener(listener)
@@ -136,9 +139,10 @@ function changeBadgeText(pageHostname, id) {
     // if (blacklist === undefined || blacklist.length == 0) { // if
 
     //     return; // or should it be cheked by defult and then the script runs and confirms?
-    // };
+    // }; 
+    //blacklist.includes(pageHostname)
     if (contains(blacklist, pageHostname)) {
-        //blacklist.incudes(hostname);
+        //blacklist.incudes(pageHostname);
         chrome.browserAction.setBadgeText({ text: "OFF", tabId: id });
     } else {
         chrome.browserAction.setBadgeText({ text: "", tabId: id });
@@ -230,6 +234,7 @@ function sendErrorMessage() {
 async function loadModel() {
     try {
         const threshold = 0.7;
+        // const toxicity = await import('@tensorflow-models/toxicity'); // THIS WORKS BUT ADDS NO BUNDLE DIFFERENCES!!!
         model = await toxicity.load(threshold);
         console.log(model);
         //const saveResult = await model.model.save('localstorage://my-model-1');

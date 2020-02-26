@@ -1,12 +1,12 @@
 // document.addEventListener('DOMContentLoaded', function(event) {
-//     console.log(location.hostname);
+    // console.log(location.hostname);
 //   })
 
 // chrome.tabs.onActivated.addListener((tabs) => {
 
-//     console.log('changed')
+    // console.log('changed')
 //     chrome.tabs.get(tabs.tabId, (object) => {
-//         console.log(object.url);
+        // console.log(object.url);
 //     })
 
 // })
@@ -15,15 +15,17 @@
 
 // chrome.tabs.onUpdated.addListener((id, obj, tab) => {
 
-//     console.log('UPDATED');
-//     console.log(tab.url);
+    // console.log('UPDATED');
+    // console.log(tab.url);
 
 // })
+// get 
+const manifest = chrome.runtime.getManifest();
 
-
+document.getElementById('version').innerHTML = 'VERSION ' + manifest.version;
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    console.log(tabs[0].url.split("/")[2]); // hostname
+    //console.log(tabs[0].url.split("/")[2]); // hostname - third part of split array
 
     let hostname = tabs[0].url.split("/")[2];
     let blacklist = [];
@@ -49,24 +51,24 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     });
     
     checkbox.addEventListener('click', function (e) {
-        console.log(checkbox.checked);
+        //console.log(checkbox.checked);
         // if the user clicks on the check box for analysis on this site (and it was off befre), remove from blacklist
         if (checkbox.checked) {
             // check if it contains?
             // use the same blacklist variable or a tempoary variable?
             blacklist = removeItem(blacklist, hostname);
             chrome.storage.sync.set({ blacklist: blacklist }, function () {
-                console.log('Blacklist is set to ' + blacklist);
+                // console.log('Blacklist is set to ' + blacklist);
                 //PORT CONNECTION SO ALL BADGE CODE IS HANLED BY BACKGROUND SCRIPT
                 chrome.browserAction.setBadgeText({text: "", tabId: tabs[0].id});
             });
-        } else {
+        } else { 
             // if user click on the checkbox for analysis on this site (and it was on before), add to blacklist 
 
             blacklist.push(hostname);
-            console.log(blacklist)
+            // console.log(blacklist)
             chrome.storage.sync.set({ blacklist: blacklist }, function () {
-                console.log('Blacklist is set to ' + blacklist);
+                // console.log('Blacklist is set to ' + blacklist);
                 chrome.browserAction.setBadgeText({text: "OFF", tabId: tabs[0].id});
             });
         }

@@ -1,4 +1,3 @@
-
 #mindful-wrapper {
   height: 30px !important;
   /* width: 200px !important; */
@@ -11,11 +10,12 @@
 }
 
 .mindful-span-elements {
-    display: inline-block !important;
-    /* line-height: 30px !important; */
-    margin-right: 10px !important; 
-    /* height: 30px !important; */
-    
+  display: inline-block !important;
+  /* line-height: 30px !important; */
+  margin-right: 10px !important;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ and Edge */
+  /* height: 30px !important; */
 }
 
 .mindful-span-toxicity-elements {
@@ -28,14 +28,17 @@
   line-height: 1 !important;
   color: #fff !important;
   text-transform: capitalize !important;
-  margin-right: 10px !important; 
+  margin-right: 10px !important;
   display: inline-block !important;
   background-color: #d95252 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ and Edge */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif !important;
 
   /* width: 50px !important; */
   /* neccasary??? */
-
 }
 
 .la-ball-clip-rotate {
@@ -50,4 +53,3 @@
   height: 12px !important;
   line-height: 30px !important;
 }
-
