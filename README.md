@@ -3,7 +3,7 @@
 
 The internet has become a wonderful place to spread ideas and beliefs, and no one should be scared to share them online. The purpose of this extension is to make you more “mindful” of the things you say online, so more people can feel free to express themselves online.
 
-![Mindful Tile](img/Mindful_Extension_Tile.png)
+![Mindful Tile](imgs/Mindful_Extension_Tile.png)
 
 
 ### Prerequisites
