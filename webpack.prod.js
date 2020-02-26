@@ -8,6 +8,7 @@ module.exports = merge(common, {
     mode: 'production',
     plugins: [
       new BundleAnalyzerPlugin()
+      
     ],
     optimization: {
         minimizer: [

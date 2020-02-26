@@ -16,19 +16,18 @@ loadModel();
 
 
 // on load, get blacklist array and update on changed. In changeBadgeText function, just use blacklist
-chrome.runtime.onInstalled.addListener(reason => {
-    console.log('here')
+chrome.runtime.onInstalled.addListener(data => {
+    // console.log('here')
     //showErrorNotification()
+
+    // anytime this event is called, the model should be loaded just in case
     loadModel();
-    // let test = await toxicity.load(0.7);
-    // let predict = await test.classify('bitch');
-    // console.log(predict);
-    //showErrorNotification();
+    
     console.log(reason); // set blacklist as empy array on install
-    if (reason.reason === "update") {
+    if (data.reason === "update") {
         console.log("update");
     }
-    if (reason.reason === "install") {
+    if (data.reason === "install") {
         chrome.storage.sync.set({ blacklist: [] });
 
 

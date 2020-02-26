@@ -1,12 +1,13 @@
 const path = require('path');
 
 const CopyPlugin = require('copy-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+// const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ExtensionReloader  = require('webpack-extension-reloader');
 // const process = require('process')
 
 // where is the entry file
-const isDev = process.env.NODE_ENV === 'development';
+
+// const isDev = process.env.NODE_ENV === 'development';
 module.exports = {
 
   mode: 'development',
@@ -68,9 +69,9 @@ module.exports = {
 
   plugins: [
     
-    ...(isDev ? [] : [new ExtensionReloader({
-      manifest: path.resolve(__dirname, "manifest.json")
-    })]),
+    // new ExtensionReloader({
+    //   manifest: path.resolve(__dirname, "manifest.json")
+    // }),
 
     new CopyPlugin([
       {from: 'public', to: 'public'}, 
@@ -78,7 +79,7 @@ module.exports = {
       {from: 'src/content.css', to: 'content.css'},
       {from: 'src/ball-clip-rotate.min.css', to: 'ball-clip-rotate.min.css'} 
       // {from: 'progressbar.min.js', to: 'progressbar.min.js'}
-    ]),
+    ])
     // new CleanWebpackPlugin()
     // new CopyWebpackPlugin(), 
     // new HtmlWebPackPlugin({

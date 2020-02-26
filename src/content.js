@@ -41,7 +41,7 @@ function runExtension() {
   // should i move to class?
   const badKeys = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'meta', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control'
   // previousInstance
-  let cleartimeOut; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
+  let noResultTimeOut; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
 
   let currentMindfulInstance = new MidfulExtensionClass();
   // window.addEventListener
@@ -108,8 +108,8 @@ function runExtension() {
           // ) {console.log('good (i think)')} else return;
           // console.log(event.keyCode);
           clearTimeout(typingTimer);
-          clearTimeout(cleartimeOut); // clears timeout for no response
-          // console.log(cleartimeOut);
+          clearTimeout(noResultTimeOut); // clears timeout for no response
+          // console.log(noResultTimeOut);
           // called on ANY Key
           // i have to determine what keys are ressed
 
@@ -322,9 +322,9 @@ function runExtension() {
     port.onMessage.addListener(function (msg) {
       console.log(msg.prediction);
       // console.log('hello');
-      if (cleartimeOut) {
-        clearTimeout(cleartimeOut);
-        // console.log(cleartimeOut);
+      if (noResultTimeOut) {
+        clearTimeout(noResultTimeOut);
+        // console.log(noResultTimeOut);
       } // do i need this
       if (
         currentMindfulInstance
@@ -393,20 +393,24 @@ function runExtension() {
     }
 
     // currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
+    //Adds loading spinner
     currentMindfulInstance
       .getLoadingElement()
       .classList.add("la-ball-clip-rotate"); // add animation
     // currentMindfulInstance.getLoadingElement().classList.toggle("la-ball-clip-rotate");
 
-    cleartimeOut = setTimeout(function () {
-      console.log('TIMEOUT') // is this how to do this???
+
+    // removes loading spinner after 15v econds and add eror elem3ent 
+    // if no response is given
+    noResultTimeOut = setTimeout(function () {
+      //console.log('TIMEOUT') // is this how to do this???
       if (currentMindfulInstance.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
         currentMindfulInstance.removeLoadingSpinner();
         // show error // should we assume an error occured???
         currentMindfulInstance.createErrorElement('Error');
       }
     }, 15 * 1000);
-    // console.log(cleartimeOut);
+    // console.log(noResultTimeOut);
 
   }
 }

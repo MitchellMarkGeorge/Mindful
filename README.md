@@ -3,7 +3,7 @@
 
 The internet has become a wonderful place to spread ideas and beliefs, and no one should be scared to share them online. The purpose of this extension is to make you more “mindful” of the things you say online, so more people can feel free to express themselves online.
 
-![Mindful Tile](public/Mindful_Extension_Tile.png)
+![Mindful Tile](img/Mindful_Extension_Tile.png)
 
 
 ### Prerequisites
@@ -11,7 +11,9 @@ The internet has become a wonderful place to spread ideas and beliefs, and no on
 You will need:
 
 
-* Node.js
+* Node.js (tested on v11.9.0)
+* npm (tested on v6.13.4)
+* Windows or Mac (tested on these platforms, should work on Linux)
 * Understanding of Chrome Extension and  Artitecture
 * Understanding of JavaScript
 * A passion of making the world a better place!
@@ -20,7 +22,7 @@ You will need:
 ### Installing (Local Development)
 
 
-Clone Reop
+Clone Reop (if getting code from Github - else, move to next step)
 
 ```
 git clone <repo url>
@@ -32,23 +34,23 @@ Install Dependencies
 npm install
 ```
 
-Run dev build
+Run dev build (with Extension Hot Reloading)
 
 ```
 npm run build
 ```
 
-To create dist build, run
+To create minified dist build, run
 
 ```
 npm run dist-build
 ```
-Package app for store disribution:
+Package app for store disribution (mostly for chrome):
 
 ```
 npm run store-dist
 ```
-
+The ```img``` folder is for Chrome store images
 
 ## Running the tests
 
@@ -62,9 +64,13 @@ npm run standard
 
 ## Built With
 
-* [VadarSentiment](https://github.com/vaderSentiment/vaderSentiment-jshttps://github.com/vaderSentiment/vaderSentiment-js) - Used for 
+* [VadarSentiment](https://github.com/vaderSentiment/vaderSentiment-jshttps://github.com/vaderSentiment/vaderSentiment-js) - Used for sentiment analysis (emojis)
+    * [Current version](https://github.com/vaderSentiment/vaderSentiment-js/tree/1.1.3)
 
-* [Tensorflow.js](https://github.com/tensorflow/tfjs-models/tree/master/toxicity) - Used for advanced text analysis
+* [Tensorflow.js Toxicity Model](https://github.com/tensorflow/tfjs-models/tree/master/toxicity) - Used for advanced text analysis
+    * [Current version](https://github.com/tensorflow/tfjs-models/tree/toxicity-v1.2.2/toxicity)
+
+* For versions, refer to [package.json](package.json)
 
 <!-- ## Contributing
 
