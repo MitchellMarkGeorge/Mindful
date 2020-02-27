@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "zip": "bestzip bundle.zip dist/*",
+    "chrome-zip": "bestzip chrome.zip dist/*",
     "build": "webpack -w",
     "dist-build": "webpack --config webpack.prod.js",
-    "store-dist": "npm run dist-build && npm run zip",
+    "chrome-dist": "npm run dist-build && npm run chrome-zip",
     "standard": "semistandard --verbose | snazzy"
   },
   "browserslist": "> 0.25%, not dead",

@@ -14,7 +14,7 @@ You will need:
 * Node.js (tested on v11.9.0)
 * npm (tested on v6.13.4)
 * Windows or Mac (tested on these platforms, should work on Linux)
-* Understanding of Chrome Extension and  Artitecture
+* Understanding of Browser Extensions and Architecture
 * Understanding of JavaScript
 * A passion of making the world a better place!
 
@@ -22,10 +22,10 @@ You will need:
 ### Installing (Local Development)
 
 
-Clone Reop (if getting code from Github - else, move to next step)
+Clone Repo (if getting code from Github - else, move to next step)
 
 ```
-git clone <repo url>
+git clone https://github.com/MitchellMarkGeorge/Mindful
 ```
 
 Install Dependencies
@@ -34,23 +34,25 @@ Install Dependencies
 npm install
 ```
 
-Run dev build (with Extension Hot Reloading)
+Run dev build (files will be watched)
 
 ```
 npm run build
 ```
 
-To create minified dist build, run
+To create minified dist build, run:
 
 ```
 npm run dist-build
 ```
-Package app for store disribution (mostly for chrome):
+Package app for Chrome Distribution:
 
 ```
-npm run store-dist
+npm run chrome-dist
 ```
-The ```img``` folder is for Chrome store images
+The ```img``` folder is for promotional images
+
+For FireFox, run ```npm run buld``` and follow the [tutorial](https://extensionworkshop.com/documentation/publish/package-your-extension/) on how to zip the files for distribution (remember to use the files in ```dist```)
 
 ## Running the tests
 

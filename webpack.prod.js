@@ -2,12 +2,14 @@ const merge = require('webpack-merge');
 const common = require('./webpack.config.js');
 const TerserPlugin = require('terser-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = merge(common, {
     mode: 'production',
     plugins: [
-      new BundleAnalyzerPlugin()
+      new CleanWebpackPlugin()
+      // new BundleAnalyzerPlugin()
+
       
     ],
     optimization: {

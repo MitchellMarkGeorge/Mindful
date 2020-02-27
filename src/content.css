@@ -18,7 +18,7 @@
   /* height: 30px !important; */
 }
 
-.mindful-span-toxicity-elements {
+.mindful-span-toxicity-elements, .mindful-error-element {
   /* border: 1px solid #000 !important; */
   border-radius: 14px !important;
   text-align: center !important;

@@ -7,35 +7,20 @@ export class MidfulExtensionClass {
         this.wrapperDiv;
         this.emojiElement;
         this.errorElement;
-        // progressBarElement;
-        // progressBar;
         this.loadingElement;
         this.tocicityElements = [];
 
-        // this.wrapperDiv;
-        // this.emojiElement;
-        // this.progressBarElement;
 
 
 
     }
 
-    setValues(DOMElement) {
-        this.wrapperDiv = DOMElement.firstChild;
+    setValues(DOM_Element) {
+        this.wrapperDiv = DOM_Element.firstChild;
         this.emojiElement = this.wrapperDiv.firstChild;
         this.loadingElement = this.wrapperDiv.lastChild;
-
-        // this.progressBar = new ProgressBar.Line(this.getProgressBarElement(), {
-        //     strokeWidth: 4,
-        //     easing: 'easeInOut',
-        //     duration: 1400,
-        //     color: '#FFEA82',
-        //     trailColor: '#eee',
-        //     trailWidth: 1,
-        //     svgStyle: { width: '50px' }
-        //   });
         console.log(this.wrapperDiv);
-        //console.log(this.progressBarElement);
+
         console.log(this.emojiElement);
         console.log(this.loadingElement)
     }
@@ -69,6 +54,10 @@ export class MidfulExtensionClass {
         if (this.errorElement) {
             this.removeErrorElement()
         }
+        // in case there is any elements for anu reason
+        // if (this.tocicityElements.length > 0) {
+        //     this.removeToxicityElements()
+        // }
         let tempArray = toxicityArray.filter(item => item.results[0].match === true);
 
         console.log(tempArray);
@@ -76,9 +65,11 @@ export class MidfulExtensionClass {
         this.tocicityElements = tempArray.map(item => {
             let element = document.createElement('span');
             element.className = 'mindful-span-toxicity-elements'
-            element.innerHTML = `${item.label.replace('_', ' ')}`; // add percentage???
+            element.innerHTML = item.label.replace('_', ' '); // add percentage???
             return element;
         })
+
+        // might wrap in a div
 
         console.log(this.tocicityElements);
 
@@ -99,6 +90,14 @@ export class MidfulExtensionClass {
         // reset array
         this.tocicityElements = [];
 
+    }
+
+    isLoaderSpinning() {
+        return this.getLoadingElement().classList.contains("la-ball-clip-rotate");
+    }
+
+    addLoaderSpinner() {
+        this.getLoadingElement().classList.add("la-ball-clip-rotate");
     }
 
 
@@ -125,15 +124,19 @@ export class MidfulExtensionClass {
 
     createErrorElement(specialMessage) {
         let text = specialMessage || 'Unavalible'
+        // the emoji element must be attached
         if (this.getEmojiElement() && !this.errorElement) {
-            if (this.tocicityElements) {
+            if (this.tocicityElements.length > 0) {
                 this.removeToxicityElements();
             }
-            if (this.getLoadingElement().classList.contains("la-ball-clip-rotate")) {
-                this.getLoadingElement().classList.remove("la-ball-clip-rotate");
+            if (this.isLoaderSpinning()) {
+                // this.getLoadingElement().classList.remove("la-ball-clip-rotate");
+                this.removeLoadingSpinner();
             }
+
+
             this.errorElement = document.createElement('span');
-            this.errorElement.className = 'mindful-span-toxicity-elements'; // might change className
+            this.errorElement.className = 'mindful-error-element'; // might change className
             this.errorElement.innerHTML = text;
             this.emojiElement.parentNode.insertBefore(
                 this.errorElement,

@@ -1,5 +1,7 @@
 /node_modules
 /build
 /dist
+.DS_Store
 bundle.zip
-extension.zip
+chrome.zip
+
