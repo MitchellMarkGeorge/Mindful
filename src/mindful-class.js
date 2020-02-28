@@ -1,7 +1,5 @@
 export class MidfulExtensionClass {
 
-
-
     constructor() {
 
         this.wrapperDiv;
@@ -9,9 +7,6 @@ export class MidfulExtensionClass {
         this.errorElement;
         this.loadingElement;
         this.tocicityElements = [];
-
-
-
 
     }
 
@@ -24,7 +19,6 @@ export class MidfulExtensionClass {
         console.log(this.emojiElement);
         console.log(this.loadingElement)
     }
-
 
     getEmojiElement() {
         return this.emojiElement;
@@ -93,7 +87,7 @@ export class MidfulExtensionClass {
     }
 
     isLoaderSpinning() {
-        return this.getLoadingElement().classList.contains("la-ball-clip-rotate");
+        return this.loadingElement.classList.contains("la-ball-clip-rotate");
     }
 
     addLoaderSpinner() {

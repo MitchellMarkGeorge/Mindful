@@ -55,16 +55,16 @@ chrome.storage.sync.get(["blacklist"], function (result) {
 chrome.runtime.onConnect.addListener(function (port) {
     if (port.name !== "ToxicML") return;
     port.onMessage.addListener(async function (msg) {
-        console.log(msg.text);
-        if (!msg.text) return;
+        console.log(msg.userText);
+        if (!msg.userText) return;
         
         if (!model) {
             loadModel(); 
         }
         // sendErrorMessage()
-         //return;
+        //  return;
         try {
-            const predict = await model.classify(msg.text);
+            const predict = await model.classify(msg.userText);
             port.postMessage({ prediction: predict });
            
         } catch (err) {
@@ -90,6 +90,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 chrome.tabs.onActivated.addListener(tabs => {
     console.log(tabs);
     console.log("changed tab");
+    // occasionally yields errors due to async nature - switch to acync await with browser api
     chrome.tabs.get(tabs.tabId, object => {
         console.log(object.url);
         hostname = object.url.split("/")[2]; // pass in directly

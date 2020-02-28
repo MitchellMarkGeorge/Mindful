@@ -15,7 +15,7 @@ chrome.storage.sync.get(['blacklist'], function (result) {
         document.body.appendChild(listOfWebsites);
     } else {
         let noListElement = document.createElement('p');
-        noListElement.innerHTML = 'No websites blacklisted. If you do so, they will appear here.';
+        noListElement.innerHTML = 'No websites blacklisted. If you have any, they will appear here.';
         document.body.appendChild(noListElement);
     }
 

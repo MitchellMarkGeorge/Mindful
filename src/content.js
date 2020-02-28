@@ -1,27 +1,20 @@
 import { SentimentIntensityAnalyzer } from "vader-sentiment";
 import { MidfulExtensionClass } from "./mindful-class";
-
+//ALL CONSOLE.LOGS ARE REMOVED IN PRODUCTION
 let hostname = location.hostname;
 let blacklist = [];
-console.log(hostname);
+// console.log(hostname);
 
 chrome.storage.sync.get(['blacklist'], function (result) {
   console.log(result.blacklist)
   blacklist = result.blacklist;
-  console.log('here')
-  // WORK ON THIS SECTION (WORKS ON MY SYSTEM/ BUT IN CASE OF OTHERS)
   console.log(`Should work ${(Array.isArray(blacklist)) && !blacklist.includes(hostname)}`)
-  // dont need length
-  // blacklist is an array and it is not included in the blacklist
+  
+  // cheks if blacklist is an array and current hostname is not included in the blacklist
   // do not technically have to check if it is an array
   if ((Array.isArray(blacklist)) && !blacklist.includes(hostname)) {
     runExtension();
-  } // handle if array is empty??
-  // it is an array and it is not empty, there are blacklisted sites
-  // else if (!blacklist.includes(hostname)) { // should i still check length??
-  //   runExtension();
-
-  // }
+  }
 });
 
 function runExtension() {
@@ -29,8 +22,9 @@ function runExtension() {
   let score = 0;
   let port;
   let text = "";
-  // NOT SURE ABOUT CAPSLOCK
+
   // would have used keyCode but is deprecated
+  //keys that should not trigger advance text analysis
   const badKeys = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
   // previousInstance
   let noResultTimeOut; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
@@ -38,7 +32,7 @@ function runExtension() {
   let currentMindfulInstance = new MidfulExtensionClass();
   // better to attach to document due to server side rendering changing the body and head
   document.addEventListener("click", () => {
-    console.log('click');
+    //console.log('click');
     activeElement = document.activeElement;
 
     console.log(activeElement.tagName);
@@ -65,6 +59,8 @@ function runExtension() {
         //progressBar = undefined; // reset value
         //analyzeInput();
       } else {
+
+
         insertExtension();
         // incase there is already text in the element
         // do i need to call these functions
@@ -83,7 +79,7 @@ function runExtension() {
         activeElement.addEventListener("keyup", (event) => {
           // console.log(event.key)
           const key = event.key.toLowerCase();
-          //console.log(key);
+          // does not call advanced analysis if "bad" key is pressed 
           if (badKeys.includes(key)) return;
 
           clearTimeout(typingTimer);
@@ -91,8 +87,8 @@ function runExtension() {
           noResultTimeOut = null;
 
           typingTimer = setTimeout(function () {
-            doneTyping(text);
-          }, 2000);
+            doneTyping(); // could just acess global variable
+          }, 2000)
 
         });
         // message listener for errors from backgriund script
@@ -193,24 +189,13 @@ function runExtension() {
     currentMindfulInstance.setEmojiElementContent(getEmoji(score));
 
 
-
   }
 
-  // function reconnectToExtension() {
-  //   console.log('Disconected'); // should insead just create an error element
-  //   port = null;
-  //   // should there be a set timeout
-  //   setTimeout(connectToPort, 1000);
-  //   // connectToPort();
-
-  // }
 
   function connectToPort() {
 
     port = chrome.runtime.connect({ name: "ToxicML" });
     console.log('connected');
-
-
 
     port.onMessage.addListener(function (msg) {
       console.log(msg.prediction);
@@ -220,11 +205,20 @@ function runExtension() {
         noResultTimeOut = null; // do i technically need to do this
 
       } // remove spinner
-      if (currentMindfulInstance.isLoaderSpinning() && msg.prediction) {
+      // this could be problematic - if loader is dismissed in timeout but a result comes in, it might not show
+      // if (currentMindfulInstance.isLoaderSpinning() && msg.prediction) {
 
+      //   currentMindfulInstance.removeLoadingSpinner();
+      //   currentMindfulInstance.setToxicityElements(msg.prediction);
+
+      // }
+
+      if (currentMindfulInstance.isLoaderSpinning()) {
         currentMindfulInstance.removeLoadingSpinner();
-        currentMindfulInstance.setToxicityElements(msg.prediction);
+      }
 
+      if (msg.prediction) {
+        currentMindfulInstance.setToxicityElements(msg.prediction);
       }
     });
 
@@ -234,16 +228,16 @@ function runExtension() {
     })
   }
 
-  function doneTyping(userText) {
-    console.log('here')
-    if (!userText) return;
-    console.log('here 2')
+  function doneTyping() {
+
+    if (!text) return;
+    
     if (!port) {
       connectToPort();
     }
 
     try {
-      port.postMessage({ text: userText });
+      port.postMessage({ userText: text });
 
       console.log("message sent");
       // check lenght????
@@ -270,14 +264,16 @@ function runExtension() {
     currentMindfulInstance.addLoaderSpinner();
     // currentMindfulInstance.getLoadingElement().classList.add("la-ball-clip-rotate"); // add animation
 
-    // removes loading spinner after 15 seconds and add error element 
-    // if no response is given
+    // removes loading spinner after 17 (15 was too short) seconds and add error element if no response is given
     noResultTimeOut = setTimeout(function () {
-      //console.log('TIMEOUT') // is this how to do this???
-      // show error // should we assume an error occured???
-      currentMindfulInstance.createErrorElement('Error');
+
+      // should we assume an error occured???
+      if (currentMindfulInstance.isLoaderSpinning()) {
+        currentMindfulInstance.removeLoadingSpinner()
+      }
+      // currentMindfulInstance.createErrorElement('Error');
       // }
-    }, 15 * 1000);
-    // console.log(noResultTimeOut);
+    }, 17 * 1000);
+
   }
 }

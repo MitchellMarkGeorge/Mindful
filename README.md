@@ -22,7 +22,7 @@ You will need:
 ### Installing (Local Development)
 
 
-Clone Repo (if getting code from Github - else, move to next step)
+Clone Repo (if getting code from Github - else, move on to next step)
 
 ```
 git clone https://github.com/MitchellMarkGeorge/Mindful
@@ -34,7 +34,7 @@ Install Dependencies
 npm install
 ```
 
-Run dev build (files will be watched)
+Run dev build (files will be watched and rebuilt on file changes)
 
 ```
 npm run build
@@ -45,15 +45,21 @@ To create minified dist build, run:
 ```
 npm run dist-build
 ```
-Package app for Chrome Distribution:
+Package app for Chrome Distribution (a chrome.zip file will be made):
 
 ```
 npm run chrome-dist
 ```
+
+Package app for FireFox Distribution (a firefox.zip file will be made):
+
+```
+npm run firefox-dist
+```
 The ```img``` folder is for promotional images
 
-For FireFox, run ```npm run buld``` and follow the [tutorial](https://extensionworkshop.com/documentation/publish/package-your-extension/) on how to zip the files for distribution (remember to use the files in ```dist```)
-
+<!-- For FireFox, run ```npm run buld``` and follow the [tutorial](https://extensionworkshop.com/documentation/publish/package-your-extension/) on how to zip the files for distribution (remember to use the files in ```dist```) -->
+<!-- IT SHOULD ALL TECHNICALLY WORK -->
 ## Running the tests
 
 To test the code, run:
@@ -71,6 +77,8 @@ npm run standard
 
 * [Tensorflow.js Toxicity Model](https://github.com/tensorflow/tfjs-models/tree/master/toxicity) - Used for advanced text analysis
     * [Current version](https://github.com/tensorflow/tfjs-models/tree/toxicity-v1.2.2/toxicity)
+
+* [Load Awsome Spinner](https://github.com/danielcardoso/load-awesome/blob/1.1.0/css/ball-clip-rotate.min.css) - Used to show green loader in extension. (included in source code)
 
 * For versions, refer to [package.json](package.json)
 
