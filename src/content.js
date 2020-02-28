@@ -19,10 +19,9 @@ chrome.storage.sync.get(['blacklist'], function (result) {
 
 function runExtension() {
   let activeElement;
-  let score = 0;
+  let score = 0; // dosent need to be 
   let port;
   let text = "";
-
   // would have used keyCode but is deprecated
   //keys that should not trigger advance text analysis
   const badKeys = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
@@ -44,7 +43,7 @@ function runExtension() {
 
 
       //score = 0; //reset score -  is this needed
-      // checks if there is already an MindfulWatcher attached
+      
       if (
         activeElement.nextSibling &&
         activeElement.nextSibling.tagName === "MINDFUL-EXTENSION" &&
@@ -53,22 +52,21 @@ function runExtension() {
         // need to check if there is a nextSibling because of content editable
         // if extension has already been added to text fiield
         // must have a sibling
-        // set values
-        // compare active elements??
+       
         currentMindfulInstance.setValues(activeElement.nextSibling);
-        //progressBar = undefined; // reset value
-        //analyzeInput();
+        
+     
       } else {
 
 
         insertExtension();
         // incase there is already text in the element
-        // do i need to call these functions
+        
         analyzeInput();
-        // conditionaly if text
         doneTyping(text);
+
         activeElement.addEventListener("input", () => {
-          console.log('input');
+          // console.log('input');
           analyzeInput();
         });
 
@@ -86,9 +84,9 @@ function runExtension() {
           clearTimeout(noResultTimeOut); // clears timeout for no response
           noResultTimeOut = null;
 
-          typingTimer = setTimeout(function () {
-            doneTyping(); // could just acess global variable
-          }, 2000)
+          typingTimer = setTimeout(
+            
+            doneTyping, 2000) // could even reduce the timing
 
         });
         // message listener for errors from backgriund script
@@ -110,10 +108,7 @@ function runExtension() {
 
   function shouldInsertWrapper() {
     // checks if element is content editable or textarea and if it has the right dimensions
-    console.log('width', activeElement.clientWidth);
-
-    console.log('height', activeElement.clientHeight);
-    console.log(activeElement.clientWidth > 190 && activeElement.clientHeight > 20);
+   
     return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable));
 
 
@@ -128,6 +123,7 @@ function runExtension() {
     let scoreElement = document.createElement("span");
 
     let loadingElement = document.createElement("div");
+    // need this for loading element to show
     loadingElement.appendChild(document.createElement("div"));
     mindfulWrapper.appendChild(wrapperDiv);
     wrapperDiv.appendChild(scoreElement);
@@ -170,7 +166,7 @@ function runExtension() {
     // should be here if all text is deleted
     if (currentMindfulInstance.tocicityElements.length > 0) {
       // if there is no text and there are
-      currentMindfulInstance.removeToxicityElements(); // think about this
+      currentMindfulInstance.removeToxicityElements(); 
     }
 
     if (!text) {
@@ -178,9 +174,7 @@ function runExtension() {
       currentMindfulInstance.setEmojiElementContent("128528");
       return;
     }
-    // if (currentMindfulInstance.errorElement) {
-    //   currentMindfulInstance.errorElement.remove();
-    // }
+ 
 
     let analysis = SentimentIntensityAnalyzer.polarity_scores(text);
 
@@ -204,7 +198,7 @@ function runExtension() {
         clearTimeout(noResultTimeOut);
         noResultTimeOut = null; // do i technically need to do this
 
-      } // remove spinner
+      } 
       // this could be problematic - if loader is dismissed in timeout but a result comes in, it might not show
       // if (currentMindfulInstance.isLoaderSpinning() && msg.prediction) {
 
@@ -240,26 +234,25 @@ function runExtension() {
       port.postMessage({ userText: text });
 
       console.log("message sent");
-      // check lenght????
+      
     } catch (err) {
       console.error(err); // if a message cannot be sent, create error element and stop execution
       currentMindfulInstance.createErrorElement('Reload Page');
 
       return;
     }
-    //port.postMessage({ text: userText });
-    // this is actually needed
+    
+    
     if (currentMindfulInstance.tocicityElements.length > 0) {
       // remove toxicity elemnts if any
       currentMindfulInstance.removeToxicityElements();
     }
     if (currentMindfulInstance.errorElement) {
-      currentMindfulInstance.removeErrorElement(); // 
-      // currentMindfulInstance.errorElement.remove();
-      // currentMindfulInstance.errorElement = undefined;
+      currentMindfulInstance.removeErrorElement(); 
+   
     }
 
-    // currentMindfulInstance.setSpanElementClassName("mindful-span-elements");
+  
     //Adds loading spinner
     currentMindfulInstance.addLoaderSpinner();
     // currentMindfulInstance.getLoadingElement().classList.add("la-ball-clip-rotate"); // add animation

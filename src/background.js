@@ -3,16 +3,14 @@ import * as toxicity from '@tensorflow-models/toxicity';
 // lazy load instead
 
 let model;
-
 let blacklist = []; 
 let hostname;
 
 
 loadModel();
 
-chrome.runtime.setUninstallURL('http://mindful-extension-feedback.herokuapp.com/');  // test this
-// if script is not persitent, disconnect current port
-// chrome.runtime.onSuspend.addListener(listener)
+chrome.runtime.setUninstallURL('http://mindful-extension-feedback.herokuapp.com');
+
 
 
 
@@ -21,7 +19,7 @@ chrome.runtime.onInstalled.addListener(data => {
    
 
     // anytime this event is called, the model should be loaded just in case
-    loadModel();
+    loadModel(); //just in case
     
     console.log(data); // set blacklist as empy array on install
     if (data.reason === "install") {
@@ -34,10 +32,9 @@ chrome.runtime.onInstalled.addListener(data => {
 
 chrome.storage.sync.get(["blacklist"], function (result) {
     console.log('here', result.blacklist);
-    //console.log(result.model);
+
     if (result.blacklist === undefined ) {
-        // if
-        // || result.blacklist.length == 0
+     
 
         return; 
     } // do i need this? is should never be undefined
@@ -52,6 +49,7 @@ chrome.storage.sync.get(["blacklist"], function (result) {
     // })
 });
 
+//Called when a port connection is made in Content Script
 chrome.runtime.onConnect.addListener(function (port) {
     if (port.name !== "ToxicML") return;
     port.onMessage.addListener(async function (msg) {
@@ -61,6 +59,7 @@ chrome.runtime.onConnect.addListener(function (port) {
         if (!model) {
             loadModel(); 
         }
+        // For testing purposes only
         // sendErrorMessage()
         //  return;
         try {
@@ -175,7 +174,6 @@ async function loadModel() {
         model = await toxicity.load(threshold);
         // console.log(model);
         
-
     } catch (err) {
         console.error(err);
         showErrorNotification();
