@@ -6,7 +6,7 @@ let model;
 let blacklist = []; 
 let hostname;
 
-
+// might wrap in if (!model) conditional
 loadModel();
 
 chrome.runtime.setUninstallURL('http://mindful-extension-feedback.herokuapp.com');
@@ -19,7 +19,7 @@ chrome.runtime.onInstalled.addListener(data => {
    
 
     // anytime this event is called, the model should be loaded just in case
-    loadModel(); //just in case
+    loadModel(); 
     
     console.log(data); // set blacklist as empy array on install
     if (data.reason === "install") {

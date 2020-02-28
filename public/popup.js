@@ -23,7 +23,7 @@
 const manifest = chrome.runtime.getManifest();
 
 document.getElementById('version').innerHTML = 'VERSION ' + manifest.version;
-
+// gets current tab's url and sets appropriate values
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     //console.log(tabs[0].url.split("/")[2]); // hostname - third part of split array
 
@@ -34,10 +34,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     let checkbox = document.getElementById('checkbox');
     checkBoxText.innerHTML = 'Perform analysis on ' + hostname + '?';
     chrome.storage.sync.get(['blacklist'], function (result) {
-        // if it is undefied or the lenght is 0
+        // if it is undefied or there are no black listed items
         if (result.blacklist === undefined || result.blacklist.length == 0) { // if 
             checkbox.checked = true;
-            return; // or should it be cheked by defult and then the script runs and confirms?
+            return; // is this still needed if set bellow?
         };
         blacklist = result.blacklist;
         // if the current website is blacklisted
@@ -53,9 +53,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     checkbox.addEventListener('click', function (e) {
         //console.log(checkbox.checked);
         // if the user clicks on the check box for analysis on this site (and it was off befre), remove from blacklist
+        // if the checkbox is now clicked (meaning anlysis should be done on the page), remove the item (if it is there) 
+        // and updates blacklist (setting the badge)
         if (checkbox.checked) {
-            // check if it contains?
-            // use the same blacklist variable or a tempoary variable?
+            
+            // removes the item blacklis
             blacklist = removeItem(blacklist, hostname);
             chrome.storage.sync.set({ blacklist: blacklist }, function () {
                 // console.log('Blacklist is set to ' + blacklist);
@@ -64,7 +66,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             });
         } else { 
             // if user click on the checkbox for analysis on this site (and it was on before), add to blacklist 
-
+            // if the check box is now false, add the item to the blacklist and set badge
             blacklist.push(hostname);
             // console.log(blacklist)
             chrome.storage.sync.set({ blacklist: blacklist }, function () {
@@ -89,7 +91,7 @@ function contains(array, element) {
 
 function removeItem(arr, item) {
     let index = arr.indexOf(item);
-
+    // if the item is in the array
     if (index !== -1) {
         arr.splice(index, 1);
     }
