@@ -6,11 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "chrome-zip": "bestzip chrome.zip dist/*",
-    "firefox-zip": "bestzip firefox.zip dist/*",
     "build": "webpack -w",
     "dist-build": "webpack --config webpack.prod.js",
     "chrome-dist": "npm run dist-build && npm run chrome-zip",
-    "firefox-dist": "npm run dist-build && npm run firefox-zip",
     "standard": "semistandard --verbose | snazzy"
   },
   "browserslist": "> 0.25%, not dead",

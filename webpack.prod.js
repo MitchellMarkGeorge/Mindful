@@ -7,6 +7,7 @@ const ZipPlugin = require('zip-webpack-plugin');
 const path = require('path');
 module.exports = merge(common, {
     mode: 'production',
+  
     plugins: [
       new CleanWebpackPlugin(),
 

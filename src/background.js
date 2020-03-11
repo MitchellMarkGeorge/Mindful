@@ -7,19 +7,25 @@ let blacklist = [];
 let hostname;
 
 // might wrap in if (!model) conditional
-loadModel();
+//loadModel();
 
 chrome.runtime.setUninstallURL('http://mindful-extension-feedback.herokuapp.com');
 
+// when the backgroung script starts
+chrome.runtime.onStartup.addListener(async function () {
+    console.log('starting...');
+     loadModel(); // might not even need await here
+     // removed await
+    
+
+})
 
 
-
-// on load, get blacklist array and update on changed. In changeBadgeText function, just use blacklist
 chrome.runtime.onInstalled.addListener(data => {
    
 
     // anytime this event is called, the model should be loaded just in case
-    loadModel(); 
+     loadModel();  // dont think i need this
     
     console.log(data); // set blacklist as empy array on install
     if (data.reason === "install") {
@@ -56,13 +62,16 @@ chrome.runtime.onConnect.addListener(function (port) {
         console.log(msg.userText);
         if (!msg.userText) return;
         
-        if (!model) {
-            loadModel(); 
-        }
+        // if (!model) {
+        //     await loadModel(); 
+        // }
         // For testing purposes only
         // sendErrorMessage()
         //  return;
         try {
+            if (!model) {
+                await loadModel(); 
+            }
             const predict = await model.classify(msg.userText);
             port.postMessage({ prediction: predict });
            
@@ -86,20 +95,24 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
     console.log(blacklist);
 });
 
-chrome.tabs.onActivated.addListener(tabs => {
-    console.log(tabs);
+chrome.tabs.onActivated.addListener( () => {
     console.log("changed tab");
+    // could just use active tab
     // occasionally yields errors due to async nature - switch to acync await with browser api
-    chrome.tabs.get(tabs.tabId, object => {
-        console.log(object.url);
-        hostname = object.url.split("/")[2]; // pass in directly
-        changeBadgeText(hostname, tabs.tabId); // or use object.id??
+    // chrome.tabs.get(tabs.tabId, object => {
+    //     console.log(object.url);
+    //     hostname = object.url.split("/")[2]; // pass in directly
+    //     changeBadgeText(hostname, tabs.tabId); // or use object.id??
+    // });
+    // get active tab - this works
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        hostname = tabs[0].url.split("/")[2];
+        changeBadgeText(hostname, tabs[0].id)
     });
 });
 
 chrome.tabs.onUpdated.addListener((id, obj, tab) => {
     console.log("UPDATED");
-    console.log(tab); // change in title
     hostname = tab.url.split("/")[2]; // pass in directly?
     changeBadgeText(hostname, id);
 });
@@ -127,6 +140,27 @@ function changeBadgeText(pageHostname, id) {
     }
     //})
 }
+
+
+// might use this to alert users of update
+// chrome.runtime.onUpdateAvailable.addListener(function (version) {
+//     let options = {
+//         type: "basic",
+//         iconUrl: "../public/mindful-logo2.png",
+//         title: `Version ${version} of Mindful is avalible!`,
+//         message: "Please reload Mindful extension and all webpages with the extension.",
+//         buttons: [{ title: "Reload Extension" }]
+//     };
+
+//     chrome.notifications.create("", options, (notificationID) => {
+//         chrome.notifications.onButtonClicked.addListener(function (id, buttonIndex) {
+//             // is checking the id neccessary??
+//             if (id === notificationID && buttonIndex === 0) {
+//                 chrome.runtime.reload();
+//             }
+//         });
+//     });
+// })
 
 // function contains(array, element) {
 //     for (let i = 0; i < array.length; i++) {
@@ -173,11 +207,11 @@ async function loadModel() {
         // const toxicity = await import('@tensorflow-models/toxicity'); // THIS WORKS BUT ADDS NO BUNDLE DIFFERENCES!!!
         model = await toxicity.load(threshold);
         // console.log(model);
-        
+        //return model;
     } catch (err) {
         console.error(err);
         showErrorNotification();
-        return; //?
+        //return; //?
     }
 }
 

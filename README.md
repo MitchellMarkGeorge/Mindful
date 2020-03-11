@@ -51,15 +51,9 @@ Package app for Chrome Distribution (a chrome.zip file will be made):
 npm run chrome-dist
 ```
 
-Package app for FireFox Distribution (a firefox.zip file will be made):
-
-```
-npm run firefox-dist
-```
 The ```img``` folder is for promotional images
 
-<!-- For FireFox, run ```npm run buld``` and follow the [tutorial](https://extensionworkshop.com/documentation/publish/package-your-extension/) on how to zip the files for distribution (remember to use the files in ```dist```) -->
-<!-- IT SHOULD ALL TECHNICALLY WORK -->
+
 ## Running the tests
 
 To test the code, run:

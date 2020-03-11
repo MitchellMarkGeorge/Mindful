@@ -4,7 +4,7 @@ import { MidfulExtensionClass } from "./mindful-class";
 let hostname = location.hostname;
 let blacklist = [];
 // console.log(hostname);
-
+// EMOJI SENTIMENT
 chrome.storage.sync.get(['blacklist'], function (result) {
   console.log(result.blacklist)
   blacklist = result.blacklist;

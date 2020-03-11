@@ -22,7 +22,7 @@
 // get 
 const manifest = chrome.runtime.getManifest();
 
-document.getElementById('version').innerHTML = 'VERSION ' + manifest.version;
+document.getElementById('version').textContent = 'VERSION ' + manifest.version;
 // gets current tab's url and sets appropriate values
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     //console.log(tabs[0].url.split("/")[2]); // hostname - third part of split array
@@ -32,7 +32,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 
     let checkBoxText = document.getElementById('checkbox-text');
     let checkbox = document.getElementById('checkbox');
-    checkBoxText.innerHTML = 'Perform analysis on ' + hostname + '?';
+    checkBoxText.textContent = 'Perform analysis on ' + hostname + '?';
     chrome.storage.sync.get(['blacklist'], function (result) {
         // if it is undefied or there are no black listed items
         if (result.blacklist === undefined || result.blacklist.length == 0) { // if 

@@ -13,10 +13,15 @@
   display: inline-block !important;
   /* line-height: 30px !important; */
   margin-right: 10px !important;
+  user-select: none;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10+ and Edge */
   /* height: 30px !important; */
 }
+
+/* span.mindful-span-elements {
+
+} */
 
 .mindful-span-toxicity-elements, .mindful-error-element {
   /* border: 1px solid #000 !important; */
@@ -31,6 +36,7 @@
   margin-right: 10px !important;
   display: inline-block !important;
   background-color: #d95252 !important;
+  user-select: none;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10+ and Edge */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

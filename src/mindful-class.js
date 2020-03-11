@@ -26,7 +26,7 @@ export class MidfulExtensionClass {
 
     setEmojiElementContent(emojiNumber) {
 
-        this.emojiElement.innerHTML = String.fromCodePoint(emojiNumber);
+        this.emojiElement.textContent = String.fromCodePoint(emojiNumber);
     }
 
     getWrapperDiv() {
@@ -59,7 +59,7 @@ export class MidfulExtensionClass {
         this.tocicityElements = tempArray.map(item => {
             let element = document.createElement('span');
             element.className = 'mindful-span-toxicity-elements'
-            element.innerHTML = item.label.replace('_', ' '); // add percentage???
+            element.textContent = item.label.replace('_', ' '); // add percentage???
             return element;
         })
 
@@ -131,7 +131,7 @@ export class MidfulExtensionClass {
 
             this.errorElement = document.createElement('span');
             this.errorElement.className = 'mindful-error-element'; // might change className
-            this.errorElement.innerHTML = text;
+            this.errorElement.textContent = text;
             this.emojiElement.parentNode.insertBefore(
                 this.errorElement,
                 this.emojiElement.nextSibling
