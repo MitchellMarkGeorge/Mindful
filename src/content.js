@@ -73,7 +73,7 @@ function runExtension() {
         currentMindfulInstance.removePrevious();
       }
 
-      insertExtension();
+      insertExtension(); 
 
       analyzeInput();
       doneTyping();
