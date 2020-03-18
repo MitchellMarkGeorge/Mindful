@@ -9,7 +9,7 @@ chrome.storage.sync.get(['blacklist'], function (result) {
   console.log(result.blacklist)
   blacklist = result.blacklist;
   console.log(`Should work ${(Array.isArray(blacklist)) && !blacklist.includes(hostname)}`)
-  
+
   // cheks if blacklist is an array and current hostname is not included in the blacklist
   // do not technically have to check if it is an array
   if ((Array.isArray(blacklist)) && !blacklist.includes(hostname)) {
@@ -27,11 +27,19 @@ function runExtension() {
   const badKeys = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
   // previousInstance
   let noResultTimeOut; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
-
+  let typingTimer;
   let currentMindfulInstance = new MidfulExtensionClass();
+
+  chrome.runtime.onMessage.addListener((message) => {
+    // do i need to check errorElemnt ???
+    if (message.error === "true" && !currentMindfulInstance.errorElement) {
+      console.log('recieved error message');
+      currentMindfulInstance.createErrorElement();
+    }
+  })
   // better to attach to document due to server side rendering changing the body and head
   document.addEventListener("click", () => {
-    //console.log('click');
+    //console.log('click'); 
     activeElement = document.activeElement;
 
     console.log(activeElement.tagName);
@@ -41,9 +49,6 @@ function runExtension() {
     if (shouldInsertWrapper()) {
       console.log(activeElement);
 
-
-      //score = 0; //reset score -  is this needed
-      
       if (
         activeElement.nextSibling &&
         activeElement.nextSibling.tagName === "MINDFUL-EXTENSION" &&
@@ -52,53 +57,90 @@ function runExtension() {
         // need to check if there is a nextSibling because of content editable
         // if extension has already been added to text fiield
         // must have a sibling
-       
+
         currentMindfulInstance.setValues(activeElement.nextSibling);
-        
-     
-      } else {
+        return;
 
-
-        insertExtension();
-        // incase there is already text in the element
-        
-        analyzeInput();
-        doneTyping(text);
-
-        activeElement.addEventListener("input", () => {
-          // console.log('input');
-          analyzeInput();
-        });
-
-
-
-        let typingTimer;
-
-        activeElement.addEventListener("keyup", (event) => {
-          // console.log(event.key)
-          const key = event.key.toLowerCase();
-          // does not call advanced analysis if "bad" key is pressed 
-          if (badKeys.includes(key)) return;
-
-          clearTimeout(typingTimer);
-          clearTimeout(noResultTimeOut); // clears timeout for no response
-          noResultTimeOut = null;
-
-          typingTimer = setTimeout(
-            
-            doneTyping, 2000) // could even reduce the timing
-
-        });
-        // message listener for errors from backgriund script
-        chrome.runtime.onMessage.addListener((message) => {
-          // do i need to check errorElemnt ???
-          if (message.error === "true" && !currentMindfulInstance.errorElement) {
-            console.log('recieved error message');
-            currentMindfulInstance.createErrorElement();
-          }
-        })
 
       }
+      
+
+      if (currentMindfulInstance.previous) {
+        let previousActiveElement = currentMindfulInstance.previous.parentNode.previousSibling // WORK ON THIS
+        previousActiveElement.removeEventListener('input', analyzeInput);
+        previousActiveElement.removeEventListener("keyup", keyUpFunction)
+        // might not even need to remove listeners due to identical listeners not added
+        currentMindfulInstance.removePrevious();
+      }
+
+      insertExtension();
+
+      analyzeInput();
+      doneTyping();
+      // NEED TO ADD EVENTLISTENERS
+      activeElement.addEventListener("input",
+          // console.log('input');
+          analyzeInput
+        );
+
+      activeElement.addEventListener("keyup", keyUpFunction)
+
+
+
+      //score = 0; //reset score -  is this needed
+
+      // if (
+      //   activeElement.nextSibling &&
+      //   activeElement.nextSibling.tagName === "MINDFUL-EXTENSION" &&
+      //   currentMindfulInstance
+      // ) {
+      //   // need to check if there is a nextSibling because of content editable
+      //   // if extension has already been added to text fiield
+      //   // must have a sibling
+
+      //   currentMindfulInstance.setValues(activeElement.nextSibling);
+
+
+      // } else {
+
+
+      //   insertExtension();
+      //   // incase there is already text in the element
+
+      //   analyzeInput();
+      //   doneTyping(text);
+
+      //   activeElement.addEventListener("input",
+      //     // console.log('input');
+      //     analyzeInput
+      //   );
+
+      //   activeElement.addEventListener("keyup", keyUpFunction)
+
+
+
+
+
+      //   // activeElement.addEventListener("keyup", (event) => {
+      //   //   // console.log(event.key)
+      //   //   const key = event.key.toLowerCase();
+      //   //   // does not call advanced analysis if "bad" key is pressed 
+      //   //   if (badKeys.includes(key)) return;
+
+      //   //   clearTimeout(typingTimer);
+      //   //   clearTimeout(noResultTimeOut); // clears timeout for no response
+      //   //   noResultTimeOut = null;
+
+      //   //   typingTimer = setTimeout(
+
+      //   //     doneTyping, 2000) // could even reduce the timing
+
+      //   // });
+      //   // message listener for errors from backgriund script
+      //   // should be outside of document click
+        
+
+      // }
 
     }
 
@@ -108,10 +150,24 @@ function runExtension() {
 
   function shouldInsertWrapper() {
     // checks if element is content editable or textarea and if it has the right dimensions
-   
-    return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable));
+
+    return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable) || activeElement.tagName === "INPUT");
 
 
+  }
+
+  function keyUpFunction(event) {
+    const key = event.key.toLowerCase();
+    // does not call advanced analysis if "bad" key is pressed 
+    if (badKeys.includes(key)) return;
+
+    clearTimeout(typingTimer);
+    clearTimeout(noResultTimeOut); // clears timeout for no response
+    noResultTimeOut = null;
+
+    typingTimer = setTimeout(
+
+      doneTyping, 2000) // could even reduce the timing
   }
 
   function insertExtension() {
@@ -166,7 +222,7 @@ function runExtension() {
     // should be here if all text is deleted
     if (currentMindfulInstance.tocicityElements.length > 0) {
       // if there is no text and there are
-      currentMindfulInstance.removeToxicityElements(); 
+      currentMindfulInstance.removeToxicityElements();
     }
 
     if (!text) {
@@ -174,7 +230,7 @@ function runExtension() {
       currentMindfulInstance.setEmojiElementContent("128528");
       return;
     }
- 
+
 
     let analysis = SentimentIntensityAnalyzer.polarity_scores(text);
 
@@ -198,7 +254,7 @@ function runExtension() {
         clearTimeout(noResultTimeOut);
         noResultTimeOut = null; // do i technically need to do this
 
-      } 
+      }
       // this could be problematic - if loader is dismissed in timeout but a result comes in, it might not show
       // if (currentMindfulInstance.isLoaderSpinning() && msg.prediction) {
 
@@ -225,7 +281,7 @@ function runExtension() {
   function doneTyping() {
 
     if (!text) return;
-    
+
     if (!port) {
       connectToPort();
     }
@@ -234,25 +290,25 @@ function runExtension() {
       port.postMessage({ userText: text });
 
       console.log("message sent");
-      
+
     } catch (err) {
       console.error(err); // if a message cannot be sent, create error element and stop execution
       currentMindfulInstance.createErrorElement('Reload Page');
 
       return;
     }
-    
-    
+
+
     if (currentMindfulInstance.tocicityElements.length > 0) {
       // remove toxicity elemnts if any
       currentMindfulInstance.removeToxicityElements();
     }
     if (currentMindfulInstance.errorElement) {
-      currentMindfulInstance.removeErrorElement(); 
-   
+      currentMindfulInstance.removeErrorElement();
+
     }
 
-  
+
     //Adds loading spinner
     currentMindfulInstance.addLoaderSpinner();
     // currentMindfulInstance.getLoadingElement().classList.add("la-ball-clip-rotate"); // add animation
