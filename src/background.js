@@ -72,8 +72,9 @@ chrome.runtime.onConnect.addListener(function (port) {
             if (!model) {
                 await loadModel(); 
             }
+             
             const predict = await model.classify(msg.userText);
-            port.postMessage({ prediction: predict });
+            port.postMessage({ prediction: predict, id: msg.id });
            
         } catch (err) {
             console.log(err);

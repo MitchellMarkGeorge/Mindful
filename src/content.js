@@ -22,6 +22,8 @@ function runExtension() {
   let score = 0; // dosent need to be 
   let port;
   let text = "";
+  let id = 0;
+  let currentElementIndex = 0;
   // would have used keyCode but is deprecated
   //keys that should not trigger advance text analysis
   const badKeys = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
@@ -58,30 +60,33 @@ function runExtension() {
         // if extension has already been added to text fiield
         // must have a sibling
 
-        currentMindfulInstance.setValues(activeElement.nextSibling);
+        currentMindfulInstance.setValues(activeElement.nextSibling, activeElement);// might just pass activeElement
         return;
 
 
       }
-      
+
 
       if (currentMindfulInstance.previous) {
-        let previousActiveElement = currentMindfulInstance.previous.parentNode.previousSibling // WORK ON THIS
-        previousActiveElement.removeEventListener('input', analyzeInput);
-        previousActiveElement.removeEventListener("keyup", keyUpFunction)
-        // might not even need to remove listeners due to identical listeners not added
+        // ALWAYS PUT THE VIEW FIRST!!!
+
         currentMindfulInstance.removePrevious();
+        let previousActiveElement = currentMindfulInstance.previousActiveElement; // WORK ON THIS
+        // might not even need to remove listeners due to identical listeners not added
+        // previousActiveElement.removeEventListener('input', analyzeInput);
+        // previousActiveElement.removeEventListener("keyup", keyUpFunction);
+
       }
 
-      insertExtension(); 
+      insertExtension();
 
       analyzeInput();
       doneTyping();
       // NEED TO ADD EVENTLISTENERS
       activeElement.addEventListener("input",
-          // console.log('input');
-          analyzeInput
-        );
+        // console.log('input');
+        analyzeInput
+      );
 
       activeElement.addEventListener("keyup", keyUpFunction)
 
@@ -138,7 +143,7 @@ function runExtension() {
       //   // });
       //   // message listener for errors from backgriund script
       //   // should be outside of document click
-        
+
 
       // }
 
@@ -151,7 +156,7 @@ function runExtension() {
   function shouldInsertWrapper() {
     // checks if element is content editable or textarea and if it has the right dimensions
 
-    return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable) || activeElement.tagName === "INPUT");
+    return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || (activeElement.isContentEditable));
 
 
   }
@@ -191,8 +196,18 @@ function runExtension() {
       activeElement.nextSibling
     );
 
+    id += 1;
+    console.log(id);
 
-    currentMindfulInstance.setValues(mindfulWrapper);
+    if (!activeElement.hasAttribute('data-mindful-id')) {
+      activeElement.setAttribute('data-mindful-id', id.toString())
+      currentElementIndex = id;
+    } else {
+     currentElementIndex = activeElement.getAttribute('data-mindful-id');
+    }
+
+
+    currentMindfulInstance.setValues(mindfulWrapper, activeElement);
     currentMindfulInstance.setWrapperDivID("mindful-wrapper");
     // if i am using analyzeInput, it dosent make sence
     // currentMindfulInstance.setEmojiElementContent("128528"); // defult emoji
@@ -244,7 +259,13 @@ function runExtension() {
 
   function connectToPort() {
 
-    port = chrome.runtime.connect({ name: "ToxicML" });
+    try {
+      port = chrome.runtime.connect({ name: "ToxicML" });
+    } catch (err) {
+      console.error(err);
+      currentMindfulInstance.createErrorElement('Reload Page');
+      return;
+    }
     console.log('connected');
 
     port.onMessage.addListener(function (msg) {
@@ -268,12 +289,21 @@ function runExtension() {
       }
 
       if (msg.prediction) {
-        currentMindfulInstance.setToxicityElements(msg.prediction);
+      
+        let currentIndex = activeElement.getAttribute('data-mindful-id');
+        console.log(currentIndex, msg.id)
+        console.log(currentIndex === msg.id)
+        if (currentIndex === msg.id) {
+          
+          currentMindfulInstance.setToxicityElements(msg.prediction);  
+
+        }
+        
       }
     });
 
     port.onDisconnect.addListener(function () {
-      currentMindfulInstance.createErrorElement('Reload Page');
+      currentMindfulInstance.createErrorElement('Reload Page'); // should probbably use variable for text
       return;
     })
   }
@@ -287,7 +317,8 @@ function runExtension() {
     }
 
     try {
-      port.postMessage({ userText: text });
+      // should i use score thershold
+      port.postMessage({ userText: text, id: currentElementIndex }); // see if this is working // activeElement.getAttribute('data-mindful-id')
 
       console.log("message sent");
 

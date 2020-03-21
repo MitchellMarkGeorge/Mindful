@@ -7,16 +7,18 @@ export class MidfulExtensionClass {
         this.errorElement;
         this.loadingElement;
         this.previous;
-        
+        this.previousActiveElement;
+        this.state;
         this.tocicityElements = [];
 
     }
 
-    setValues(DOM_Element) { // should i store the previous activeElement?
+    setValues(DOM_Element, activeElement) { // should i store the previous activeElement?
         this.wrapperDiv = DOM_Element.firstChild;
         this.emojiElement = this.wrapperDiv.firstChild;
         this.loadingElement = this.wrapperDiv.lastChild;
         this.previous = DOM_Element;
+        this.previousActiveElement = activeElement
         console.log(this.wrapperDiv);
 
         console.log(this.emojiElement);
