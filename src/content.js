@@ -198,12 +198,13 @@ function runExtension() {
 
     id += 1;
     console.log(id);
-
+      // every element that the mindful-wraper is attached to has and id attached to it
+      // to so when messages are sent to the background script, it whows whitch element to 
     if (!activeElement.hasAttribute('data-mindful-id')) {
       activeElement.setAttribute('data-mindful-id', id.toString())
-      currentElementIndex = id;
-    } else {
-     currentElementIndex = activeElement.getAttribute('data-mindful-id');
+    //   currentElementIndex = id.toString(); // CAN JUST DECLARE VARABLE ABOVE SETATTRIBUTE
+    // } else {
+    //  currentElementIndex = activeElement.getAttribute('data-mindful-id');
     }
 
 
@@ -290,10 +291,10 @@ function runExtension() {
 
       if (msg.prediction) {
       
-        let currentIndex = activeElement.getAttribute('data-mindful-id');
-        console.log(currentIndex, msg.id)
-        console.log(currentIndex === msg.id)
-        if (currentIndex === msg.id) {
+        let currentID = activeElement.getAttribute('data-mindful-id');
+        console.log(currentID, msg.id)
+        console.log(currentID === msg.id)
+        if (currentID === msg.id) {
           
           currentMindfulInstance.setToxicityElements(msg.prediction);  
 
@@ -318,8 +319,8 @@ function runExtension() {
 
     try {
       // should i use score thershold
-      port.postMessage({ userText: text, id: currentElementIndex }); // see if this is working // activeElement.getAttribute('data-mindful-id')
-
+      port.postMessage({ userText: text, id: activeElement.getAttribute('data-mindful-id') }); // see if this is working // activeElement.getAttribute('data-mindful-id')
+        // currentElementId
       console.log("message sent");
 
     } catch (err) {
