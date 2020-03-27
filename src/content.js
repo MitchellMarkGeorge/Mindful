@@ -43,7 +43,9 @@ function runExtension() {
   document.addEventListener("click", () => {
     //console.log('click'); 
     activeElement = document.activeElement;
-
+    // SET EMOJI SIZE!!!
+    //STILL SOMETIMES COMES AS UNAVILIBLE
+    //EXTENSION REFRESH
     console.log(activeElement.tagName);
 
     console.log("Should insert: " + shouldInsertWrapper());
@@ -198,8 +200,9 @@ function runExtension() {
 
     id += 1;
     console.log(id);
-      // every element that the mindful-wraper is attached to has and id attached to it
-      // to so when messages are sent to the background script, it whows whitch element to 
+      // every element that the mindful-wraper is attached to is has an id attached to it
+      // to so when messages are sent to the background script, it knows witch element to 
+      // set the results to (id is with text)
     if (!activeElement.hasAttribute('data-mindful-id')) {
       activeElement.setAttribute('data-mindful-id', id.toString())
     //   currentElementIndex = id.toString(); // CAN JUST DECLARE VARABLE ABOVE SETATTRIBUTE
@@ -290,6 +293,8 @@ function runExtension() {
       }
 
       if (msg.prediction) {
+      // once results from bg script is received, if the current active elment's id 
+      // is not the same as the one sent to the background script, it will ignore the result 
       
         let currentID = activeElement.getAttribute('data-mindful-id');
         console.log(currentID, msg.id)
