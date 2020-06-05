@@ -8,37 +8,37 @@
   "description": "An extension that makes you mindful of what you say using the power of sentiment analysis, machine learning and emojis",
  
   "browser_action": {
-    "default_icon": "public/mindful-logo2.png", 
-    "default_popup": "public/popup.html"
+    "default_icon": "icons/mindful-logo2.png", 
+    "default_popup": "popup/popup.html"
     
   },
 
   "icons": {
-    "128": "public/mindful-logo2.png"
+    "128": "icons/mindful-logo2.png"
   },
 
   "permissions": [
     "tabs",
-    "storage",
-    "notifications"
+    "storage"
+    
   ],
 
   "options_ui": {
-    "page": "public/options.html",
+    "page": "options/options.html",
     "open_in_tab": false
   },
   
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"], 
-      "js": ["content.js"],
-      "css": ["content.css", "ball-clip-rotate.min.css"]
+      "js": ["content/content.js"],
+      "css": ["content/content.css"]
       
     }
   ],
 
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["background/background.js"],
     "persistent": true
   },
 

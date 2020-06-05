@@ -1,0 +1,75 @@
+#mindful-wrapper {
+  /* height: 2rem !important; */
+  /* was 30px before */
+  /* width: 200px !important; */
+  /* line-height: 2rem !important; */ 
+
+  /* do i need length */
+  /* position: relative; */
+  /* bottom: 50%; */
+  /* padding: 3px !important; */
+  background-color: transparent !important;
+  /* background-color: inherit !important; */
+
+  /* margin?? */
+}
+
+.mindful-span-elements {
+  display: inline-block !important;
+  /* font size */
+  /* line-height: 30px !important; */
+  margin-right: 10px !important;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ and Edge */
+  /* height: 30px !important; */
+}
+
+/* span.mindful-span-elements {
+
+} */
+
+.mindful-span-toxicity-elements, .mindful-error-element {
+  /* border: 1px solid #000 !important; */
+  border-radius: 14px !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  white-space: nowrap;
+  padding: 5px !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  text-transform: capitalize !important;
+  margin-right: 10px !important;
+  display: inline-block !important;
+  background-color: #d95252 !important;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ and Edge */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif !important;
+
+  /* width: 50px !important; */
+  /* neccasary??? */
+}
+
+.la-ball-clip-rotate {
+  color: #79bbb5 !important;
+  width: 12px !important;
+  height: 12px !important;
+  line-height: 30px !important;
+}
+
+.la-ball-clip-rotate > div {
+  width: 12px !important;
+  height: 12px !important;
+  line-height: 30px !important;
+}
+
+/*!
+ * Load Awesome v1.1.0 (http://github.danielcardoso.net/load-awesome/)
+ * Copyright 2015 Daniel Cardoso <@DanielCardoso>
+ * Licensed under MIT
+ */
+ .la-ball-clip-rotate,.la-ball-clip-rotate>div{position:relative;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.la-ball-clip-rotate{display:block;font-size:0;color:#fff}.la-ball-clip-rotate.la-dark{color:#333}.la-ball-clip-rotate>div{display:inline-block;float:none;background-color:currentColor;border:0 solid currentColor}.la-ball-clip-rotate{width:32px;height:32px}.la-ball-clip-rotate>div{width:32px;height:32px;background:transparent;border-width:2px;border-bottom-color:transparent;border-radius:100%;-webkit-animation:ball-clip-rotate 0.75s linear infinite;-moz-animation:ball-clip-rotate 0.75s linear infinite;-o-animation:ball-clip-rotate 0.75s linear infinite;animation:ball-clip-rotate 0.75s linear infinite}.la-ball-clip-rotate.la-sm{width:16px;height:16px}.la-ball-clip-rotate.la-sm>div{width:16px;height:16px;border-width:1px}.la-ball-clip-rotate.la-2x{width:64px;height:64px}.la-ball-clip-rotate.la-2x>div{width:64px;height:64px;border-width:4px}.la-ball-clip-rotate.la-3x{width:96px;height:96px}.la-ball-clip-rotate.la-3x>div{width:96px;height:96px;border-width:6px}@-webkit-keyframes ball-clip-rotate{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}50%{-webkit-transform:rotate(180deg);transform:rotate(180deg)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@-moz-keyframes ball-clip-rotate{0%{-moz-transform:rotate(0deg);transform:rotate(0deg)}50%{-moz-transform:rotate(180deg);transform:rotate(180deg)}100%{-moz-transform:rotate(360deg);transform:rotate(360deg)}}@-o-keyframes ball-clip-rotate{0%{-o-transform:rotate(0deg);transform:rotate(0deg)}50%{-o-transform:rotate(180deg);transform:rotate(180deg)}100%{-o-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes ball-clip-rotate{0%{-webkit-transform:rotate(0deg);-moz-transform:rotate(0deg);-o-transform:rotate(0deg);transform:rotate(0deg)}50%{-webkit-transform:rotate(180deg);-moz-transform:rotate(180deg);-o-transform:rotate(180deg);transform:rotate(180deg)}100%{-webkit-transform:rotate(360deg);-moz-transform:rotate(360deg);-o-transform:rotate(360deg);transform:rotate(360deg)}}
+
