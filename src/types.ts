@@ -6,6 +6,20 @@ import { AxiosError } from "axios";
 
 export type ActiveElementType = Element | HTMLElement | HTMLTextAreaElement
 
+export interface MindfulProps {
+    emoji?: string
+    isLoading?: boolean,
+    hasError?: boolean
+    toxicityList?: string[], 
+    // margin?: string,
+    computedStyle?: CSSStyleDeclaration
+
+}
+
+export interface ToxicityElementProps {
+    toxicityList: string[]
+}
+
 export interface SentimentAnalysisResult { 
     neg: number, 
     neu: number, 

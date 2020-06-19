@@ -3,7 +3,7 @@ class Common {
 
     private blacklist: string[] = [];
     API_URL: string = 'https://us-central1-mindful-279120.cloudfunctions.net/advanced-analysis'
-
+    // API_URL: string = 'https://mindful-279120.uc.r.appspot.com/avanced_analysis'
     constructor() {
 
         // chrome.storage.sync.get(['blacklist'], (result) => {
@@ -28,15 +28,15 @@ class Common {
         chrome.storage.sync.set({ blacklist: [] });
     }
 
-    getBlacklistFromStorage(): Promise<string[]> {
-        return new Promise((resolve, reject) => {
-            chrome.storage.sync.get(['blacklist'], (result) => {
-                // this.blacklist = result.blacklist;
-                if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
-                return resolve(<string[]>result.blacklist);
-            })
-        })
-    }
+    // getBlacklistFromStorage(): Promise<string[]> {
+    //     return new Promise((resolve, reject) => {
+    //         chrome.storage.sync.get(['blacklist'], (result) => {
+    //             // this.blacklist = result.blacklist;
+    //             if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+    //             return resolve(<string[]>result.blacklist);
+    //         })
+    //     })
+    // }
 
     getTabFromQuery(config: chrome.tabs.QueryInfo = { active: true, currentWindow: true }): Promise<chrome.tabs.Tab[]> {
         return new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ class Common {
         })
     }
 
-    getBlacklist(): Promise<string[]> {
+    init(): Promise<string[]> {
 
         return new Promise((resolve, reject) => {
             chrome.storage.sync.get(['blacklist'], (result) => {
@@ -61,6 +61,26 @@ class Common {
 
 
         // return this.blacklist;
+        // return [''];
+    }
+
+
+    
+
+    getBlacklist() {
+
+        // return new Promise((resolve, reject) => {
+        //     chrome.storage.sync.get(['blacklist'], (result) => {
+        //         if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+        //         this.blacklist = result.blacklist;
+        //         return resolve(this.blacklist);
+        //         // console.log(this.blacklist);
+        //     })
+        // })
+        
+
+
+        return this.blacklist;
         // return [''];
     }
 
@@ -100,4 +120,23 @@ class Common {
     }
 }
 
-export default new Common();
+let common: Common;
+
+(async function() {
+    common = new Common();
+    try {
+
+    } catch (e) {
+        console.log(e)
+    }
+    await common.init();
+})()
+
+export default common;
+
+// common = new Common();
+//  common.init().then(() => {
+//     module.exports.common = common
+//     
+//  });
+

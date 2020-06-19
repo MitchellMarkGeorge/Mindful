@@ -1,8 +1,8 @@
 import common from '../common/common';
-; (async function main() {
+// ; (async function main() {
     // try catch
-    let blacklist = await common.getBlacklist();
-
+    let blacklist = common.getBlacklist();
+    console.log(blacklist)
     if (blacklist.length > 0) {
         let listOfWebsites = document.createElement('ul');
 
@@ -25,5 +25,5 @@ import common from '../common/common';
         document.body.appendChild(noListElement);
     }
 
-})()
+// })()
 

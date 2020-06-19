@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener(data => {
         // chrome.storage.sync.set({ blacklist: [] });
         // chrome.storage.sync
 
-        common.setInitalBlacklist();
+        // common.setInitalBlacklist();
 
         //loadModel();
     }
@@ -150,22 +150,24 @@ try {
     // });
 });
 
-chrome.tabs.onUpdated.addListener((id, obj, tab) => {
-    // if (obj.url) {
-        console.log("UPDATED");
+chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
+    // if (obj.url) { 
+        // could just use id nd url
+        // look into documentation
+    console.log("UPDATED");
     // hostname = tab.url.split("/")[2]; // pass in directly?
     // still need tab??
     const domain = common.getHostDomain(tab.url);
-    changeBadgeText(domain, tab.id);
+    changeBadgeText(domain, id);
     // } // is only run whn the url chnages
     
 });
 
-async function changeBadgeText(domain: string, tabId:number) {
+ function changeBadgeText(domain: string, tabId:number) {
     // console.log(blacklist)
-    const blacklist = await common.getBlacklist()
+    const blacklist = common.getBlacklist();
     
-
+    console.log(blacklist)
     
 
    //contains(blacklist, pageHostname)

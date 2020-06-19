@@ -1,7 +1,14 @@
-import { ActiveElementType, ToxicResult } from '../types';
+import { ActiveElementType, ToxicResult, ToxicAPIResponse, MindfulProps } from '../types';
 
-
+import common from '../common/common'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import { MindfulComponent } from './components'
+import { getEmojiCode } from './functions';
 export class MidfulExtensionClass {
+
+    mindfulWrapper: HTMLElement
+
     // activeElement
     private currentActiveElement: ActiveElementType
     wrapperDiv: Element;
@@ -9,14 +16,98 @@ export class MidfulExtensionClass {
     errorElement: Element;
     loadingElement: Element;
     previousMindfulWraper: Element;
-    previousActiveElement: Element;
+    previousActiveElement: Element
     tocicityElements: HTMLSpanElement[] = [];
+    public props: MindfulProps
     // think about these thrshold values
-    TOXIC_THRESHOLD: number = 0.75
-    SCORE_THRESHOLD: number = -0.4
+    public TOXIC_THRESHOLD: number = 0.75
+    public SCORE_THRESHOLD: number = -0.4
     private score: number = 0;
     private text: string
+    public isEnabled: boolean // default shoud be true??
     // API_URL: string = 'https://us-central1-mindful-279120.cloudfunctions.net/advanced-analysis'
+
+    constructor(currentURL: string) {
+        let domain = common.getHostDomain(currentURL);
+        console.log(!common.getBlacklist().includes(domain))
+        this.isEnabled = !common.getBlacklist().includes(domain);
+
+    }
+
+    public get isMounted(): boolean {
+        return !!this.mindfulWrapper
+    }
+
+    public mountComponent(props: MindfulProps = {}) {
+        let mindfulWrapper = document.createElement("mindful-extension");
+        // THINK ABOIT THIS
+        //  mindfulWrapper.style.margin = window.getComputedStyle(activeElement).padding;
+        // // should i append the element before moounting>>
+        // if (props.computedStyle) {
+        //     mindfulWrapper.style.top = (-props.computedStyle.height).toString;
+        //     console.log(mindfulWrapper.style.top);
+        // }
+        // this.curr
+        // insertafter - should they be elements
+        this.currentActiveElement.parentNode.insertBefore(
+            mindfulWrapper,
+            this.currentActiveElement.nextSibling
+        );
+
+        this.mindfulWrapper = mindfulWrapper;
+
+        this.props = props;
+
+        // if (props) {
+        //     this.props = props
+        // }
+
+        this.renderComponent();
+
+    }
+
+    public unmountComponent() {
+        ReactDOM.unmountComponentAtNode(this.mindfulWrapper);
+        this.mindfulWrapper.remove(); // should i remove ore leave if re-attached
+        this.mindfulWrapper = null;
+        
+
+    }
+
+    public updateProps(props: MindfulProps) {
+        Object.assign(this.props, props);
+        this.renderComponent();
+    }
+
+    public renderComponent() {
+
+        const componentInstance = React.createElement(MindfulComponent, this.props);
+        ReactDOM.render(componentInstance, this.mindfulWrapper);
+
+    }
+
+    public setScore(score: number) {
+        this.score = score
+        // this.updateProps({ emoji: this.getEmojiFromScore(score) })
+    }
+
+    public getEmojiFromScore(score: number) {
+        const emojicode = getEmojiCode(score);
+        return String.fromCodePoint(emojicode)
+    }
+
+
+
+    public getDefaultEmoji() {
+        return String.fromCodePoint(128528)
+    }
+
+    public getToxicityList(response: ToxicResult[]): string[] {
+        return response.filter((item) => item.prediction >= this.TOXIC_THRESHOLD)
+                        .map((item) => item.label.replace('_', ' '))
+        
+        // response..map((item) => item.label.replace('_', ' '))
+    }
     // constructor() {
 
     //     // this.wrapperDiv;
@@ -35,7 +126,7 @@ export class MidfulExtensionClass {
     setValues(DOM_Element: HTMLElement | Element, activeElement: ActiveElementType) { // should i store the previousMindfulWraper activeElement?
         this.wrapperDiv = DOM_Element.firstElementChild;
         this.emojiElement = this.wrapperDiv.firstElementChild;
-        
+
         this.loadingElement = this.wrapperDiv.lastElementChild;
         this.previousMindfulWraper = DOM_Element;
         this.previousActiveElement = activeElement
@@ -57,15 +148,19 @@ export class MidfulExtensionClass {
         return this.text
     }
 
+    // getDefaultEmoji(): string {
+    //     return this.getEmoji(128528)
+    // }
+
     setEmojiAsDefault() {
-        this.setEmoji(128528)
+        this.getEmoji(128528)
     }
 
     getBadKeys(): string[] {
         return ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
     }
 
-    setText(text:string) {
+    setText(text: string) {
         this.text = text
     }
 
@@ -77,14 +172,12 @@ export class MidfulExtensionClass {
         return this.emojiElement;
     }
 
-    setEmoji(emojiNumber: number) {
+    getEmoji(emojiNumber: number): string {
         // 
-        this.emojiElement.textContent = String.fromCodePoint(emojiNumber);
+        return String.fromCodePoint(emojiNumber);
     }
 
-    setScore(score: number) {
-        this.score = score
-    }
+
 
     getScore(): number {
         return this.score

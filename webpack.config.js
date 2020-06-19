@@ -3,7 +3,7 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 // const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ExtensionReloader  = require('webpack-extension-reloader');
+// const ExtensionReloader = require('webpack-extension-reloader');
 // const process = require('process')
 
 // where is the entry file
@@ -13,13 +13,13 @@ module.exports = {
 
   mode: 'development',
   entry: {
-    
+
     popup: path.resolve(__dirname, `src/popup/popup.ts`),
     options: path.resolve(__dirname, `src/options/options.ts`),
     content: path.resolve(__dirname, `src/content/content.ts`),
     background: path.resolve(__dirname, `src/background/background.ts`)
     // load popupscript
-  }, 
+  },
   output: {
 
     path: path.resolve(__dirname, 'dist'),
@@ -33,13 +33,19 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.ts(x?)$/,
         exclude: /node_modules/,
-        // use: {
-        //   loader: "babel-loader"
-        // }
-        use: 'ts-loader'
+        use: [
+          {
+            loader: "ts-loader"
+          }
+        ]
+      },
 
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        loader: "source-map-loader"
       },
 
       {
@@ -73,7 +79,7 @@ module.exports = {
   },
 
   plugins: [
-    
+
     // new ExtensionReloader({
     //   manifest: path.resolve(__dirname, "manifest.json")
     // }),
@@ -93,9 +99,9 @@ module.exports = {
 
     new CopyPlugin([
       // {from: 'public', to: 'public'}, 
-      {from: 'manifest.json', to: 'manifest.json'},
-      {from: 'src/icons', to: 'icons'},
-      {from: 'src/content/content.css', to: 'content/content.css'} 
+      { from: 'manifest.json', to: 'manifest.json' },
+      { from: 'src/icons', to: 'icons' },
+      { from: 'src/content/content.css', to: 'content/content.css' }
       // {from: 'src/content.css', to: 'content.css'},
       // {from: 'src/ball-clip-rotate.min.css', to: 'ball-clip-rotate.min.css'} 
       // {from: 'progressbar.min.js', to: 'progressbar.min.js'}
@@ -115,7 +121,7 @@ module.exports = {
   ],
 
   resolve: {
-    extensions: ['.js', '.json', '.jsx', '.ts'],
+    extensions: [".js", ".json", ".ts", ".tsx"],
     alias: {
       src: path.resolve(__dirname, "src/")
     }
