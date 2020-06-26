@@ -8,7 +8,7 @@ import { getEmojiCode } from './functions';
 export class MidfulExtensionClass {
 
     mindfulWrapper: HTMLElement
-
+    mindfulContainer: HTMLElement
     // activeElement
     private currentActiveElement: ActiveElementType
     wrapperDiv: Element;
@@ -18,43 +18,97 @@ export class MidfulExtensionClass {
     previousMindfulWraper: Element;
     previousActiveElement: Element
     tocicityElements: HTMLSpanElement[] = [];
+
+    private DEFAULT_EMOJICODE;
+    // CREATE CONSTANTS FOR SPECIAL EMOJI CODE (LIKE DEFAULT OR DISABLED)
+
     public props: MindfulProps
     // think about these thrshold values
     public TOXIC_THRESHOLD: number = 0.75
     public SCORE_THRESHOLD: number = -0.4
     private score: number = 0;
     private text: string
-    public isEnabled: boolean // default shoud be true??
+    // public isEnabled: boolean // default shoud be true??
     // API_URL: string = 'https://us-central1-mindful-279120.cloudfunctions.net/advanced-analysis'
 
-    constructor(currentURL: string) {
-        let domain = common.getHostDomain(currentURL);
-        console.log(!common.getBlacklist().includes(domain))
-        this.isEnabled = !common.getBlacklist().includes(domain);
+    constructor() {
+        // let domain = common.getHostDomain(currentURL);
+        // console.log(!common.getBlacklist().includes(domain))
+        // this.isEnabled = !common.getBlacklist().includes(domain);
 
     }
 
+    // turn isEnabled to get function
+
     public get isMounted(): boolean {
-        return !!this.mindfulWrapper
+        return !!this.mindfulWrapper;
+    }
+
+    public get isEnabled(): boolean {
+        let domain = common.getHostDomain(location.href); // or just use loc
+        // console.log(!common.getBlacklist().includes(domain))
+        return !common.getBlacklist().includes(domain);
     }
 
     public mountComponent(props: MindfulProps = {}) {
-        let mindfulWrapper = document.createElement("mindful-extension");
-        // THINK ABOIT THIS
-        //  mindfulWrapper.style.margin = window.getComputedStyle(activeElement).padding;
-        // // should i append the element before moounting>>
-        // if (props.computedStyle) {
-        //     mindfulWrapper.style.top = (-props.computedStyle.height).toString;
-        //     console.log(mindfulWrapper.style.top);
-        // }
-        // this.curr
-        // insertafter - should they be elements
-        this.currentActiveElement.parentNode.insertBefore(
-            mindfulWrapper,
-            this.currentActiveElement.nextSibling
-        );
 
-        this.mindfulWrapper = mindfulWrapper;
+        // console.log(this.currentActiveElement.clientHeight);
+        // container messes up grammarly
+        // figure out
+
+        // change order
+
+
+        // this.currentActiveElement.parentElement.insertBefore(mindfulContainer, this.currentActiveElement);
+        // mindfulContainer.appendChild(this.currentActiveElement);
+
+        this.mindfulWrapper = document.createElement("mindful-extension");
+        // this.previousMindfulWraper = this.mindfulWrapper;
+
+        // THINK ABOIT THIS
+        //  mindfulWrapper.style.margin = window.getComputedStyle(this.activeElement).padding;
+        // also compare size/ height (only for bigger elements that absolute positioning should be usef)
+        if (props.computedStyle && this.currentActiveElement.clientHeight > 40) {
+            // figure outfinal values
+
+            this.mindfulContainer = document.createElement("mindful-container");
+
+            console.log(props.computedStyle.padding);
+            // figure margin out
+            // this.mindfulWrapper.style.margin = !props.computedStyle.padding.includes('0px') ? props.computedStyle.padding : '10px' // default value of 10px
+            this.mindfulWrapper.style.position = 'absolute'; // try relative
+            // needts to be on the element itself
+            // mindfulWrapper.style.bottom = props.computedStyle.paddingBottom; // was 0
+            // this.mindfulWrapper.style.bottom = '0'; // maybey i should use top
+            // this.mindfulWrapper.style.left = '0';
+
+            this.mindfulWrapper.style.bottom = '1em'; // maybey i should use top
+            this.mindfulWrapper.style.left = '1em';
+            // think about this
+            // this.mindfulWrapper.style.top =    `calc(-0.2 * ${props.computedStyle.height})`
+            // this.mindfulWrapper.style.right =    `calc(0.8 * ${props.computedStyle.width})`
+            // console.log(props.computedStyle.height);
+
+            this.wrapActiveElement(this.currentActiveElement, this.mindfulContainer);
+
+            this.mindfulContainer.appendChild(this.mindfulWrapper);
+        } else {
+
+            // insertafter - should they be elements
+            this.currentActiveElement.parentNode.insertBefore(
+                this.mindfulWrapper, // use element
+                this.currentActiveElement.nextSibling
+            );
+        }
+
+
+        // this.curr
+
+
+
+
+
+        // this.mindfulWrapper = mindfulWrapper;
 
         this.props = props;
 
@@ -63,14 +117,44 @@ export class MidfulExtensionClass {
         // }
 
         this.renderComponent();
+        // console.log('here');
+
+    }
+
+
+
+    public unWrapElement(el: HTMLElement) {
+
+        let parent = el.parentNode;
+
+        // move all children out of the element
+        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+
+        // remove the empty element
+        parent.removeChild(el); // OR el.remove()
+
+    }
+
+    public wrapActiveElement(activeElement: ActiveElementType, wrapper: HTMLElement) {
+
+        activeElement.parentNode.insertBefore(wrapper, activeElement);
+        wrapper.appendChild(activeElement);
 
     }
 
     public unmountComponent() {
+        // re-consider order 
         ReactDOM.unmountComponentAtNode(this.mindfulWrapper);
+
+        if (this.mindfulContainer) { // incase the second attachment option is used
+            this.unWrapElement(this.mindfulContainer);
+            this.mindfulContainer = null;
+        }
+
         this.mindfulWrapper.remove(); // should i remove ore leave if re-attached
         this.mindfulWrapper = null;
-        
+
+
 
     }
 
@@ -102,10 +186,14 @@ export class MidfulExtensionClass {
         return String.fromCodePoint(128528)
     }
 
+    public getDisabledEmoji() {
+        return String.fromCodePoint(128274)
+    }
+
     public getToxicityList(response: ToxicResult[]): string[] {
         return response.filter((item) => item.prediction >= this.TOXIC_THRESHOLD)
-                        .map((item) => item.label.replace('_', ' '))
-        
+            .map((item) => item.label.replace('_', ' '))
+
         // response..map((item) => item.label.replace('_', ' '))
     }
     // constructor() {
@@ -138,6 +226,7 @@ export class MidfulExtensionClass {
 
     setActiveElement(activeElement: ActiveElementType) {
         this.currentActiveElement = activeElement;
+        // this.previousActiveElement = activeElement;
     }
 
     getActiveElement(): ActiveElementType {

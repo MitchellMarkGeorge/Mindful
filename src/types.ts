@@ -13,7 +13,15 @@ export interface MindfulProps {
     toxicityList?: string[], 
     // margin?: string,
     computedStyle?: CSSStyleDeclaration
+    enableFunc?: () => void
+    disableFunc?: () => void
+    isEnabled?: boolean
 
+}
+
+export interface CurrentStatus {
+    isEnabled?: boolean,
+    domain?: string
 }
 
 export interface ToxicityElementProps {

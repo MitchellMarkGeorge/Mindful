@@ -6,7 +6,7 @@ import axios from 'axios';
 import common from '../common/common'
 
 
-
+// remove blacklist
 
 chrome.runtime.onInstalled.addListener(data => {
    
@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener(data => {
         // chrome.storage.sync.set({ blacklist: [] });
         // chrome.storage.sync
 
-        // common.setInitalBlacklist();
+        common.setInitalBlacklist();
 
         //loadModel();
     }
@@ -118,68 +118,68 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //     console.log(blacklist);
 // });
 
-chrome.tabs.onActivated.addListener( async () => {
-    console.log("changed tab");
-    // could just use active tab
-    // occasionally yields errors due to async nature - switch to acync await with browser api
-    // chrome.tabs.get(tabs.tabId, object => {
-    //     console.log(object.url);
-    //     hostname = object.url.split("/")[2]; // pass in directly
-    //     changeBadgeText(hostname, tabs.tabId); // or use object.id??
-    // });
-    // get active tab - this works
-try {
-    let [ tab ] = await common.getTabFromQuery({ active: true, currentWindow: true })
-    if (tab?.url) {
-        const domain = common.getHostDomain(tab?.url);
+// chrome.tabs.onActivated.addListener( async () => {
+//     console.log("changed tab");
+//     // could just use active tab
+//     // occasionally yields errors due to async nature - switch to acync await with browser api
+//     // chrome.tabs.get(tabs.tabId, object => {
+//     //     console.log(object.url);
+//     //     hostname = object.url.split("/")[2]; // pass in directly
+//     //     changeBadgeText(hostname, tabs.tabId); // or use object.id??
+//     // });
+//     // get active tab - this works
+// try {
+//     let [ tab ] = await common.getTabFromQuery({ active: true, currentWindow: true })
+//     if (tab?.url) {
+//         const domain = common.getHostDomain(tab?.url);
 
-        changeBadgeText(domain, tab.id)
-    }
-} catch (error) {
-    console.log(error)
-}
+//         changeBadgeText(domain, tab.id)
+//     }
+// } catch (error) {
+//     console.log(error)
+// }
     
 
     
-    // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    //     hostname = tabs[0].url.split("/")[2];
-    //     if (hostname) {
-    //         changeBadgeText(hostname, tabs[0].id)
-    //     }
+//     // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+//     //     hostname = tabs[0].url.split("/")[2];
+//     //     if (hostname) {
+//     //         changeBadgeText(hostname, tabs[0].id)
+//     //     }
         
-    // });
-});
+//     // });
+// });
 
-chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-    // if (obj.url) { 
-        // could just use id nd url
-        // look into documentation
-    console.log("UPDATED");
-    // hostname = tab.url.split("/")[2]; // pass in directly?
-    // still need tab??
-    const domain = common.getHostDomain(tab.url);
-    changeBadgeText(domain, id);
-    // } // is only run whn the url chnages
+// chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
+//     // if (obj.url) { 
+//         // could just use id nd url
+//         // look into documentation
+//     console.log("UPDATED");
+//     // hostname = tab.url.split("/")[2]; // pass in directly?
+//     // still need tab??
+//     const domain = common.getHostDomain(tab.url);
+//     changeBadgeText(domain, id);
+//     // } // is only run whn the url chnages
     
-});
+// });
 
- function changeBadgeText(domain: string, tabId:number) {
-    // console.log(blacklist)
-    const blacklist = common.getBlacklist();
+//  function changeBadgeText(domain: string, tabId:number) {
+//     // console.log(blacklist)
+//     const blacklist = common.getBlacklist();
     
-    console.log(blacklist)
+//     console.log(blacklist)
     
 
-   //contains(blacklist, pageHostname)
+//    //contains(blacklist, pageHostname)
     
-    if (blacklist.includes(domain)) {
-        //blacklist.includes(pageHostname);
-        chrome.browserAction.setBadgeText({ text: "OFF", tabId: tabId });
-    } else {
-        chrome.browserAction.setBadgeText({ text: "", tabId: tabId });
-    }
-    //})
-}
+//     if (blacklist.includes(domain)) {
+//         //blacklist.includes(pageHostname);
+//         chrome.browserAction.setBadgeText({ text: "OFF", tabId: tabId });
+//     } else {
+//         chrome.browserAction.setBadgeText({ text: "", tabId: tabId });
+//     }
+//     //})
+// }
 
 
 // might use this to alert users of update

@@ -3,7 +3,7 @@ import { SentimentIntensityAnalyzer } from "vader-sentiment";
 import { MidfulExtensionClass } from "./mindful-class";
 // import axios from 'axios';
 // import common from '../common/common';
-import { shouldInsertExtension } from "./functions";
+import { shouldInsertExtension, isAlreadyInserted } from "./functions";
 // SentimentAnalysisResult
 //ALL CONSOLE.LOGS ARE REMOVED IN PRODUCTION
 // let hostname = location.hostname;
@@ -48,12 +48,12 @@ import { shouldInsertExtension } from "./functions";
 // let noResultTimeOut: number; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
 let typingTimer: number;
 // console.log() 
-let mindful = new MidfulExtensionClass(location.href);
+let mindful = new MidfulExtensionClass();
 
-if (mindful.isEnabled) {
-  // think about thus
-  document.addEventListener("click", documentListener);
-}
+// if (mindful.isEnabled) {
+// think about thus
+document.addEventListener("click", documentListener);
+// }
 
 
 
@@ -69,10 +69,10 @@ function documentListener() {
   //STILL SOMETIMES COMES AS UNAVILIBLE
   //EXTENSION REFRESH
   console.log(activeElement.tagName);
-
-
-  if (shouldInsertExtension(activeElement)) {
-    // console.log(activeElement);
+  console.log(activeElement.clientHeight);
+  console.log(!mindful.isMounted);
+  if (shouldInsertExtension(activeElement) && !isAlreadyInserted(activeElement)) {
+    
 
     // if (isAlreadyInserted(activeElement)) {
     //   // need to check if there is a nextSibling because of content editable
@@ -86,8 +86,9 @@ function documentListener() {
     // }
 
 
-    if (mindful.previousMindfulWraper) {
+    if (mindful.isMounted) { // just us isMounted
       // ALWAYS PUT THE VIEW FIRST!!!
+      //mindfulWrapper
 
       // mindful.removePreviousMindfulWraper();
 
@@ -119,20 +120,45 @@ function documentListener() {
 
 
 
-    analyzeInput();
-    doneTyping();
+
     // NEED TO ADD EVENTLISTENERS
 
     // will only be called once as internally, duplicate listeners cannot be added
-    activeElement.addEventListener("input", analyzeInput);
 
-    activeElement.addEventListener("keyup", keyUpFunction)
+    if (mindful.isEnabled) {
+      // BASED ON ENABLED STATE, 
+      // activeElement.addEventListener("input", analyzeInput);
+
+      // activeElement.addEventListener("keyup", keyUpFunction);
+
+      // analyzeInput();
+      // doneTyping();
+
+      setUpListeners();
+      // should i remove 
+
+    } else {
+      const computedStyle = window.getComputedStyle(activeElement)
+      mindful.mountComponent({ emoji: mindful.getDisabledEmoji(), computedStyle, enableFunc: setUpListeners, isEnabled: mindful.isEnabled })
+    }
+
 
     // mindful.setActiveElement(document.activeElement)
     // when would be the best time to call this function?????
 
 
   }
+
+}
+
+function disableExtension() {
+  const activeElement = mindful.getActiveElement();
+  //see if tjis is slow
+  activeElement.removeEventListener('input', analyzeInput);
+  activeElement.removeEventListener("keyup", keyUpFunction);
+
+  mindful.updateProps({ emoji: mindful.getDisabledEmoji(), enableFunc: setUpListeners }) // pass isEnabled???
+
 
 }
 
@@ -167,9 +193,9 @@ function analyzeInput() {
   // text = activeElement.value || activeElement.textContent
   //mindful.setText(text.trim())
   let text = activeElement.tagName === "TEXTAREA" ? (activeElement as HTMLTextAreaElement).value.trim() : activeElement.textContent.trim();
-  mindful.setText(text)
+  mindful.setText(text);
 
-  console.log('here 1')
+  console.log('here 1');
   // if there is no text, there should technically be no toxicElements
   // should be here if all text is deleted
   if (mindful?.props?.toxicityList?.length > 0) {
@@ -190,6 +216,8 @@ function analyzeInput() {
   //   return;
   // }
   let emoji: string;
+
+  // if (mindful.isEnabled)
   if (text) {
     let analysis: SentimentAnalysisResult = SentimentIntensityAnalyzer.polarity_scores(text);
     console.log(analysis);
@@ -204,11 +232,11 @@ function analyzeInput() {
   }
 
   if (mindful.isMounted) {
-    mindful.updateProps({ emoji })
+    mindful.updateProps({ emoji });
   } else {
     // let margin = window.getComputedStyle(activeElement).padding
     const computedStyle = window.getComputedStyle(activeElement)
-    mindful.mountComponent({ emoji, computedStyle })
+    mindful.mountComponent({ emoji, computedStyle, disableFunc: disableExtension, isEnabled: mindful.isEnabled }) //or use stright boolean values
   }
 
 
@@ -222,8 +250,23 @@ function analyzeInput() {
 
 }
 
+function setUpListeners() {
 
-async function doneTyping() {
+  let activeElement = mindful.getActiveElement();
+
+  activeElement.addEventListener("input", analyzeInput);
+
+  activeElement.addEventListener("keyup", keyUpFunction);
+
+  analyzeInput();
+  doneTyping();
+
+}
+
+
+
+
+function doneTyping() {
 
   // Look for bugs
 
@@ -259,7 +302,7 @@ async function doneTyping() {
     //     // mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
     //     // should remove previos toxic elemnts
     //     // mindful.setToxicityElements(response.prediction)
-          // const toxicityList =  mindful.getToxicityList(response.prediction)
+    // const toxicityList =  mindful.getToxicityList(response.prediction)
 
 
     //     // if there is no error an there is the toxicityList => display elements

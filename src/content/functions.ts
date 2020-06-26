@@ -1,6 +1,6 @@
 import { ActiveElementType } from '../types';
 // DOCUMENTATION
-
+//should i mearge all function in mindful-class
 export function getEmojiCode(score: number): number {
     if (score > 0.8) return 128525;
     else if (score > 0.6) return 128512;
@@ -16,7 +16,12 @@ export function getEmojiCode(score: number): number {
 
 export function shouldInsertExtension(activeElement: ActiveElementType): boolean {
     return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || ( (activeElement as HTMLElement).isContentEditable));   
+    // look into wiidth
 }
+
+export function isAlreadyInserted(activeElement: ActiveElementType): boolean {
+    return activeElement?.nextElementSibling?.tagName === 'MINDFUL-EXTENSION' //mindful-extension
+} // should just use parent
 
 
 

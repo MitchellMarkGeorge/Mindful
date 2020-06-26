@@ -1,3 +1,6 @@
+import { CurrentStatus } from './../types';
+// CurrentStatus
+
 class Common {
     // WORK ON THIS
 
@@ -22,6 +25,13 @@ class Common {
             this.blacklist = changes.blacklist.newValue;
             // console.log(blacklist);
         }); //
+    }
+
+    async getStatus(): Promise<CurrentStatus> {
+        let [first] = await this.getTabFromQuery()
+        let domain = this.getHostDomain(first?.url);
+        const result: CurrentStatus = { domain, isEnabled: !this.getBlacklist().includes(domain)}
+        return result;
     }
 
     setInitalBlacklist(): void {
