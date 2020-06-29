@@ -1,6 +1,6 @@
 import { ActiveElementType, ToxicResult, ToxicAPIResponse, MindfulProps } from '../types';
 
-import common from '../common/common'
+// import common from '../common/common'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { MindfulComponent } from './components'
@@ -44,11 +44,11 @@ export class MidfulExtensionClass {
         return !!this.mindfulWrapper;
     }
 
-    public get isEnabled(): boolean {
-        let domain = common.getHostDomain(location.href); // or just use loc
-        // console.log(!common.getBlacklist().includes(domain))
-        return !common.getBlacklist().includes(domain);
-    }
+    // public get isEnabled(): boolean {
+    //     let domain = common.getHostDomain(location.href); // or just use loc
+    //     // console.log(!common.getBlacklist().includes(domain))
+    //     return !common.getBlacklist().includes(domain);
+    // }
 
     public mountComponent(props: MindfulProps = {}) {
 

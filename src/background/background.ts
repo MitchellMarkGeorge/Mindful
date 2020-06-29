@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener(data => {
         // chrome.storage.sync.set({ blacklist: [] });
         // chrome.storage.sync
 
-        common.setInitalBlacklist();
+        // common.setInitalBlacklist();
 
         //loadModel();
     }

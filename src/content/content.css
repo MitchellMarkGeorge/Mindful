@@ -1,5 +1,5 @@
-@import '~antd/dist/antd.css';
-
+/* @import '~antd/dist/antd.css'; */
+/* BLACKLIST FEARURE */
 mindful-extension {
   
 
@@ -32,9 +32,9 @@ mindful-container {
   /* margin?? */
 }
 
-span.mindful-span-elements:hover {
+/* span.mindful-span-elements:hover {
   cursor: pointer;
-}
+} */
 
 .mindful-span-elements {
   display: inline-block !important;
@@ -51,7 +51,7 @@ span.mindful-span-elements:hover {
 
 } */
 
-.mindful-span-toxicity-elements, .mindful-error-element {
+.mindful-span-toxicity-elements, .mindful-error-element, .mindful-red-pill {
   /* border: 1px solid #000 !important; */
   border-radius: 14px !important;
   text-align: center !important;

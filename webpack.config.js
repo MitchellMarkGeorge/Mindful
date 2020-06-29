@@ -1,5 +1,5 @@
 const path = require('path');
-
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 // const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -50,7 +50,8 @@ module.exports = {
 
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: [MiniCssExtractPlugin.loader, "css-loader"] // should i use the minicss loader?
+
 
       },
 
@@ -80,6 +81,9 @@ module.exports = {
 
   plugins: [
 
+    new MiniCssExtractPlugin({
+      filename: "[name]/[name].css",
+    }),
     // new ExtensionReloader({
     //   manifest: path.resolve(__dirname, "manifest.json")
     // }),
@@ -101,7 +105,7 @@ module.exports = {
       // {from: 'public', to: 'public'}, 
       { from: 'manifest.json', to: 'manifest.json' },
       { from: 'src/icons', to: 'icons' },
-      { from: 'src/content/content.css', to: 'content/content.css' }
+      // { from: 'src/content/content.css', to: 'content/content.css' }
       // {from: 'src/content.css', to: 'content.css'},
       // {from: 'src/ball-clip-rotate.min.css', to: 'ball-clip-rotate.min.css'} 
       // {from: 'progressbar.min.js', to: 'progressbar.min.js'}

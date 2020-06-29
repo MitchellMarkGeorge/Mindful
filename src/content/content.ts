@@ -125,7 +125,7 @@ function documentListener() {
 
     // will only be called once as internally, duplicate listeners cannot be added
 
-    if (mindful.isEnabled) {
+    // if (mindful.isEnabled) {
       // BASED ON ENABLED STATE, 
       // activeElement.addEventListener("input", analyzeInput);
 
@@ -137,10 +137,10 @@ function documentListener() {
       setUpListeners();
       // should i remove 
 
-    } else {
-      const computedStyle = window.getComputedStyle(activeElement)
-      mindful.mountComponent({ emoji: mindful.getDisabledEmoji(), computedStyle, enableFunc: setUpListeners, isEnabled: mindful.isEnabled })
-    }
+    // } else {
+    //   const computedStyle = window.getComputedStyle(activeElement)
+    //   mindful.mountComponent({ emoji: mindful.getDisabledEmoji(), computedStyle, enableFunc: setUpListeners, isEnabled: mindful.isEnabled })
+    // }
 
 
     // mindful.setActiveElement(document.activeElement)
@@ -151,16 +151,16 @@ function documentListener() {
 
 }
 
-function disableExtension() {
-  const activeElement = mindful.getActiveElement();
-  //see if tjis is slow
-  activeElement.removeEventListener('input', analyzeInput);
-  activeElement.removeEventListener("keyup", keyUpFunction);
+// function disableExtension() {
+//   const activeElement = mindful.getActiveElement();
+//   //see if tjis is slow
+//   activeElement.removeEventListener('input', analyzeInput);
+//   activeElement.removeEventListener("keyup", keyUpFunction);
 
-  mindful.updateProps({ emoji: mindful.getDisabledEmoji(), enableFunc: setUpListeners }) // pass isEnabled???
+//   mindful.updateProps({ emoji: mindful.getDisabledEmoji(), enableFunc: setUpListeners }) // pass isEnabled???
 
 
-}
+// }
 
 
 
@@ -235,8 +235,9 @@ function analyzeInput() {
     mindful.updateProps({ emoji });
   } else {
     // let margin = window.getComputedStyle(activeElement).padding
+    // SHOULD PROBABLY USE A SEPERATE PARAMETER FOR STYLE
     const computedStyle = window.getComputedStyle(activeElement)
-    mindful.mountComponent({ emoji, computedStyle, disableFunc: disableExtension, isEnabled: mindful.isEnabled }) //or use stright boolean values
+    mindful.mountComponent({ emoji, computedStyle }) //or use stright boolean values
   }
 
 
@@ -297,7 +298,7 @@ function doneTyping() {
     //   // work on this
     //   if (response.error) {
     //     // mindful.createErrorElement();
-    //     mindful.updateProps({ hasError: true })
+        // mindful.updateProps({ hasError: true, toxicityList: [] })
     //   } else {
     //     // mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
     //     // should remove previos toxic elemnts
@@ -307,7 +308,7 @@ function doneTyping() {
 
     //     // if there is no error an there is the toxicityList => display elements
 
-    //     mindful.updateProps({ isLoading: false, toxicityList }) // add toxicity array
+        // mindful.updateProps({ isLoading: false, hasError: false, toxicityList }) // add toxicity array
     //   }
     // })
     // try {
