@@ -292,25 +292,30 @@ function doneTyping() {
 
     // mindful.addLoaderSpinner();
     mindful.updateProps({ isLoading: true })
-    // chrome.runtime.sendMessage({ text: [mindful.getText()] }, (response) => {
 
-    //   console.log(response); // remove spinner and 
-    //   // work on this
-    //   if (response.error) {
-    //     // mindful.createErrorElement();
-        // mindful.updateProps({ hasError: true, toxicityList: [] })
-    //   } else {
-    //     // mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
-    //     // should remove previos toxic elemnts
-    //     // mindful.setToxicityElements(response.prediction)
-    // const toxicityList =  mindful.getToxicityList(response.prediction)
+    // no longer needs to be an array
+    chrome.runtime.sendMessage({ text: mindful.getText() }, (response) => {
 
+      console.log(response); // remove spinner and 
+      // work on this
+      if (response.error) {
+        // mindful.createErrorElement();
+        console.log(response.body)
+        // might not need to set toxicityList
+        mindful.updateProps({ hasError: true, toxicityList: [] })
+      } else {
+        // mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
+        // should remove previos toxic elemnts
+        // mindful.setToxicityElements(response.prediction)
+        console.log(response.predictions);
+        const toxicityList =  mindful.getToxicityList(response.predictions)
+        
 
-    //     // if there is no error an there is the toxicityList => display elements
-
-        // mindful.updateProps({ isLoading: false, hasError: false, toxicityList }) // add toxicity array
-    //   }
-    // })
+        // if there is no error an there is the toxicityList => display elements
+        // might not need to update hasError 
+        mindful.updateProps({ isLoading: false, hasError: false, toxicityList}) // add toxicity array
+      }
+    })
     // try {
     //   // const response = await axios.post(mindful.API_URL, { text: [mindful.getText()] }, { timeout: 17 * 1000 });
     //   // const data: ToxicAPIResponse = response.data

@@ -70,10 +70,10 @@ export class MidfulExtensionClass {
         // also compare size/ height (only for bigger elements that absolute positioning should be usef)
         if (props.computedStyle && this.currentActiveElement.clientHeight > 40) {
             // figure outfinal values
-
+            console.log(props.computedStyle.position);
             this.mindfulContainer = document.createElement("mindful-container");
 
-            console.log(props.computedStyle.padding);
+            console.log(props.computedStyle);
             // figure margin out
             // this.mindfulWrapper.style.margin = !props.computedStyle.padding.includes('0px') ? props.computedStyle.padding : '10px' // default value of 10px
             this.mindfulWrapper.style.position = 'absolute'; // try relative
@@ -191,7 +191,7 @@ export class MidfulExtensionClass {
     }
 
     public getToxicityList(response: ToxicResult[]): string[] {
-        return response.filter((item) => item.prediction >= this.TOXIC_THRESHOLD)
+        return response.filter((item) => item?.results[0]?.match)
             .map((item) => item.label.replace('_', ' '))
 
         // response..map((item) => item.label.replace('_', ' '))
@@ -287,42 +287,42 @@ export class MidfulExtensionClass {
 
     }
 
-    setToxicityElements(toxicityArray: ToxicResult[]) {
-        if (this.errorElement) {
-            this.removeErrorElement() // should groupt in div
-        }
-        // in case there is any elements for anu reason
+    // setToxicityElements(toxicityArray: ToxicResult[]) {
+    //     if (this.errorElement) {
+    //         this.removeErrorElement() // should groupt in div
+    //     }
+    //     // in case there is any elements for anu reason
 
-        // for example cold cloud function boot times
-        if (this.tocicityElements.length > 0) {
-            this.removeToxicityElements();
-        }
+    //     // for example cold cloud function boot times
+    //     if (this.tocicityElements.length > 0) {
+    //         this.removeToxicityElements();
+    //     }
 
-        let tempArray = toxicityArray.filter(item => item.prediction >= this.TOXIC_THRESHOLD)
-        // let tempArray = toxicityArray.filter(item => item.results[0].match === true);
+    //     let tempArray = toxicityArray.filter(item => item.prediction >= this.TOXIC_THRESHOLD)
+    //     // let tempArray = toxicityArray.filter(item => item.results[0].match === true);
 
-        console.log(tempArray);
+    //     console.log(tempArray);
 
-        this.tocicityElements = tempArray.map(item => {
-            let element = document.createElement('span');
-            element.className = 'mindful-span-toxicity-elements'
-            element.textContent = item.label.replace('_', ' '); // add percentage???
-            return element;
-        })
+    //     this.tocicityElements = tempArray.map(item => {
+    //         let element = document.createElement('span');
+    //         element.className = 'mindful-span-toxicity-elements'
+    //         element.textContent = item.label.replace('_', ' '); // add percentage???
+    //         return element;
+    //     })
 
-        // might wrap in a div
+    //     // might wrap in a div
 
-        console.log(this.tocicityElements);
+    //     console.log(this.tocicityElements);
 
-        for (let item of this.tocicityElements) {
-            // insert all toxicity elements after emoji element
-            // USE ELEMENTS
-            this.emojiElement.parentNode.insertBefore(
-                item,
-                this.emojiElement.nextSibling
-            );
-        }
-    }
+    //     for (let item of this.tocicityElements) {
+    //         // insert all toxicity elements after emoji element
+    //         // USE ELEMENTS
+    //         this.emojiElement.parentNode.insertBefore(
+    //             item,
+    //             this.emojiElement.nextSibling
+    //         );
+    //     }
+    // }
 
     removeToxicityElements() {
 

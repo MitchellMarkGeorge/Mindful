@@ -1,5 +1,5 @@
 import { ToxicAPIResponse, RequestError } from './../types';
-
+// import toxicity from '@tensorflow-models/toxicity';
 import axios from 'axios';
 
 
@@ -29,9 +29,10 @@ chrome.runtime.onInstalled.addListener(data => {
 // common.addUpdateListener();
 
 
-
+// look at documentation for async
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // use async await???
+    // sender.
     // try {
         axios.post(common.API_URL, message)
         .then(response => {

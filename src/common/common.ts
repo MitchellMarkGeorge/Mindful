@@ -5,8 +5,9 @@ class Common {
     // WORK ON THIS
 
     private blacklist: string[] = [];
-    API_URL: string = 'https://us-central1-mindful-279120.cloudfunctions.net/advanced-analysis'
-    // API_URL: string = 'https://mindful-279120.uc.r.appspot.com/avanced_analysis'
+    
+    // API_URL = 'http://localhost:5000/advanced_analysis';
+    API_URL = 'https://us-central1-mindfulmodel.cloudfunctions.net/advanced_analysis';
     constructor() {
 
         // chrome.storage.sync.get(['blacklist'], (result) => {
@@ -130,17 +131,17 @@ class Common {
     }
 }
 
-let common: Common;
+let common: Common = new Common();
 
-(async function() {
-    common = new Common();
-    try {
+// (async function() {
+//     common = new Common();
+//     try {
 
-    } catch (e) {
-        console.log(e)
-    }
-    await common.init();
-})()
+//     } catch (e) {
+//         console.log(e)
+//     }
+//     await common.init();
+// })()
 
 export default common;
 

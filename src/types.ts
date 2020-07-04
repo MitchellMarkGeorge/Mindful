@@ -37,7 +37,12 @@ export interface SentimentAnalysisResult {
 
 export interface ToxicResult {
     label: string,
-    prediction: number
+    results: PredictionResult[]
+}
+
+export interface PredictionResult {
+    probabilities: {},
+    match: boolean;
 }
 
 export interface ToxicAPIResponse {

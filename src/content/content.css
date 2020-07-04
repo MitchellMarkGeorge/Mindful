@@ -6,13 +6,13 @@ mindful-extension {
   /* position: relative; */
 
   /* display: block */
-  z-index: 2;
+  z-index: 2 !important;
   
 }
 
 mindful-container {
-  position: relative;
-  height: 100%;
+  position: relative !important;
+  /* height: 100% !important; */
 }
 
 
@@ -50,7 +50,7 @@ mindful-container {
 /* span.mindful-span-elements {
 
 } */
-
+/* remove first two classes */
 .mindful-span-toxicity-elements, .mindful-error-element, .mindful-red-pill {
   /* border: 1px solid #000 !important; */
   border-radius: 14px !important;
