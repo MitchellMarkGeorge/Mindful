@@ -52,7 +52,9 @@ let mindful = new MidfulExtensionClass();
 
 // if (mindful.isEnabled) {
 // think about thus
-document.addEventListener("click", documentListener);
+
+console.log('here')
+document.addEventListener("focusin", documentListener);
 // }
 
 

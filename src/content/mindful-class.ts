@@ -68,38 +68,38 @@ export class MidfulExtensionClass {
         // THINK ABOIT THIS
         //  mindfulWrapper.style.margin = window.getComputedStyle(this.activeElement).padding;
         // also compare size/ height (only for bigger elements that absolute positioning should be usef)
-        if (props.computedStyle && this.currentActiveElement.clientHeight > 40) {
-            // figure outfinal values
-            console.log(props.computedStyle.position);
-            this.mindfulContainer = document.createElement("mindful-container");
+        // if (props.computedStyle && this.currentActiveElement.clientHeight > 40) {
+        //     // figure outfinal values
+        //     console.log(props.computedStyle.position);
+        //     this.mindfulContainer = document.createElement("mindful-container");
 
-            console.log(props.computedStyle);
-            // figure margin out
-            // this.mindfulWrapper.style.margin = !props.computedStyle.padding.includes('0px') ? props.computedStyle.padding : '10px' // default value of 10px
-            this.mindfulWrapper.style.position = 'absolute'; // try relative
-            // needts to be on the element itself
-            // mindfulWrapper.style.bottom = props.computedStyle.paddingBottom; // was 0
-            // this.mindfulWrapper.style.bottom = '0'; // maybey i should use top
-            // this.mindfulWrapper.style.left = '0';
+        //     console.log(props.computedStyle);
+        //     // figure margin out
+        //     // this.mindfulWrapper.style.margin = !props.computedStyle.padding.includes('0px') ? props.computedStyle.padding : '10px' // default value of 10px
+        //     this.mindfulWrapper.style.position = 'absolute'; // try relative
+        //     // needts to be on the element itself
+        //     // mindfulWrapper.style.bottom = props.computedStyle.paddingBottom; // was 0
+        //     // this.mindfulWrapper.style.bottom = '0'; // maybey i should use top
+        //     // this.mindfulWrapper.style.left = '0';
 
-            this.mindfulWrapper.style.bottom = '1em'; // maybey i should use top
-            this.mindfulWrapper.style.left = '1em';
-            // think about this
-            // this.mindfulWrapper.style.top =    `calc(-0.2 * ${props.computedStyle.height})`
-            // this.mindfulWrapper.style.right =    `calc(0.8 * ${props.computedStyle.width})`
-            // console.log(props.computedStyle.height);
+        //     this.mindfulWrapper.style.bottom = '1em'; // maybey i should use top
+        //     this.mindfulWrapper.style.left = '1em';
+        //     // think about this
+        //     // this.mindfulWrapper.style.top =    `calc(-0.2 * ${props.computedStyle.height})`
+        //     // this.mindfulWrapper.style.right =    `calc(0.8 * ${props.computedStyle.width})`
+        //     // console.log(props.computedStyle.height);
 
-            this.wrapActiveElement(this.currentActiveElement, this.mindfulContainer);
+        //     this.wrapActiveElement(this.currentActiveElement, this.mindfulContainer);
 
-            this.mindfulContainer.appendChild(this.mindfulWrapper);
-        } else {
+        //     this.mindfulContainer.appendChild(this.mindfulWrapper);
+        // } else {
 
             // insertafter - should they be elements
             this.currentActiveElement.parentNode.insertBefore(
                 this.mindfulWrapper, // use element
                 this.currentActiveElement.nextSibling
             );
-        }
+        // }
 
 
         // this.curr
@@ -146,10 +146,10 @@ export class MidfulExtensionClass {
         // re-consider order 
         ReactDOM.unmountComponentAtNode(this.mindfulWrapper);
 
-        if (this.mindfulContainer) { // incase the second attachment option is used
-            this.unWrapElement(this.mindfulContainer);
-            this.mindfulContainer = null;
-        }
+        // if (this.mindfulContainer) { // incase the second attachment option is used
+        //     this.unWrapElement(this.mindfulContainer);
+        //     this.mindfulContainer = null;
+        // }
 
         this.mindfulWrapper.remove(); // should i remove ore leave if re-attached
         this.mindfulWrapper = null;
@@ -171,7 +171,7 @@ export class MidfulExtensionClass {
     }
 
     public setScore(score: number) {
-        this.score = score
+        this.score = score;
         // this.updateProps({ emoji: this.getEmojiFromScore(score) })
     }
 

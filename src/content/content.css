@@ -6,21 +6,21 @@ mindful-extension {
   /* position: relative; */
 
   /* display: block */
-  z-index: 2 !important;
+  /* z-index: 2 !important; */
   
 }
 
 mindful-container {
-  position: relative !important;
+  /* position: relative !important; */
   /* height: 100% !important; */
 }
 
 
 #mindful-wrapper {
-  /* height: 2rem !important; */
+  height: 2rem !important;
   /* was 30px before */
   /* width: 200px !important; */
-  /* line-height: 2rem !important; */ 
+  line-height: 2rem !important; 
 
   /* do i need length */
   /* position: relative; */
@@ -28,7 +28,8 @@ mindful-container {
   /* padding: 3px !important; */
   background-color: transparent !important;
   /* background-color: inherit !important; */
-
+  /* height: 30px !important; */
+  /* line-height: 30px !important; */
   /* margin?? */
 }
 

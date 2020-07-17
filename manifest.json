@@ -17,16 +17,7 @@
     "128": "icons/mindful-logo2.png"
   },
 
-  "permissions": [
-    "tabs",
-    "storage"
-    
-  ],
-
-  "options_ui": {
-    "page": "options/options.html",
-    "open_in_tab": false
-  },
+  
   
   "content_scripts": [
     {

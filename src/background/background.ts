@@ -1,71 +1,72 @@
-import { ToxicAPIResponse, RequestError } from './../types';
+import { ToxicAPIResponse, RequestError } from "./../types";
 // import toxicity from '@tensorflow-models/toxicity';
-import axios from 'axios';
+import axios from "axios";
 
+// import common from '../common/common'
 
-import common from '../common/common'
-
-
+const API_URL =
+  "https://us-central1-mindfulmodel.cloudfunctions.net/advanced_analysis";
 // remove blacklist
 
-chrome.runtime.onInstalled.addListener(data => {
-   
+chrome.runtime.onInstalled.addListener((data) => {
+  // anytime this event is called, the model should be loaded just in case
+  //  loadModel();  // dont think i need this
 
-    // anytime this event is called, the model should be loaded just in case
-    //  loadModel();  // dont think i need this
-    
-    console.log(data); // set blacklist as empy array on install
-    if (data.reason === "install") {
-        chrome.runtime.setUninstallURL('http://mindful-extension-feedback.herokuapp.com');
-        // chrome.storage.sync.set({ blacklist: [] });
-        // chrome.storage.sync
+  console.log(data); // set blacklist as empy array on install
+  if (data.reason === "install") {
+    chrome.runtime.setUninstallURL(
+      "http://mindful-extension-feedback.herokuapp.com"
+    );
+    // chrome.storage.sync.set({ blacklist: [] });
+    // chrome.storage.sync
 
-        // common.setInitalBlacklist();
+    // common.setInitalBlacklist();
 
-        //loadModel();
-    }
+    //loadModel();
+  }
 });
 
 // common.addUpdateListener();
 
-
 // look at documentation for async
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // use async await???
-    // sender.
-    // try {
-        axios.post(common.API_URL, message)
-        .then(response => {
-            const data: ToxicAPIResponse = response.data
-            console.log(response.data);
-            sendResponse(data);
-        }).catch(err => {
-            console.log(err);
-            let request_error: RequestError = {error: true, body: err}
-            sendResponse(request_error)
-        });
+  // use async await???
 
-        return true;
-        
-        // return true // should i
-    // } catch (error) {
-    //     console.log(error)
-    //     let request_error: RequestError = {error: true, body: error}
-    //     sendResponse(request_error)
-    // }
-    
-    // const response = await axios.post(common.API_URL, message, { timeout: 25 * 1000 });
-    // const data: ToxicAPIResponse = response.data
-    // sendResponse(data)
-})
+  // sender.
+  // try {
+  axios
+    .post(API_URL, message)
+    .then((response) => {
+      const data: ToxicAPIResponse = response.data;
+      console.log(response.data);
+      sendResponse(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      let request_error: RequestError = { error: true, body: err };
+      sendResponse(request_error);
+    });
+
+  return true;
+
+  // return true // should i
+  // } catch (error) {
+  //     console.log(error)
+  //     let request_error: RequestError = {error: true, body: error}
+  //     sendResponse(request_error)
+  // }
+
+  // const response = await axios.post(common.API_URL, message, { timeout: 25 * 1000 });
+  // const data: ToxicAPIResponse = response.data
+  // sendResponse(data)
+});
 
 // chrome.storage.sync.get(["blacklist"], function (result) {
 //     console.log('here', result.blacklist);
 
 //     if (result.blacklist === undefined ) {
-     
 
-//         return; 
+//         return;
 //     } // do i need this? is should never be undefined
 //     blacklist = result.blacklist;
 //     console.log(blacklist);
@@ -84,21 +85,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //     port.onMessage.addListener(async function (msg) {
 //         console.log(msg.userText);
 //         if (!msg.userText) return;
-        
+
 //         // if (!model) {
-//         //     await loadModel(); 
+//         //     await loadModel();
 //         // }
 //         // For testing purposes only
 //         // sendErrorMessage()
 //         //  return;
 //         try {
 //             if (!model) {
-//                 await loadModel(); 
+//                 await loadModel();
 //             }
-             
+
 //             const predict = await model.classify(msg.userText);
 //             port.postMessage({ prediction: predict, id: msg.id });
-           
+
 //         } catch (err) {
 //             console.log(err);
 //             sendErrorMessage();
@@ -106,12 +107,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //         }
 //     })
 // })
-
-
-
-
-
-
 
 // chrome.storage.onChanged.addListener(function (changes, namespace) {
 //     console.log(changes.blacklist.newValue);
@@ -139,20 +134,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // } catch (error) {
 //     console.log(error)
 // }
-    
 
-    
 //     // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 //     //     hostname = tabs[0].url.split("/")[2];
 //     //     if (hostname) {
 //     //         changeBadgeText(hostname, tabs[0].id)
 //     //     }
-        
+
 //     // });
 // });
 
 // chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-//     // if (obj.url) { 
+//     // if (obj.url) {
 //         // could just use id nd url
 //         // look into documentation
 //     console.log("UPDATED");
@@ -161,18 +154,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //     const domain = common.getHostDomain(tab.url);
 //     changeBadgeText(domain, id);
 //     // } // is only run whn the url chnages
-    
+
 // });
 
 //  function changeBadgeText(domain: string, tabId:number) {
 //     // console.log(blacklist)
 //     const blacklist = common.getBlacklist();
-    
+
 //     console.log(blacklist)
-    
 
 //    //contains(blacklist, pageHostname)
-    
+
 //     if (blacklist.includes(domain)) {
 //         //blacklist.includes(pageHostname);
 //         chrome.browserAction.setBadgeText({ text: "OFF", tabId: tabId });
@@ -181,7 +173,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //     }
 //     //})
 // }
-
 
 // might use this to alert users of update
 // chrome.runtime.onUpdateAvailable.addListener(function (version) {
@@ -211,8 +202,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //     }
 //     return false;
 // }
-
-
 
 // function showErrorNotification() {
 
@@ -256,4 +245,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //         //return; //?
 //     }
 // }
-

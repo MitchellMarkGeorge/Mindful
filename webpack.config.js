@@ -15,7 +15,7 @@ module.exports = {
   entry: {
 
     popup: path.resolve(__dirname, `src/popup/popup.tsx`),
-    options: path.resolve(__dirname, `src/options/options.ts`),
+    // options: path.resolve(__dirname, `src/options/options.ts`),
     content: path.resolve(__dirname, `src/content/content.ts`),
     background: path.resolve(__dirname, `src/background/background.ts`)
     // load popupscript
@@ -94,12 +94,12 @@ module.exports = {
       template: `src/popup/popup.html`,
       chunks: ["popup"]
     }),
-    new HtmlWebpackPlugin({
-      title: "Options",
-      filename: path.resolve(__dirname, `dist/options/options.html`),
-      template: `src/options/options.html`,
-      chunks: ["options"]
-    }),
+    // new HtmlWebpackPlugin({
+    //   title: "Options",
+    //   filename: path.resolve(__dirname, `dist/options/options.html`),
+    //   template: `src/options/options.html`,
+    //   chunks: ["options"]
+    // }),
 
     new CopyPlugin([
       // {from: 'public', to: 'public'}, 
