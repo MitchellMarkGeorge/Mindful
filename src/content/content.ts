@@ -53,14 +53,14 @@ let mindful = new MidfulExtensionClass();
 // if (mindful.isEnabled) {
 // think about thus
 
-console.log('here')
+// console.log('here') //
 document.addEventListener("focusin", documentListener);
 // }
 
 
 
 function documentListener() {
-
+  console.log('focus')
   //LOOK INTO THIS
   let activeElement: ActiveElementType = document.activeElement;
   mindful.setActiveElement(activeElement);
@@ -71,10 +71,10 @@ function documentListener() {
   //STILL SOMETIMES COMES AS UNAVILIBLE
   //EXTENSION REFRESH
   console.log(activeElement.tagName);
-  console.log(activeElement.clientHeight);
-  console.log(!mindful.isMounted);
+  // console.log(activeElement.clientHeight);
+  // console.log(!mindful.isMounted);
   if (shouldInsertExtension(activeElement) && !isAlreadyInserted(activeElement)) {
-    
+
 
     // if (isAlreadyInserted(activeElement)) {
     //   // need to check if there is a nextSibling because of content editable
@@ -128,16 +128,16 @@ function documentListener() {
     // will only be called once as internally, duplicate listeners cannot be added
 
     // if (mindful.isEnabled) {
-      // BASED ON ENABLED STATE, 
-      // activeElement.addEventListener("input", analyzeInput);
+    // BASED ON ENABLED STATE, 
+    // activeElement.addEventListener("input", analyzeInput);
 
-      // activeElement.addEventListener("keyup", keyUpFunction);
+    // activeElement.addEventListener("keyup", keyUpFunction);
 
-      // analyzeInput();
-      // doneTyping();
+    // analyzeInput();
+    // doneTyping();
 
-      setUpListeners();
-      // should i remove 
+    setUpListeners();
+    // should i remove 
 
     // } else {
     //   const computedStyle = window.getComputedStyle(activeElement)
@@ -200,9 +200,15 @@ function analyzeInput() {
   console.log('here 1');
   // if there is no text, there should technically be no toxicElements
   // should be here if all text is deleted
-  if (mindful?.props?.toxicityList?.length > 0) {
-    mindful.updateProps({ toxicityList: [] });
-  }
+
+  
+    // if (mindful?.props?.toxicityList?.length > 0) {
+    //   mindful.updateProps({ toxicityList: [] });
+    // }
+
+    // DOES NOT WORK IF THERE IS TXICITY RESULT WHEN SWITCHING
+  
+
   // if (mindful.tocicityElements.length > 0) {
   //   // if there is no text and there are
   //   mindful.removeToxicityElements();
@@ -234,12 +240,12 @@ function analyzeInput() {
   }
 
   if (mindful.isMounted) {
-    mindful.updateProps({ emoji });
+    mindful.updateProps({ emoji, toxicityList: [] });
   } else {
     // let margin = window.getComputedStyle(activeElement).padding
     // SHOULD PROBABLY USE A SEPERATE PARAMETER FOR STYLE
-    const computedStyle = window.getComputedStyle(activeElement)
-    mindful.mountComponent({ emoji, computedStyle }) //or use stright boolean values
+    // const computedStyle = window.getComputedStyle(activeElement)
+    mindful.mountComponent( emoji ) //or use stright boolean values
   }
 
 
@@ -272,7 +278,7 @@ function setUpListeners() {
 function doneTyping() {
 
   // Look for bugs
-
+  // global text variable
   if (!mindful.getText()) return;
 
 
@@ -297,8 +303,8 @@ function doneTyping() {
 
     // no longer needs to be an array
     chrome.runtime.sendMessage({ text: mindful.getText() }, (response) => {
-
-      console.log(response); // remove spinner and 
+      console.log('request sent')
+      // console.log(response); // remove spinner and 
       // work on this
       if (response.error) {
         // mindful.createErrorElement();
@@ -309,13 +315,13 @@ function doneTyping() {
         // mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
         // should remove previos toxic elemnts
         // mindful.setToxicityElements(response.prediction)
-        console.log(response.predictions);
-        const toxicityList =  mindful.getToxicityList(response.predictions)
-        
+        // console.log(response.predictions);
+        const toxicityList = mindful.getToxicityList(response.predictions)
+
 
         // if there is no error an there is the toxicityList => display elements
         // might not need to update hasError 
-        mindful.updateProps({ isLoading: false, hasError: false, toxicityList}) // add toxicity array
+        mindful.updateProps({ isLoading: false, hasError: false, toxicityList }) // add toxicity array
       }
     })
     // try {

@@ -50,8 +50,8 @@ export class MidfulExtensionClass {
     //     return !common.getBlacklist().includes(domain);
     // }
 
-    public mountComponent(props: MindfulProps = {}) {
-
+    public mountComponent(emoji: string) {
+        console.log('mounitng')
         // console.log(this.currentActiveElement.clientHeight);
         // container messes up grammarly
         // figure out
@@ -110,7 +110,7 @@ export class MidfulExtensionClass {
 
         // this.mindfulWrapper = mindfulWrapper;
 
-        this.props = props;
+        this.props = { emoji };
 
         // if (props) {
         //     this.props = props
@@ -158,7 +158,12 @@ export class MidfulExtensionClass {
 
     }
 
+    public resetProps() {
+        this.props = {};
+    }
+
     public updateProps(props: MindfulProps) {
+        console.log('update to props')
         Object.assign(this.props, props);
         this.renderComponent();
     }
@@ -166,6 +171,7 @@ export class MidfulExtensionClass {
     public renderComponent() {
 
         const componentInstance = React.createElement(MindfulComponent, this.props);
+        console.log(this.mindfulWrapper);
         ReactDOM.render(componentInstance, this.mindfulWrapper);
 
     }

@@ -3,9 +3,8 @@ import { ToxicAPIResponse, RequestError } from "./../types";
 import axios from "axios";
 
 // import common from '../common/common'
-
-const API_URL =
-  "https://us-central1-mindfulmodel.cloudfunctions.net/advanced_analysis";
+let blacklist = [];
+const API_URL = "https://us-central1-mindfulmodel.cloudfunctions.net/advanced_analysis";
 // remove blacklist
 
 chrome.runtime.onInstalled.addListener((data) => {
@@ -25,6 +24,9 @@ chrome.runtime.onInstalled.addListener((data) => {
     //loadModel();
   }
 });
+
+
+// chrome.storage.sync.get((['blacklist']))
 
 // common.addUpdateListener();
 
