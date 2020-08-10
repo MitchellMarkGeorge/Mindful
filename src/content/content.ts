@@ -4,6 +4,9 @@ import { MidfulExtensionClass } from "./mindful-class";
 // import axios from 'axios';
 // import common from '../common/common';
 import { shouldInsertExtension, isAlreadyInserted } from "./functions";
+
+// console.log(chrome.extension)
+
 // SentimentAnalysisResult
 //ALL CONSOLE.LOGS ARE REMOVED IN PRODUCTION
 // let hostname = location.hostname;
@@ -73,6 +76,8 @@ function documentListener() {
   console.log(activeElement.tagName);
   // console.log(activeElement.clientHeight);
   // console.log(!mindful.isMounted);
+
+  console.log(getComputedStyle(activeElement));
   if (shouldInsertExtension(activeElement) && !isAlreadyInserted(activeElement)) {
 
 

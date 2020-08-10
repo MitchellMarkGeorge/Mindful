@@ -15,7 +15,9 @@ export function getEmojiCode(score: number): number {
 }
 
 export function shouldInsertExtension(activeElement: ActiveElementType): boolean {
-    return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) || ( (activeElement as HTMLElement).isContentEditable));   
+    // confim if this works
+    let fontSize = parseFloat(getComputedStyle(activeElement).fontSize) // think about this. should use some kind of reletive size
+    return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) && fontSize < 40 || ( (activeElement as HTMLElement).isContentEditable));   
     // look into wiidth
 }
 

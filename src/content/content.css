@@ -1,26 +1,26 @@
 /* @import '~antd/dist/antd.css'; */
 /* BLACKLIST FEARURE */
 mindful-extension {
-  
+  /* position: absolute !important; */
 
   /* position: relative; */
 
   /* display: block */
-  /* z-index: 2 !important; */
+  z-index: 2 !important;
   
 }
 
 mindful-container {
-  /* position: relative !important; */
+  position: relative !important;
   /* height: 100% !important; */
 }
 
 
 #mindful-wrapper {
-  height: 2rem !important;
+  /* height: 2rem !important; */
   /* was 30px before */
-  /* width: 200px !important; */
-  line-height: 2rem !important; 
+  
+  /* line-height: 2rem !important;  */
 
   /* do i need length */
   /* position: relative; */
