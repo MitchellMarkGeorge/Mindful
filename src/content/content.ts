@@ -1,9 +1,19 @@
-import { SentimentAnalysisResult, ActiveElementType } from '../types';
+import {
+  SentimentAnalysisResult,
+  ActiveElementType,
+  AttachmentStrategy,
+} from "../types";
 import { SentimentIntensityAnalyzer } from "vader-sentiment";
 import { MidfulExtensionClass } from "./mindful-class";
-// import axios from 'axios';
-// import common from '../common/common';
-import { shouldInsertExtension, isAlreadyInserted } from "./functions";
+import {
+  shouldInsertExtension,
+  isAlreadyInserted,
+  isBody,
+  getVisibleTypingArea,
+} from "./functions";
+import getCaretCoordinates from "textarea-caret";
+
+// BLACKLIST
 
 // console.log(chrome.extension)
 
@@ -39,7 +49,7 @@ import { shouldInsertExtension, isAlreadyInserted } from "./functions";
 
 //function runExtension() { // remove from fuction
 // let activeElement: Element | HTMLElement | HTMLTextAreaElement; // figure out type
-// let score: number = 0; // dosent need to be 
+// let score: number = 0; // dosent need to be
 // // let port: chrome.runtime.Port;
 // let text: string = "";
 // let id: number = 0;
@@ -47,28 +57,102 @@ import { shouldInsertExtension, isAlreadyInserted } from "./functions";
 // // would have used keyCode but is deprecated
 // //keys that should not trigger advance text analysis
 // // const badKeys: string[] = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'audiovolumemute', 'audiovolumedown', 'arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'audiovolumeup', 'mediaplaypause', 'mediatracknext', 'mediatrackprevious', 'capslock', 'printscreen', 'home', 'end', 'pageup', 'pagedown', 'numlock', 'clear', 'escape']// 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
-// // previousInstance 
+// // previousInstance
 // let noResultTimeOut: number; // TIMEOUT INCASE NO RESULS COME IN ABOUT 15 SECONDS
 let typingTimer: number;
-// console.log() 
-let mindful = new MidfulExtensionClass();
+// console.log()
+const mindful = new MidfulExtensionClass();
 
 // if (mindful.isEnabled) {
 // think about thus
 
-// console.log('here') //
-document.addEventListener("focusin", documentListener);
+console.log("here"); //
+// console.log(document.activeElement); // does not work onn
+// better to atach to document due to serverside rendering
+(async function main() {
+  // just use then() and catch??
+
+  const status = await mindful.currentStatus;
+  console.log(status)
+  if (status.isEnabled) {
+    
+    
+    document.addEventListener("focusin", documentListener);
+    //autofocus
+    // incase it is null
+    checkInitalFocusedElement()
+    // const initalFocusedElement = document.activeElement;
+    // if (
+    //   initalFocusedElement &&
+    //   !isBody(initalFocusedElement) &&
+    //   shouldInsertExtension(initalFocusedElement)
+    // ) {
+    //   mindful.setActiveElement(initalFocusedElement);
+    //   setUpListeners();
+    // }
+  }
+})();
+
+chrome.storage.onChanged.addListener(changes => {
+  const blacklist: string[] = changes.blacklist.newValue
+  if (blacklist.length > 0 && mindful.isMounted && mindful.isDomainInBlacklist(blacklist)) {
+
+    mindful.unmountComponent();
+    disableExtension();
+    //   const activeElement = mindful.getActiveElement();
+//   //see if tjis is slow
+//   activeElement.removeEventListener('input', analyzeInput);
+//   activeElement.removeEventListener("keyup", keyUpFunction);
+    
+  } else if (!mindful.isMounted && !mindful.isDomainInBlacklist(blacklist)) {
+    document.addEventListener("focusin", documentListener);
+    // const initalFocusedElement = document.activeElement;
+    // if (
+    //   initalFocusedElement &&
+    //   !isBody(initalFocusedElement) &&
+    //   shouldInsertExtension(initalFocusedElement)
+    // ) {
+    //   mindful.setActiveElement(initalFocusedElement);
+    //   setUpListeners();
+    // }
+
+    checkInitalFocusedElement();
+  }
+})
+
+// document.addEventListener("focusin", documentListener);
+
+// const initalFocusedElement = document.activeElement;
+// // incase it is null
+// if (
+//   initalFocusedElement &&
+//   !isBody(initalFocusedElement) &&
+//   shouldInsertExtension(initalFocusedElement)
+// ) {
+//   mindful.setActiveElement(initalFocusedElement);
+//   setUpListeners();
 // }
 
-
+function checkInitalFocusedElement() {
+  const initalFocusedElement = document.activeElement;
+  // incase document.activeElement is null
+    if (
+      initalFocusedElement &&
+      !isBody(initalFocusedElement) &&
+      shouldInsertExtension(initalFocusedElement)
+    ) {
+      mindful.setActiveElement(initalFocusedElement);
+      setUpListeners();
+    }
+}
 
 function documentListener() {
-  console.log('focus')
+  console.log("focus");
   //LOOK INTO THIS
-  let activeElement: ActiveElementType = document.activeElement;
-  mindful.setActiveElement(activeElement);
+  const activeElement: ActiveElementType = document.activeElement;
+  // mindful.setActiveElement(activeElement);
+  // should probably onnly set activeelement is it works
   // let activeElement = mindful.getActiveElement();
-
 
   // SET EMOJI SIZE!!!
   //STILL SOMETIMES COMES AS UNAVILIBLE
@@ -77,10 +161,12 @@ function documentListener() {
   // console.log(activeElement.clientHeight);
   // console.log(!mindful.isMounted);
 
-  console.log(getComputedStyle(activeElement));
-  if (shouldInsertExtension(activeElement) && !isAlreadyInserted(activeElement)) {
-
-
+  // console.log(shouldInsertExtension(activeElement) && !isAlreadyInserted(activeElement));
+  if (
+    shouldInsertExtension(activeElement) &&
+    !isAlreadyInserted(activeElement)
+  ) {
+    mindful.setActiveElement(activeElement);
     // if (isAlreadyInserted(activeElement)) {
     //   // need to check if there is a nextSibling because of content editable
     //   // if extension has already been added to text fiield
@@ -89,22 +175,21 @@ function documentListener() {
     //   mindful.setValues(activeElement.nextElementSibling, activeElement);// might just pass activeElement
     //   return;
 
-
     // }
 
-
-    if (mindful.isMounted) { // just us isMounted
+    if (mindful.isMounted) {
+      // just us isMounted
       // ALWAYS PUT THE VIEW FIRST!!!
       //mindfulWrapper
 
       // mindful.removePreviousMindfulWraper();
 
       mindful.unmountComponent();
+
       // let previousActiveElement = mindful.previousActiveElement; // WORK ON THIS
       // might not even need to remove listeners due to identical listeners not added
       // previousActiveElement.removeEventListener('input', analyzeInput);
       // previousActiveElement.removeEventListener("keyup", keyUpFunction);
-
     }
 
     // insertExtension();
@@ -113,7 +198,6 @@ function documentListener() {
     // // THINK ABOIT THIS
     //     //  mindfulWrapper.style.margin = window.getComputedStyle(activeElement).padding;
     //     // should i append the element before moounting>>
-
 
     //     // insertafter - should they be elements
     //     activeElement.parentNode.insertBefore(
@@ -125,15 +209,12 @@ function documentListener() {
 
     // mindful.setValues(minfulDOMWrapper, activeElement)
 
-
-
-
     // NEED TO ADD EVENTLISTENERS
 
     // will only be called once as internally, duplicate listeners cannot be added
 
     // if (mindful.isEnabled) {
-    // BASED ON ENABLED STATE, 
+    // BASED ON ENABLED STATE,
     // activeElement.addEventListener("input", analyzeInput);
 
     // activeElement.addEventListener("keyup", keyUpFunction);
@@ -142,56 +223,45 @@ function documentListener() {
     // doneTyping();
 
     setUpListeners();
-    // should i remove 
+    // should i remove
 
     // } else {
     //   const computedStyle = window.getComputedStyle(activeElement)
     //   mindful.mountComponent({ emoji: mindful.getDisabledEmoji(), computedStyle, enableFunc: setUpListeners, isEnabled: mindful.isEnabled })
     // }
 
-
     // mindful.setActiveElement(document.activeElement)
     // when would be the best time to call this function?????
-
-
   }
+}
+
+function disableExtension() {
+  const activeElement = mindful.getActiveElement();
+  //see if tjis is slow
+
+  activeElement.removeEventListener('input', analyzeInput);
+  activeElement.removeEventListener("keyup", keyUpFunction);
+  document.removeEventListener('focusin', documentListener);
+
+  
 
 }
 
-// function disableExtension() {
-//   const activeElement = mindful.getActiveElement();
-//   //see if tjis is slow
-//   activeElement.removeEventListener('input', analyzeInput);
-//   activeElement.removeEventListener("keyup", keyUpFunction);
-
-//   mindful.updateProps({ emoji: mindful.getDisabledEmoji(), enableFunc: setUpListeners }) // pass isEnabled???
-
-
-// }
-
-
-
-
 // better to attach to document due to server side rendering changing the body and head
-
-
 
 function keyUpFunction(event) {
   const key = event.key.toLowerCase();
-  // does not call advanced analysis if "bad" key is pressed 
+  // does not call advanced analysis if "bad" key is pressed
   if (mindful.getBadKeys().includes(key)) return;
 
   window.clearTimeout(typingTimer);
   // window.clearTimeout(noResultTimeOut); // clears timeout for no response
   // noResultTimeOut = null; //?????
 
-  typingTimer = window.setTimeout(
+  typingTimer = window.setTimeout(doneTyping, 2000); // could even reduce the timing
 
-    doneTyping, 2000) // could even reduce the timing 
-
-  // might not even need 
+  // might not even need
 }
-
 
 function analyzeInput() {
   //activeElement.value || activeElement.textContent
@@ -199,24 +269,41 @@ function analyzeInput() {
   // rework this
   // text = activeElement.value || activeElement.textContent
   //mindful.setText(text.trim())
-  let text = activeElement.tagName === "TEXTAREA" ? (activeElement as HTMLTextAreaElement).value.trim() : activeElement.textContent.trim();
+  const text =
+    activeElement.tagName === "TEXTAREA"
+      ? (activeElement as HTMLTextAreaElement).value.trim()
+      : activeElement.textContent.trim();
   mindful.setText(text);
 
-  console.log('here 1');
+  console.log("here 1");
   // if there is no text, there should technically be no toxicElements
   // should be here if all text is deleted
 
-  
-    // if (mindful?.props?.toxicityList?.length > 0) {
-    //   mindful.updateProps({ toxicityList: [] });
-    // }
+  // if (mindful?.props?.toxicityList?.length > 0) {
+  //   mindful.updateProps({ toxicityList: [] });
+  // }
 
-    // DOES NOT WORK IF THERE IS TXICITY RESULT WHEN SWITCHING
-  
+  // DOES NOT WORK IF THERE IS TXICITY RESULT WHEN SWITCHING
 
   // if (mindful.tocicityElements.length > 0) {
   //   // if there is no text and there are
   //   mindful.removeToxicityElements();
+  // if (
+  //   mindful.isMounted &&
+  //   mindful.ATTACHEMENT_STRATEGY === AttachmentStrategy.COMPLEX
+  // ) {
+  //   // console.log(getLineNumber(activeElement));
+  //   const caretPosition = getCaretCoordinates(
+  //     activeElement as HTMLElement,
+  //     (activeElement as HTMLTextAreaElement).selectionStart
+  //   );
+  //   console.log(
+  //     getVisibleTypingArea(activeElement, mindful.mindfulWrapper),
+  //     caretPosition
+  //   );
+  //   // console.log(parseFloat(getComputedStyle(mindful.mindfulWrapper).fontSize));
+  //   // console.log((activeElement as HTMLTextAreaElement).cols)
+  // }
   // }
 
   // if (!text) {
@@ -232,41 +319,45 @@ function analyzeInput() {
 
   // if (mindful.isEnabled)
   if (text) {
-    let analysis: SentimentAnalysisResult = SentimentIntensityAnalyzer.polarity_scores(text);
+    const analysis: SentimentAnalysisResult = SentimentIntensityAnalyzer.polarity_scores(
+      text
+    );
     console.log(analysis);
-    let score = analysis.compound;
+    const score = analysis.compound;
     mindful.setScore(score);
 
-    emoji = mindful.getEmojiFromScore(score)
+    emoji = mindful.getEmojiFromScore(score);
     // update props in indide method
   } else {
-    emoji = mindful.getDefaultEmoji()
+    emoji = mindful.getDefaultEmoji();
     // mindful.updateProps({ emoji: mindful.getDefaultEmoji() })
   }
 
   if (mindful.isMounted) {
-    mindful.updateProps({ emoji, toxicityList: [] });
+    let isTrancelucent = false;
+    if (mindful.ATTACHEMENT_STRATEGY === AttachmentStrategy.COMPLEX) {
+      const caretPosition = getCaretCoordinates(
+        activeElement as HTMLElement,
+        (activeElement as HTMLTextAreaElement).selectionStart
+      );
+      const visibleTypingArea = getVisibleTypingArea(
+        activeElement,
+        mindful.mindfulWrapper
+      );
+      isTrancelucent = caretPosition.top >= visibleTypingArea - 5; // do i need to do this
+    }
+    mindful.updateProps({ emoji, toxicityList: [], isTrancelucent });
   } else {
-    // let margin = window.getComputedStyle(activeElement).padding
-    // SHOULD PROBABLY USE A SEPERATE PARAMETER FOR STYLE
-    // const computedStyle = window.getComputedStyle(activeElement)
-    mindful.mountComponent( emoji ) //or use stright boolean values
+    mindful.mountComponent(emoji);
   }
-
-
-
-
 
   // mindful.setEmoji(getEmojiCode(score));
 
   // when would be the best time to call this method
-
-
 }
 
 function setUpListeners() {
-
-  let activeElement = mindful.getActiveElement();
+  const activeElement = mindful.getActiveElement();
 
   activeElement.addEventListener("input", analyzeInput);
 
@@ -274,18 +365,13 @@ function setUpListeners() {
 
   analyzeInput();
   doneTyping();
-
 }
 
-
-
-
 function doneTyping() {
-
   // Look for bugs
   // global text variable
+  const text = mindful.getText();
   if (!mindful.getText()) return;
-
 
   // if (mindful.tocicityElements.length > 0) {
   //   // remove toxicity elemnts if any
@@ -293,61 +379,40 @@ function doneTyping() {
   // }
   if (mindful.props.hasError) {
     // mindful.removeErrorElement();
-    mindful.updateProps({ hasError: true })
-
+    mindful.updateProps({ hasError: true });
   }
-
 
   //Adds loading spinner
 
-
   if (mindful.getScore() <= mindful.SCORE_THRESHOLD) {
-
     // mindful.addLoaderSpinner();
-    mindful.updateProps({ isLoading: true })
+    mindful.updateProps({ isLoading: true });
 
     // no longer needs to be an array
-    chrome.runtime.sendMessage({ text: mindful.getText() }, (response) => {
-      console.log('request sent')
-      // console.log(response); // remove spinner and 
+    chrome.runtime.sendMessage({ text }, (response) => {
+      console.log("request sent");
+      // console.log(response); // remove spinner and
       // work on this
       if (response.error) {
         // mindful.createErrorElement();
-        console.log(response.body)
+        console.log(response.body);
         // might not need to set toxicityList
-        mindful.updateProps({ hasError: true, toxicityList: [] })
+        mindful.updateProps({ hasError: true, toxicityList: [] });
       } else {
         // mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
         // should remove previos toxic elemnts
         // mindful.setToxicityElements(response.prediction)
         // console.log(response.predictions);
-        const toxicityList = mindful.getToxicityList(response.predictions)
-
+        const toxicityList = mindful.getToxicityList(response.predictions);
 
         // if there is no error an there is the toxicityList => display elements
-        // might not need to update hasError 
-        mindful.updateProps({ isLoading: false, hasError: false, toxicityList }) // add toxicity array
+        // might not need to update hasError
+        mindful.updateProps({
+          isLoading: false,
+          hasError: false,
+          toxicityList,
+        }); // add toxicity array
       }
-    })
-    // try {
-    //   // const response = await axios.post(mindful.API_URL, { text: [mindful.getText()] }, { timeout: 17 * 1000 });
-    //   // const data: ToxicAPIResponse = response.data
-    //   // if (data) {
-    //   //   mindful.removeLoadingSpinner(); // should it be in setToxicityEments method
-    //   //   mindful.setToxicityElements(data.prediction)
-    //   // }
-    //   // is this needed
-    // } catch (e) {
-    //   mindful.createErrorElement();
-    //   console.log(e)
-    // }
-
-
+    });
   }
-  // mindful.getLoadingElement().classList.add("la-ball-clip-rotate"); // add animation
-
-  // removes loading spinner after 17 (15 was too short) seconds and add error element if no response is given
-
-
 }
-// }

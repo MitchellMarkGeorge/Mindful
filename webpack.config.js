@@ -1,3 +1,4 @@
+
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
@@ -101,7 +102,9 @@ module.exports = {
     //   chunks: ["options"]
     // }),
 
-    new CopyPlugin([
+    new CopyPlugin({
+      
+      patterns:[
       // {from: 'public', to: 'public'}, 
       { from: 'manifest.json', to: 'manifest.json' },
       { from: 'src/icons', to: 'icons' },
@@ -109,7 +112,7 @@ module.exports = {
       // {from: 'src/content.css', to: 'content.css'},
       // {from: 'src/ball-clip-rotate.min.css', to: 'ball-clip-rotate.min.css'} 
       // {from: 'progressbar.min.js', to: 'progressbar.min.js'}
-    ])
+    ]})
     // new CleanWebpackPlugin()
     // new CopyWebpackPlugin(), 
     // new HtmlWebPackPlugin({

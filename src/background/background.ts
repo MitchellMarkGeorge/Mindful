@@ -2,8 +2,8 @@ import { ToxicAPIResponse, RequestError } from "./../types";
 // import toxicity from '@tensorflow-models/toxicity';
 import axios from "axios";
 
-// import common from '../common/common'
-let blacklist = [];
+import * as common from '../common/common'
+// let blacklist = [];
 const API_URL = "https://us-central1-mindfulmodel.cloudfunctions.net/advanced_analysis";
 // remove blacklist
 
@@ -12,16 +12,14 @@ chrome.runtime.onInstalled.addListener((data) => {
   //  loadModel();  // dont think i need this
 
   console.log(data); // set blacklist as empy array on install
+  // || data.reason === "update"
   if (data.reason === "install") {
     chrome.runtime.setUninstallURL(
       "http://mindful-extension-feedback.herokuapp.com"
     );
-    // chrome.storage.sync.set({ blacklist: [] });
-    // chrome.storage.sync
 
-    // common.setInitalBlacklist();
-
-    //loadModel();
+    common.setInitalBlacklist();
+  
   }
 });
 
@@ -34,7 +32,7 @@ chrome.runtime.onInstalled.addListener((data) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // use async await???
 
-  // sender.
+  
   // try {
   axios
     .post(API_URL, message)
@@ -45,7 +43,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     })
     .catch((err) => {
       console.log(err);
-      let request_error: RequestError = { error: true, body: err };
+      const request_error: RequestError = { error: true, body: err };
       sendResponse(request_error);
     });
 

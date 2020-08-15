@@ -1,11 +1,13 @@
+import { CurrentStatus } from './../types';
 import {
   ActiveElementType,
   ToxicResult,
-  ToxicAPIResponse,
   MindfulProps,
+  AttachmentStrategy
+
 } from "../types";
 
-// import common from '../common/common'
+import * as common from '../common/common'
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MindfulComponent } from "./components";
@@ -28,9 +30,9 @@ export class MidfulExtensionClass {
 
   public props: MindfulProps;
   // think about these thrshold values
-  public TOXIC_THRESHOLD: number = 0.75;
-  public SCORE_THRESHOLD: number = -0.4;
-  private score: number = 0;
+  public TOXIC_THRESHOLD = 0.75;
+  public SCORE_THRESHOLD = -0.4;
+  private score = 0;
   private text: string;
   // public isEnabled: boolean // default shoud be true??
   // API_URL: string = 'https://us-central1-mindful-279120.cloudfunctions.net/advanced-analysis'
@@ -47,13 +49,45 @@ export class MidfulExtensionClass {
     return !!this.mindfulWrapper;
   }
 
+  public get currentStatus(): Promise<CurrentStatus> {
+    console.log(location.href)
+    return common.getStatus(location.href);
+  }
+
+  public isDomainInBlacklist(blacklist: string[]) {
+    const domain = common.getHostDomain(location.href);
+    return blacklist.includes(domain);
+  }
+
+//   public removeListeners() {
+//     activeElement.removeEventListener('input', analyzeInput);
+// //   activeElement.removeEventListener("keyup", keyUpFunction);
+//   }
+
+  private async getIsEnabled() {
+    try {
+      const blacklist = await common.getBlacklist();
+      // const domain = common.getHostDomain(location.href);
+      // return blacklist.includes(domain);
+      return this.isDomainInBlacklist(blacklist)
+    } catch(e) {
+      console.log(e);
+      return true;
+    }
+  }
+  
+
+ 
+
   // public get isEnabled(): boolean {
   //     let domain = common.getHostDomain(location.href); // or just use loc
   //     // console.log(!common.getBlacklist().includes(domain))
   //     return !common.getBlacklist().includes(domain);
   // }
-
-  public mountComponent(emoji: string) {
+  public get ATTACHEMENT_STRATEGY(): AttachmentStrategy {
+    return this.mindfulWrapper.style.position === "relative" ? AttachmentStrategy.COMPLEX : AttachmentStrategy.SIMPLE
+  }
+  public mountComponent(emoji: string): void {
     console.log("mounting");
     // console.log(this.currentActiveElement.clientHeight);
     // container messes up grammarly
@@ -74,7 +108,7 @@ export class MidfulExtensionClass {
       // //     // figure outfinal values
       // //     console.log(props.computedStyle.position);
       //     this.mindfulContainer = document.createElement("mindful-container");
-      let styleObject = { // use strings incase of other css rules
+      const styleObject = { // use strings incase of other css rules
           "position": "relative", 
           "display": "block", 
           "width": "0", 
@@ -83,7 +117,7 @@ export class MidfulExtensionClass {
           "left": "0.5em"
         };
 
-      for (let style in styleObject) {
+      for (const style in styleObject) {
           if (styleObject.hasOwnProperty(style)) {
               this.mindfulWrapper.style.setProperty(style, styleObject[style], "important");
           }
@@ -137,8 +171,8 @@ export class MidfulExtensionClass {
     // console.log('here');
   }
 
-  public unWrapElement(el: HTMLElement) {
-    let parent = el.parentNode;
+  public unWrapElement(el: HTMLElement): void {
+    const parent = el.parentNode;
 
     // move all children out of the element
     while (el.firstChild) parent.insertBefore(el.firstChild, el);
@@ -225,24 +259,24 @@ export class MidfulExtensionClass {
 
   // setReferences
 
-  setValues(
-    DOM_Element: HTMLElement | Element,
-    activeElement: ActiveElementType
-  ) {
-    // should i store the previousMindfulWraper activeElement?
-    this.wrapperDiv = DOM_Element.firstElementChild;
-    this.emojiElement = this.wrapperDiv.firstElementChild;
+  // setValues(
+  //   DOM_Element: HTMLElement | Element,
+  //   activeElement: ActiveElementType
+  // ) {
+  //   // should i store the previousMindfulWraper activeElement?
+  //   this.wrapperDiv = DOM_Element.firstElementChild;
+  //   this.emojiElement = this.wrapperDiv.firstElementChild;
 
-    this.loadingElement = this.wrapperDiv.lastElementChild;
-    this.previousMindfulWraper = DOM_Element;
-    this.previousActiveElement = activeElement;
-    console.log(this.wrapperDiv);
+  //   this.loadingElement = this.wrapperDiv.lastElementChild;
+  //   this.previousMindfulWraper = DOM_Element;
+  //   this.previousActiveElement = activeElement;
+  //   console.log(this.wrapperDiv);
 
-    console.log(this.emojiElement);
-    console.log(this.loadingElement);
-  }
+  //   console.log(this.emojiElement);
+  //   console.log(this.loadingElement);
+  // }
 
-  setActiveElement(activeElement: ActiveElementType) {
+  setActiveElement(activeElement: ActiveElementType): void {
     this.currentActiveElement = activeElement;
     // this.previousActiveElement = activeElement;
   }
@@ -303,13 +337,13 @@ export class MidfulExtensionClass {
     this.text = text;
   }
 
-  removePreviousMindfulWraper() {
-    this.previousMindfulWraper.remove();
-  }
+  // removePreviousMindfulWraper() {
+  //   this.previousMindfulWraper.remove();
+  // }
 
-  getEmojiElement() {
-    return this.emojiElement;
-  }
+  // getEmojiElement() {
+  //   return this.emojiElement;
+  // }
 
   getEmoji(emojiNumber: number): string {
     //
@@ -320,19 +354,19 @@ export class MidfulExtensionClass {
     return this.score;
   }
 
-  getWrapperDiv() {
-    return this.wrapperDiv;
-  }
+  // getWrapperDiv() {
+  //   return this.wrapperDiv;
+  // }
 
-  setWrapperDivID(idString) {
-    this.wrapperDiv.id = idString;
-  }
+  // setWrapperDivID(idString) {
+  //   this.wrapperDiv.id = idString;
+  // }
 
-  setSpanElementClassName(className) {
-    // check if it aleready contains it
-    this.emojiElement.classList.add(className);
-    this.loadingElement.classList.add(className); // , 'mindful-span-toxicity-elements'
-  }
+  // setSpanElementClassName(className) {
+  //   // check if it aleready contains it
+  //   this.emojiElement.classList.add(className);
+  //   this.loadingElement.classList.add(className); // , 'mindful-span-toxicity-elements'
+  // }
 
   // setToxicityElements(toxicityArray: ToxicResult[]) {
   //     if (this.errorElement) {
@@ -371,60 +405,60 @@ export class MidfulExtensionClass {
   //     }
   // }
 
-  removeToxicityElements() {
-    for (let element of this.tocicityElements) {
-      element.remove(); // removes element??
-    }
-    // reset array
-    this.tocicityElements = [];
-  }
+  // removeToxicityElements() {
+  //   for (let element of this.tocicityElements) {
+  //     element.remove(); // removes element??
+  //   }
+  //   // reset array
+  //   this.tocicityElements = [];
+  // }
 
-  isLoaderSpinning() {
-    return this.loadingElement.classList.contains("la-ball-clip-rotate");
-  }
+  // isLoaderSpinning() {
+  //   return this.loadingElement.classList.contains("la-ball-clip-rotate");
+  // }
 
-  addLoaderSpinner() {
-    this.getLoadingElement().classList.add("la-ball-clip-rotate");
-  }
+  // addLoaderSpinner() {
+  //   this.getLoadingElement().classList.add("la-ball-clip-rotate");
+  // }
 
   // ????????????
-  setToxicityElementClass(className) {
-    this.loadingElement.classList.add(className);
-    console.log(className); //
-  }
+  // setToxicityElementClass(className) {
+  //   this.loadingElement.classList.add(className);
+  //   console.log(className); //
+  // }
 
-  getLoadingElement() {
-    return this.loadingElement;
-  }
+  // getLoadingElement() {
+  //   return this.loadingElement;
+  // }
 
-  removeErrorElement() {
-    this.errorElement.remove();
-    this.errorElement = undefined;
-  }
+  // removeErrorElement() {
+  //   this.errorElement.remove();
+  //   this.errorElement = undefined;
+  // }
 
-  removeLoadingSpinner() {
-    this.getLoadingElement().classList.remove("la-ball-clip-rotate");
-  }
+  // removeLoadingSpinner() {
+  //   this.getLoadingElement().classList.remove("la-ball-clip-rotate");
+  // }
 
-  createErrorElement(specialMessage: string = "Unavalible") {
-    let text = specialMessage;
-    // the emoji element must be attached
-    if (this.getEmojiElement() && !this.errorElement) {
-      if (this.tocicityElements.length > 0) {
-        this.removeToxicityElements();
-      }
-      if (this.isLoaderSpinning()) {
-        // this.getLoadingElement().classList.remove("la-ball-clip-rotate");
-        this.removeLoadingSpinner();
-      }
+  // createErrorElement(specialMessage = "Unavalible") {
+  //   let text = specialMessage;
+  //   // the emoji element must be attached
+  //   if (this.getEmojiElement() && !this.errorElement) {
+  //     if (this.tocicityElements.length > 0) {
+  //       this.removeToxicityElements();
+  //     }
+  //     if (this.isLoaderSpinning()) {
+  //       // this.getLoadingElement().classList.remove("la-ball-clip-rotate");
+  //       this.removeLoadingSpinner();
+  //     }
 
-      this.errorElement = document.createElement("span");
-      this.errorElement.className = "mindful-error-element"; // might change className
-      this.errorElement.textContent = text;
-      this.emojiElement.parentNode.insertBefore(
-        this.errorElement,
-        this.emojiElement.nextSibling
-      );
-    }
-  }
+  //     this.errorElement = document.createElement("span");
+  //     this.errorElement.className = "mindful-error-element"; // might change className
+  //     this.errorElement.textContent = text;
+  //     this.emojiElement.parentNode.insertBefore(
+  //       this.errorElement,
+  //       this.emojiElement.nextSibling
+  //     );
+  //   }
+  // }
 }

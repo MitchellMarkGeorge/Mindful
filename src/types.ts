@@ -11,6 +11,7 @@ export interface MindfulProps {
     isLoading?: boolean,
     hasError?: boolean
     toxicityList?: string[], 
+    isTrancelucent?: boolean
     // margin?: string,
     computedStyle?: CSSStyleDeclaration
     // enableFunc?: () => void
@@ -19,9 +20,15 @@ export interface MindfulProps {
 
 }
 
+export enum AttachmentStrategy {
+    COMPLEX, 
+    SIMPLE
+}
+
 export interface CurrentStatus {
     isEnabled?: boolean,
-    domain?: string
+    domain?: string,
+    blacklist?: string[]
 }
 
 export interface ToxicityElementProps {
@@ -41,7 +48,7 @@ export interface ToxicResult {
 }
 
 export interface PredictionResult {
-    probabilities: {},
+    // probabilities: {},
     match: boolean;
 }
 

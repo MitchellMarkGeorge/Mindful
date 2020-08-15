@@ -1,4 +1,5 @@
-import { ActiveElementType } from '../types';
+import { ActiveElementType } from './../types';
+// import { ActiveElementType } from '../types';
 // DOCUMENTATION
 //should i mearge all function in mindful-class
 export function getEmojiCode(score: number): number {
@@ -14,11 +15,26 @@ export function getEmojiCode(score: number): number {
     else return 128528; // default score
 }
 
+export function getVisibleTypingArea(activeElement: ActiveElementType, extensionElement: HTMLElement): number {
+    const takenArea = getStyle(extensionElement, 'fontSize') * 2
+    return activeElement.clientHeight - takenArea;
+}
+
+function getStyle(element: HTMLElement, style: string): number {
+    return parseFloat(getComputedStyle(element)[style]);
+}
+
 export function shouldInsertExtension(activeElement: ActiveElementType): boolean {
-    // confim if this works
-    let fontSize = parseFloat(getComputedStyle(activeElement).fontSize) // think about this. should use some kind of reletive size
+    // CONFIRM THIF THIS WORKS
+    const fontSize = getStyle((activeElement as HTMLElement), 'fontSize') // think about this. should use some kind of reletive size
     return ((activeElement.tagName === "TEXTAREA" && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) && fontSize < 40 || ( (activeElement as HTMLElement).isContentEditable));   
     // look into wiidth
+}
+
+
+
+export function isBody(activeElement: ActiveElementType): boolean {
+    return document.body.isSameNode(activeElement);
 }
 
 export function isAlreadyInserted(activeElement: ActiveElementType): boolean {
@@ -27,27 +43,5 @@ export function isAlreadyInserted(activeElement: ActiveElementType): boolean {
 
 
 
-// export function createExtension(activeElement: ActiveElementType):  HTMLElement {
-//     // for encasulation
-//     // LOOK INTO BETTER STYLING
-//     let mindfulWrapper = document.createElement("mindful-extension");
-    
-//     let wrapperDiv = document.createElement("div"); 
-//     // THINK ABOIT THIS
-//     wrapperDiv.style.margin = window.getComputedStyle(activeElement).padding;
-//     wrapperDiv.id = "mindful-wrapper"
-//     let emojiElement = document.createElement("span");
-//     emojiElement.classList.add("mindful-span-elements");
-//     // just use className
-//     // might add ids to identify seperate emelemts in development
-//     let loadingElement = document.createElement("div");
-//     loadingElement.classList.add("mindful-span-elements");
-//     // need this for loading element to show
-//     loadingElement.appendChild(document.createElement("div"));
-//     mindfulWrapper.appendChild(wrapperDiv);
-//     wrapperDiv.appendChild(emojiElement);
-//     wrapperDiv.appendChild(loadingElement);
-    
-//     return mindfulWrapper;
-// }
+
 

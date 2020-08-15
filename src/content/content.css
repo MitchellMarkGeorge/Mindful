@@ -21,11 +21,13 @@ mindful-container {
   /* was 30px before */
   
   /* line-height: 2rem !important;  */
-
+  /* display: initial !important; */
   /* do i need length */
   /* position: relative; */
   /* bottom: 50%; */
   /* padding: 3px !important; */
+  display: flex;
+  align-items: center;
   background-color: transparent !important;
   /* background-color: inherit !important; */
   /* height: 30px !important; */
@@ -38,7 +40,7 @@ mindful-container {
 } */
 
 .mindful-span-elements {
-  display: inline-block !important;
+  /* display: inline-block !important; */
   /* font size */
   /* line-height: 30px !important; */
   margin-right: 10px !important;
@@ -63,11 +65,11 @@ mindful-container {
   color: #fff !important;
   text-transform: capitalize !important;
   margin-right: 10px !important;
-  display: inline-block !important;
+  /* display: inline-block !important; */
   background-color: #d95252 !important;
-  user-select: none;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10+ and Edge */
+  user-select: none !important;
+  -webkit-user-select: none !important; /* Safari */
+  -ms-user-select: none !important; /* IE 10+ and Edge */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif !important;

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { MindfulProps, ToxicityElementProps } from "../types";
 import * as React from "react";
 // import { Popover } from 'antd';
@@ -12,10 +13,11 @@ export const MindfulComponent: React.FC<MindfulProps> = ({
   hasError,
   toxicityList,
   isLoading,
+  isTrancelucent
 }) => {
   // in tooltip, if disbabled and switch is fliped, call enableFunc
   return (
-    <div id="mindful-wrapper">
+    <div id="mindful-wrapper" style={isTrancelucent ? {opacity: .15, transition: "opacity .15s ease-in-out", filter: "alpha(opacity=15)"}: {opacity: 1, transition: "opacity .15s ease-in"}}>
       {/* <span className="mindful-span-elements">{emoji}</span> */}
         <Emoji emoji={emoji}/>
       {/* Emoji */}

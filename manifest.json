@@ -4,7 +4,7 @@
   "name": "Mindful Extension",
   "short_name": "Mindful",
   "author": "Mitchell Mark-George",
-  "version": "1.0.2",
+  "version": "1.1.2",
   "description": "An extension that makes you mindful of what you say using the power of sentiment analysis, machine learning and emojis",
  
   "browser_action": {
@@ -16,6 +16,8 @@
   "icons": {
     "128": "icons/mindful-logo2.png"
   },
+
+  "permissions": ["tabs", "storage"],
 
   
   
