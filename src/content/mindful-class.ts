@@ -1,46 +1,45 @@
-import { CurrentStatus } from './../types';
+import { CurrentStatus } from "./../types";
 import {
   ActiveElementType,
   ToxicResult,
   MindfulProps,
-  AttachmentStrategy
-
+  AttachmentStrategy,
 } from "../types";
 
-import * as common from '../common/common'
+import * as common from "../common/common";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MindfulComponent } from "./components";
 import { getEmojiCode } from "./functions";
 export class MidfulExtensionClass {
   mindfulWrapper: HTMLElement;
-  mindfulContainer: HTMLElement;
-  // activeElement
-  private currentActiveElement: ActiveElementType;
-  wrapperDiv: Element;
-  emojiElement: Element;
-  errorElement: Element;
-  loadingElement: Element;
-  previousMindfulWraper: Element;
-  previousActiveElement: Element;
-  tocicityElements: HTMLSpanElement[] = [];
 
-  private DEFAULT_EMOJICODE;
+  // activeElement
+  private activeElement: ActiveElementType;
+
   // CREATE CONSTANTS FOR SPECIAL EMOJI CODE (LIKE DEFAULT OR DISABLED)
 
   public props: MindfulProps;
   // think about these thrshold values
-  public TOXIC_THRESHOLD = 0.75;
+ 
   public SCORE_THRESHOLD = -0.4;
   private score = 0;
   private text: string;
-  // public isEnabled: boolean // default shoud be true??
-  // API_URL: string = 'https://us-central1-mindful-279120.cloudfunctions.net/advanced-analysis'
 
-  constructor() {
-    // let domain = common.getHostDomain(currentURL);
-    // console.log(!common.getBlacklist().includes(domain))
-    // this.isEnabled = !common.getBlacklist().includes(domain);
+  // experimental
+  public getActiveElementPos(): number {
+    // for contentedit field
+    const activeElement = this.activeElement;
+    if ((<HTMLElement>activeElement).isContentEditable) {
+      // activeElement.focus() // might not need to
+      const _range = document.getSelection().getRangeAt(0);
+      const range = _range.cloneRange();
+      range.selectNodeContents(activeElement);
+      range.setEnd(_range.endContainer, _range.endOffset);
+      return range.toString().length;
+    }
+    // for texterea/input element
+    return (<HTMLTextAreaElement>activeElement).selectionStart;
   }
 
   // turn isEnabled to get function
@@ -50,34 +49,28 @@ export class MidfulExtensionClass {
   }
 
   public get currentStatus(): Promise<CurrentStatus> {
-    console.log(location.href)
+    console.log(location.href);
     return common.getStatus(location.href);
   }
 
-  public isDomainInBlacklist(blacklist: string[]) {
+  public isDomainInBlacklist(blacklist: string[]): boolean {
     const domain = common.getHostDomain(location.href);
     return blacklist.includes(domain);
   }
 
-//   public removeListeners() {
-//     activeElement.removeEventListener('input', analyzeInput);
-// //   activeElement.removeEventListener("keyup", keyUpFunction);
-//   }
+  
 
   private async getIsEnabled() {
     try {
       const blacklist = await common.getBlacklist();
       // const domain = common.getHostDomain(location.href);
       // return blacklist.includes(domain);
-      return this.isDomainInBlacklist(blacklist)
-    } catch(e) {
+      return this.isDomainInBlacklist(blacklist);
+    } catch (e) {
       console.log(e);
       return true;
     }
   }
-  
-
- 
 
   // public get isEnabled(): boolean {
   //     let domain = common.getHostDomain(location.href); // or just use loc
@@ -85,81 +78,48 @@ export class MidfulExtensionClass {
   //     return !common.getBlacklist().includes(domain);
   // }
   public get ATTACHEMENT_STRATEGY(): AttachmentStrategy {
-    return this.mindfulWrapper.style.position === "relative" ? AttachmentStrategy.COMPLEX : AttachmentStrategy.SIMPLE
+    return this.mindfulWrapper.style.position === "relative"
+      ? AttachmentStrategy.COMPLEX
+      : AttachmentStrategy.SIMPLE;
   }
   public mountComponent(emoji: string): void {
     console.log("mounting");
-    // console.log(this.currentActiveElement.clientHeight);
-    // container messes up grammarly
-    // figure out
-
-    // change order
-
-    // this.currentActiveElement.parentElement.insertBefore(mindfulContainer, this.currentActiveElement);
-    // mindfulContainer.appendChild(this.currentActiveElement);
+    
 
     this.mindfulWrapper = document.createElement("mindful-extension");
-    // this.previousMindfulWraper = this.mindfulWrapper;
+   
 
     // THINK ABOIT THIS
-    console.log(this.currentActiveElement.clientHeight);
-    // also compare size/ height (only for bigger elements that absolute positioning should be usef)
-    if (this.currentActiveElement.clientHeight > 40) {
-      // //     // figure outfinal values
-      // //     console.log(props.computedStyle.position);
-      //     this.mindfulContainer = document.createElement("mindful-container");
-      const styleObject = { // use strings incase of other css rules
-          "position": "relative", 
-          "display": "block", 
-          "width": "0", 
-          "height": "0", 
-          "bottom": "2em",
-          "left": "0.5em"
-        };
+    console.log(this.activeElement.clientHeight);
+    // also compare size/ height (only for bigger elements that absolute positioning should be useful)
+    if (this.activeElement.clientHeight > 40) {
+   
+      const styleObject = {
+        // use strings incase of other css rules
+        position: "relative",
+        display: "block",
+        width: "0",
+        height: "0",
+        bottom: "2em",
+        left: "0.5em",
+      };
 
       for (const style in styleObject) {
-          if (styleObject.hasOwnProperty(style)) {
-              this.mindfulWrapper.style.setProperty(style, styleObject[style], "important");
-          }
+        if (styleObject.hasOwnProperty(style)) {
+          this.mindfulWrapper.style.setProperty(
+            style,
+            styleObject[style],
+            "important"
+          );
+        }
       }
-    //   this.mindfulWrapper.style.position = "relative";
-    //   this.mindfulWrapper.style.display = "block";
-    //   this.mindfulWrapper.style.width = "0";
-    //   this.mindfulWrapper.style.height = "0";
-    //   this.mindfulWrapper.style.bottom = "2em"; // or use actual pixels/ height???
-    //   this.mindfulWrapper.style.left = "0.5em";
-      //   const { height, width } = this.getActiveElementStyles()
-      //   console.log(height, width)
-      //   this.mindfulWrapper.style.transform =  "translate(30%, 340%)";
-      //   this.mindfulWrapper.style.bottom = "3em";
-      //   this.mindfulWrapper.style.left = "1em";
-
-      // above or below
-      //   this.currentActiveElement.parentNode.insertBefore(
-      //     this.mindfulWrapper, // use element
-      //     this.currentActiveElement.nextSibling
-      // );
-      //     //     this.mindfulWrapper.style.position = 'absolute'; // try relative
-
-      //     this.mindfulWrapper.style.bottom = '1em'; // maybey i should use top
-      //     this.mindfulWrapper.style.left = '1em';
-
-      //     this.wrapActiveElement(this.currentActiveElement, this.mindfulContainer);
-
-      //     this.mindfulContainer.appendChild(this.mindfulWrapper);
     }
-    //  else {
 
     // insertafter - should they be elements
-    this.currentActiveElement.parentNode.insertBefore(
+    this.activeElement.parentNode.insertBefore(
       this.mindfulWrapper, // use element
-      this.currentActiveElement.nextSibling
+      this.activeElement.nextSibling
     );
-    //  }
-
-    // this.curr
-
-    // this.mindfulWrapper = mindfulWrapper;
 
     this.props = { emoji };
 
@@ -182,107 +142,70 @@ export class MidfulExtensionClass {
   }
 
   public getActiveElementStyles(): CSSStyleDeclaration {
-    return window.getComputedStyle(this.currentActiveElement);
+    return window.getComputedStyle(this.activeElement);
   }
 
   public wrapActiveElement(
     activeElement: ActiveElementType,
     wrapper: HTMLElement
-  ) {
+  ): void {
     activeElement.parentNode.insertBefore(wrapper, activeElement);
     wrapper.appendChild(activeElement);
   }
 
-  public unmountComponent() {
+  public unmountComponent(): void {
     // re-consider order
     ReactDOM.unmountComponentAtNode(this.mindfulWrapper);
-
-    // if (this.mindfulContainer) { // incase the second attachment option is used
-    //     this.unWrapElement(this.mindfulContainer);
-    //     this.mindfulContainer = null;
-    // }
 
     this.mindfulWrapper.remove(); // should i remove ore leave if re-attached
     this.mindfulWrapper = null;
   }
 
-
-  public updateProps(props: MindfulProps) {
+  public updateProps(props: MindfulProps): void {
     console.log("update to props");
     Object.assign(this.props, props);
     this.renderComponent();
   }
 
-  public renderComponent() {
+  public renderComponent(): void {
     const componentInstance = React.createElement(MindfulComponent, this.props);
     console.log(this.mindfulWrapper);
     ReactDOM.render(componentInstance, this.mindfulWrapper);
   }
 
-  public setScore(score: number) {
+  public setScore(score: number): void {
     this.score = score;
     // this.updateProps({ emoji: this.getEmojiFromScore(score) })
   }
 
-  public getEmojiFromScore(score: number) {
+  public getEmojiFromScore(score: number): string {
     const emojicode = getEmojiCode(score);
     return String.fromCodePoint(emojicode);
   }
 
-  public getDefaultEmoji() {
+  public getDefaultEmoji(): string {
     return String.fromCodePoint(128528);
   }
 
-  public getDisabledEmoji() {
-    return String.fromCodePoint(128274);
-  }
+  // public getDisabledEmoji(): string {
+  //   return String.fromCodePoint(128274);
+  // }
 
   public getToxicityList(response: ToxicResult[]): string[] {
     return response
       .filter((item) => item?.results[0]?.match)
       .map((item) => item.label.replace("_", " "));
 
-    // response..map((item) => item.label.replace('_', ' '))
+    
   }
-  // constructor() {
-
-  //     // this.wrapperDiv;
-  //     // this.emojiElement;
-  //     // this.errorElement;
-  //     // this.loadingElement;
-  //     // this.previousMindfulWraper;
-  //     // this.previousActiveElement;
-  //     // // this.state;
-  //     // this.tocicityElements = [];
-
-  // }
-
-  // setReferences
-
-  // setValues(
-  //   DOM_Element: HTMLElement | Element,
-  //   activeElement: ActiveElementType
-  // ) {
-  //   // should i store the previousMindfulWraper activeElement?
-  //   this.wrapperDiv = DOM_Element.firstElementChild;
-  //   this.emojiElement = this.wrapperDiv.firstElementChild;
-
-  //   this.loadingElement = this.wrapperDiv.lastElementChild;
-  //   this.previousMindfulWraper = DOM_Element;
-  //   this.previousActiveElement = activeElement;
-  //   console.log(this.wrapperDiv);
-
-  //   console.log(this.emojiElement);
-  //   console.log(this.loadingElement);
-  // }
 
   setActiveElement(activeElement: ActiveElementType): void {
-    this.currentActiveElement = activeElement;
+    this.activeElement = activeElement;
     // this.previousActiveElement = activeElement;
   }
 
   getActiveElement(): ActiveElementType {
-    return this.currentActiveElement;
+    return this.activeElement;
   }
 
   getText(): string {
@@ -337,14 +260,6 @@ export class MidfulExtensionClass {
     this.text = text;
   }
 
-  // removePreviousMindfulWraper() {
-  //   this.previousMindfulWraper.remove();
-  // }
-
-  // getEmojiElement() {
-  //   return this.emojiElement;
-  // }
-
   getEmoji(emojiNumber: number): string {
     //
     return String.fromCodePoint(emojiNumber);
@@ -353,112 +268,4 @@ export class MidfulExtensionClass {
   getScore(): number {
     return this.score;
   }
-
-  // getWrapperDiv() {
-  //   return this.wrapperDiv;
-  // }
-
-  // setWrapperDivID(idString) {
-  //   this.wrapperDiv.id = idString;
-  // }
-
-  // setSpanElementClassName(className) {
-  //   // check if it aleready contains it
-  //   this.emojiElement.classList.add(className);
-  //   this.loadingElement.classList.add(className); // , 'mindful-span-toxicity-elements'
-  // }
-
-  // setToxicityElements(toxicityArray: ToxicResult[]) {
-  //     if (this.errorElement) {
-  //         this.removeErrorElement() // should groupt in div
-  //     }
-  //     // in case there is any elements for anu reason
-
-  //     // for example cold cloud function boot times
-  //     if (this.tocicityElements.length > 0) {
-  //         this.removeToxicityElements();
-  //     }
-
-  //     let tempArray = toxicityArray.filter(item => item.prediction >= this.TOXIC_THRESHOLD)
-  //     // let tempArray = toxicityArray.filter(item => item.results[0].match === true);
-
-  //     console.log(tempArray);
-
-  //     this.tocicityElements = tempArray.map(item => {
-  //         let element = document.createElement('span');
-  //         element.className = 'mindful-span-toxicity-elements'
-  //         element.textContent = item.label.replace('_', ' '); // add percentage???
-  //         return element;
-  //     })
-
-  //     // might wrap in a div
-
-  //     console.log(this.tocicityElements);
-
-  //     for (let item of this.tocicityElements) {
-  //         // insert all toxicity elements after emoji element
-  //         // USE ELEMENTS
-  //         this.emojiElement.parentNode.insertBefore(
-  //             item,
-  //             this.emojiElement.nextSibling
-  //         );
-  //     }
-  // }
-
-  // removeToxicityElements() {
-  //   for (let element of this.tocicityElements) {
-  //     element.remove(); // removes element??
-  //   }
-  //   // reset array
-  //   this.tocicityElements = [];
-  // }
-
-  // isLoaderSpinning() {
-  //   return this.loadingElement.classList.contains("la-ball-clip-rotate");
-  // }
-
-  // addLoaderSpinner() {
-  //   this.getLoadingElement().classList.add("la-ball-clip-rotate");
-  // }
-
-  // ????????????
-  // setToxicityElementClass(className) {
-  //   this.loadingElement.classList.add(className);
-  //   console.log(className); //
-  // }
-
-  // getLoadingElement() {
-  //   return this.loadingElement;
-  // }
-
-  // removeErrorElement() {
-  //   this.errorElement.remove();
-  //   this.errorElement = undefined;
-  // }
-
-  // removeLoadingSpinner() {
-  //   this.getLoadingElement().classList.remove("la-ball-clip-rotate");
-  // }
-
-  // createErrorElement(specialMessage = "Unavalible") {
-  //   let text = specialMessage;
-  //   // the emoji element must be attached
-  //   if (this.getEmojiElement() && !this.errorElement) {
-  //     if (this.tocicityElements.length > 0) {
-  //       this.removeToxicityElements();
-  //     }
-  //     if (this.isLoaderSpinning()) {
-  //       // this.getLoadingElement().classList.remove("la-ball-clip-rotate");
-  //       this.removeLoadingSpinner();
-  //     }
-
-  //     this.errorElement = document.createElement("span");
-  //     this.errorElement.className = "mindful-error-element"; // might change className
-  //     this.errorElement.textContent = text;
-  //     this.emojiElement.parentNode.insertBefore(
-  //       this.errorElement,
-  //       this.emojiElement.nextSibling
-  //     );
-  //   }
-  // }
 }

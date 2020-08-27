@@ -1,6 +1,5 @@
 // export interface ToxicResult {
 
-import { AxiosError } from "axios";
 
 // }
 
@@ -57,8 +56,9 @@ export interface ToxicAPIResponse {
 }
 
 export interface RequestError {
-    error: true,
-    body: AxiosError
+    error?: boolean,
+    // body: AxiosError
+    isCancel?: boolean
 
 }
 

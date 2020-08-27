@@ -16,10 +16,9 @@ module.exports = {
   entry: {
 
     popup: path.resolve(__dirname, `src/popup/popup.tsx`),
-    // options: path.resolve(__dirname, `src/options/options.ts`),
     content: path.resolve(__dirname, `src/content/content.ts`),
     background: path.resolve(__dirname, `src/background/background.ts`)
-    // load popupscript
+
   },
   output: {
 
@@ -51,23 +50,10 @@ module.exports = {
 
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"] // should i use the minicss loader?
+        use: [MiniCssExtractPlugin.loader, "css-loader"] 
 
 
       },
-
-      // web worker
-
-      // {
-      //   test: /\.worker\.js$/,
-      //   use: {
-      //     loader: 'worker-loader',
-      //     options: { inline: true }
-      //     // options: {
-      //     //   inline: true
-      //     // }
-      //   }
-      // },
 
       {
         test: /\.(png|svg|jpg|gif)$/,

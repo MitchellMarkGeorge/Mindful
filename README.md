@@ -74,7 +74,7 @@ npm run standard
 
 * [Load Awsome Spinner](https://github.com/danielcardoso/load-awesome/blob/1.1.0/css/ball-clip-rotate.min.css) - Used to show green loader in extension. (included in source code)
 
-* For versions, refer to [package.json](package.json)
+<!-- * For versions, refer to [package.json](package.json) -->
 
 <!-- ## Contributing
 

@@ -1,29 +1,4 @@
 import { CurrentStatus } from "./../types";
-// CurrentStatus
-
-// class Common {
-//     // WORK ON THIS
-
-//     private blacklist: string[] = [];
-
-//     // API_URL = 'http://localhost:5000/advanced_analysis';
-//     API_URL = 'https://us-central1-mindfulmodel.cloudfunctions.net/advanced_analysis';
-//     constructor() {
-
-//         // chrome.storage.sync.get(['blacklist'], (result) => {
-//         //     this.blacklist = result.blacklist;
-//         //     console.log(this.blacklist);
-//         // })
-
-//     }
-
-// export function addUpdateListener(): void {
-//     chrome.storage.onChanged.addListener((changes) => {
-//         console.log(changes.blacklist.newValue);
-//         this.blacklist = changes.blacklist.newValue;
-//         // console.log(blacklist);
-//     }); //
-// }
 
 export async function getStatus(url?: string): Promise<CurrentStatus> {
   try {
@@ -38,8 +13,12 @@ export async function getStatus(url?: string): Promise<CurrentStatus> {
     const blacklist = await getBlacklist();
     console.log(blacklist);
     const isEnabled = !blacklist.includes(domain);
+    if (url) { // meaning it came from a content script
+      return { isEnabled }
+    } else {
     const result: CurrentStatus = { domain, isEnabled, blacklist };
     return result;
+    }
   } catch (e) {
     console.log(e);
     return { domain: "", isEnabled: true, blacklist: [] };
@@ -47,7 +26,7 @@ export async function getStatus(url?: string): Promise<CurrentStatus> {
 }
 
 export function setInitalBlacklist(): void { // try chrome.storage.local
-  chrome.storage.sync.set({ blacklist: [] });
+  chrome.storage.local.set({ blacklist: [] });
 }
 
 // getBlacklistFromStorage(): Promise<string[]> {
@@ -73,7 +52,7 @@ export function getTabFromQuery(
 
 export function getBlacklist(): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["blacklist"], (result) => {
+    chrome.storage.local.get(["blacklist"], (result) => {
       if (chrome.runtime.lastError) {
         console.log(chrome.runtime.lastError);
         return reject(chrome.runtime.lastError);
@@ -85,25 +64,9 @@ export function getBlacklist(): Promise<string[]> {
     });
   });
 
-  // return this.blacklist;
-  // return [''];
+ 
 }
 
-// function addToBlacklist(domain: string) {
-//     this.blacklist.push(domain);
-//     chrome.storage.sync.set({ blacklist: this.blacklist })
-// }
-
-// function removeFromBlacklist(domain: string) {
-//     let index = this.blacklist.indexOf(domain);
-//     // if the item is in the array
-//     if (index !== -1) {
-//         this.blacklist.splice(index, 1);
-//     }
-
-//     chrome.storage.sync.set({ blacklist: this.blacklist })
-
-// }
 
 export function getHostDomain(url: string): string {
   let domain: string;
@@ -122,19 +85,3 @@ export function getHostDomain(url: string): string {
 
   return domain;
 }
-
-// (async function() {
-//     common = new Common();
-//     try {
-
-//     } catch (e) {
-//         console.log(e)
-//     }
-//     await common.init();
-// })()
-
-// common = new Common();
-//  common.init().then(() => {
-//     module.exports.common = common
-//
-//  });
