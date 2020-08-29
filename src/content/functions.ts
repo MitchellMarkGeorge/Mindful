@@ -20,12 +20,13 @@ export function getVisibleTypingArea(activeElement: ActiveElementType, extension
     return activeElement.clientHeight - takenArea;
 }
 
-function getStyle(element: HTMLElement, style: string): number {
+export function getStyle(element: HTMLElement, style: string): number {
     return parseFloat(getComputedStyle(element)[style]);
 }
 
 export function shouldInsertExtension(activeElement: ActiveElementType): boolean {
     // CONFIRM THIF THIS WORKS
+    console.log('marginBottom', getStyle((activeElement as HTMLElement), 'marginBottom'));
     const fontSize = getStyle((activeElement as HTMLElement), 'fontSize') // think about this. should use some kind of reletive size
     return ((isTextArea(activeElement) && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) && fontSize < 40 || ( (activeElement as HTMLElement).isContentEditable));   
     // look into wiidth

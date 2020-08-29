@@ -5,7 +5,7 @@ import {
   MindfulProps,
   AttachmentStrategy,
 } from "../types";
-
+import { getStyle } from './functions';
 import * as common from "../common/common";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -88,20 +88,25 @@ export class MidfulExtensionClass {
 
     this.mindfulWrapper = document.createElement("mindful-extension");
    
+    
 
     // THINK ABOIT THIS
     console.log(this.activeElement.clientHeight);
+
+    const marginBottom = getStyle(this.activeElement as HTMLElement, 'marginBottom')
+    console.log(marginBottom)
+    const marginLeft = getStyle(this.activeElement as HTMLElement, 'marginLeft')
     // also compare size/ height (only for bigger elements that absolute positioning should be useful)
     if (this.activeElement.clientHeight > 40) {
    
       const styleObject = {
-        // use strings incase of other css rules
-        position: "relative",
-        display: "block",
-        width: "0",
-        height: "0",
-        bottom: "2em",
-        left: "0.5em",
+        // use strings for properties incase of other css rules
+        "position": "relative",
+        "display": "block",
+        "width": "0",
+        "height": "0",
+        "bottom": `calc(2em + ${marginBottom}px)`,  // add margin-bottom
+        "left": `calc(0.5em + ${marginLeft}px)`, // add margin-left
       };
 
       for (const style in styleObject) {
@@ -216,9 +221,9 @@ export class MidfulExtensionClass {
   //     return this.getEmoji(128528)
   // }
 
-  setEmojiAsDefault() {
-    this.getEmoji(128528);
-  }
+  // setEmojiAsDefault() {
+  //   this.getEmoji(128528);
+  // }
 
   getBadKeys(): string[] {
     return [
@@ -256,7 +261,7 @@ export class MidfulExtensionClass {
     ]; // 'alt', 'shift', 'control', 'meta', 'scrolllock', 'symbol', 'symbollock'
   }
 
-  setText(text: string) {
+  setText(text: string): void {
     this.text = text;
   }
 
