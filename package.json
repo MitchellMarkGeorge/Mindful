@@ -24,7 +24,7 @@
     "@types/webpack": "4.1.4",
     "@typescript-eslint/eslint-plugin": "^3.9.0",
     "@typescript-eslint/parser": "^3.9.0",
-    "bestzip": "^2.1.6",
+    "bestzip": "^2.1.7",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^3.6.0",
