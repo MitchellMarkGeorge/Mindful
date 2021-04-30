@@ -49,6 +49,8 @@ class Popup extends React.Component {
       .catch((err) => console.log(err));
   };
 
+  
+
   render() {
     
     console.log(this.state);

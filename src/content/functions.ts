@@ -2,6 +2,11 @@ import { ActiveElementType } from './../types';
 
 // DOCUMENTATION
 
+/**
+ * @param {string}  score score to be coverted to emoji
+ * @return {number} the emojicode to be rendered
+ */
+
 export function getEmojiCode(score: number): number {
     if (score > 0.8) return 128525;
     else if (score > 0.6) return 128512;
@@ -26,7 +31,7 @@ export function getStyle(element: HTMLElement, style: string): number {
 
 export function shouldInsertExtension(activeElement: ActiveElementType): boolean {
     // CONFIRM THIF THIS WORKS
-    console.log('marginBottom', getStyle((activeElement as HTMLElement), 'marginBottom'));
+    // console.log('marginBottom', getStyle((activeElement as HTMLElement), 'marginBottom'));
     const fontSize = getStyle((activeElement as HTMLElement), 'fontSize') // think about this. should use some kind of reletive size
     return ((isTextArea(activeElement) && activeElement.clientWidth > 190 && activeElement.clientHeight > 20) && fontSize < 40 || ( (activeElement as HTMLElement).isContentEditable));   
     // look into wiidth

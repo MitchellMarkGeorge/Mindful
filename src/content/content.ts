@@ -17,6 +17,13 @@ import getCaretCoordinates from "textarea-caret";
 let typingTimer: number;
 const mindful = new MidfulExtensionClass();
 
+// console.log()
+
+// for debug in realtime???
+
+// (window as any).mindful = mindful;
+
+
 
 /* DOCUMENTATION */
 
@@ -122,7 +129,8 @@ function analyzeInput() {
   // text = activeElement.value || activeElement.textContent
   //mindful.setText(text.trim())
   const text =
-    activeElement.tagName === "TEXTAREA"
+
+  isTextArea(activeElement)
       ? (activeElement as HTMLTextAreaElement).value.trim()
       : activeElement.textContent.trim();
   mindful.setText(text);

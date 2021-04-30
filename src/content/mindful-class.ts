@@ -82,10 +82,12 @@ export class MidfulExtensionClass {
       ? AttachmentStrategy.COMPLEX
       : AttachmentStrategy.SIMPLE;
   }
+
+  // set attachment strategy
   public mountComponent(emoji: string): void {
     console.log("mounting");
     
-
+    // does not work well on 
     this.mindfulWrapper = document.createElement("mindful-extension");
    
     
@@ -97,6 +99,9 @@ export class MidfulExtensionClass {
     console.log(marginBottom)
     const marginLeft = getStyle(this.activeElement as HTMLElement, 'marginLeft')
     // also compare size/ height (only for bigger elements that absolute positioning should be useful)
+
+    // would need to cross check this value
+    // might change to around 60
     if (this.activeElement.clientHeight > 40) {
    
       const styleObject = {
